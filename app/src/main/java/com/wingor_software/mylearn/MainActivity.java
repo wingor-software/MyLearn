@@ -1,10 +1,17 @@
 package com.wingor_software.mylearn;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.core.view.GravityCompat;
@@ -13,6 +20,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -20,24 +28,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    //tu cos zmieniam
+    Dialog myDialog;
+    LinearLayout subjectsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //o i tutaj
+        myDialog = new Dialog(this);
+        subjectsLayout = findViewById(R.id.subjectsLayout);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -103,4 +119,48 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void showPopup(View v)
+    {
+        Log.d("test", "jestem w funkcji showPopup");
+        TextView txtclose;
+        Button addButton;
+        myDialog.setContentView(R.layout.popup_main);
+        txtclose = myDialog.findViewById(R.id.txtclose);
+        addButton = myDialog.findViewById(R.id.addButton);
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog.dismiss();
+            }
+        });
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = MainActivity.this;
+                TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetter);
+                String s;
+                if(subjectsLayout==null)
+                {
+                    Log.d("test","subjectslayout jest nullem");
+                }
+                s=nameGetter.getText().toString();
+
+                Button b = new Button(context);
+                b.setText(s);
+                b.setMinimumWidth(200);
+                b.setMinimumHeight(200);
+
+                subjectsLayout.addView(b);
+
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+
+    }
+
+
+
 }
