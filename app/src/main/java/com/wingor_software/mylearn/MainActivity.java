@@ -1,11 +1,14 @@
 package com.wingor_software.mylearn;
 
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,11 +40,17 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import android.widget.Toast;
+
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     //tu cos zmieniam
     Dialog myDialog;
     LinearLayout subjectsLayout;
+
+    SubjectDataBaseHelper subjectDataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +70,8 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        subjectDataBaseHelper = new SubjectDataBaseHelper(this);
     }
 
     @Override
@@ -103,8 +114,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
+            addData("Test" + new Random().nextInt());
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_tools) {
@@ -162,5 +175,21 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+
+    public void addData(String newEntry)
+    {
+        boolean insertData = subjectDataBaseHelper.addData(newEntry);
+
+        if(insertData)
+           toastMessage("Dodano poprawnie - " + newEntry);
+        else
+            toastMessage("Cos sie wysralo");
+    }
+
+    private void toastMessage(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 
 }
