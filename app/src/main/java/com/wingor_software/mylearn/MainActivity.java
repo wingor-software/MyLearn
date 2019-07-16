@@ -1,5 +1,6 @@
 package com.wingor_software.mylearn;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,9 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.Toast;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    SubjectDataBaseHelper subjectDataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,8 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        subjectDataBaseHelper = new SubjectDataBaseHelper(this);
     }
 
     @Override
@@ -87,8 +95,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
+            addData("Test" + new Random().nextInt());
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_tools) {
@@ -102,5 +112,20 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void addData(String newEntry)
+    {
+        boolean insertData = subjectDataBaseHelper.addData(newEntry);
+
+        if(insertData)
+           toastMessage("Dodano poprawnie - " + newEntry);
+        else
+            toastMessage("Cos sie wysralo");
+    }
+
+    private void toastMessage(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
