@@ -158,9 +158,9 @@ public class MainActivity extends AppCompatActivity
                     Log.d("test","subjectslayout jest nullem");
                 }
                 s=nameGetter.getText().toString();
-
                 Button b = new Button(context);
                 b.setText(s);
+                b.setTag(s);
                 b.setMinimumWidth(200);
                 b.setMinimumHeight(200);
 
