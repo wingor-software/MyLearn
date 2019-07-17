@@ -55,7 +55,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
-    public List<Subject> getSubjectsList()
+    public List<Subject> getSubjectsList() throws EmptyDataBaseException
     {
         Cursor data = this.getData();
         List<Subject> subjects = new ArrayList<>();
@@ -63,6 +63,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         {
             subjects.add(new Subject(data.getInt(0), data.getString(1)));
         }
+        if (subjects.size() == 0) throw new EmptyDataBaseException();
         return subjects;
     }
 
@@ -73,11 +74,12 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public Subject getLatelyAddedSubject()
+    public Subject getLatelyAddedSubject() throws EmptyDataBaseException
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL1 + " DESC WHERE ROWNUM <= 1";
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL1 + " DESC LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
+        if (cursor == null) throw new EmptyDataBaseException();
         Subject subject = new Subject(cursor.getInt(0), cursor.getString(1));
         cursor.close();
         return subject;
