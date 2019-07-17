@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void showPopup(View v)
+    public void showPopup(final View v)
     {
         Log.d("test", "jestem w funkcji showPopup");
         TextView txtclose;
@@ -155,26 +156,56 @@ public class MainActivity extends AppCompatActivity
                 String s;
                 if(subjectsLayout==null)
                 {
-                    Log.d("test","subjectslayout jest nullem");
+                    Log.d("tesciki","subjectslayout jest nullem");
                 }
-                s=nameGetter.getText().toString();
-                Button b = new Button(context);
-                b.setText(s);
-                b.setTag(s);
-                b.setMinimumWidth(200);
-                b.setMinimumHeight(200);
+                Subject subject;
 
-                subjectsLayout.addView(b);
+                try {
+                    s=nameGetter.getText().toString();
+                    addData(s);
+                    subject=subjectDataBaseHelper.getLatelyAddedSubject();
+                    Log.d("tesciki","dodano do bazy");
+
+                    Button b =  new Button(context);
+
+                    b.setText(subject.getSubjectName());
+                    b.setTag("subject_" + subject.getSubjectID());
+                    b.setMinimumWidth(200);
+                    b.setMinimumHeight(200);
+                    b.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
+                    b.setHighlightColor(getResources().getColor(R.color.colorAccent));
+
+
+                    b.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String s = view.getTag().toString();
+                            String  r_s = s.substring(8);
+                            subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
+                            toastMessage("Poprawnie usunieto przedmiot" + r_s);
+
+                            ((ViewManager)view.getParent()).removeView(view);
+
+                        }
+                    });
+
+
+                    subjectsLayout.addView(b);
+                    Log.d("tesciki","powinno tutaj dodac przycisk");
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
 
                 myDialog.dismiss();
             }
         });
+
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
-
     }
-
-
 
 
     public void addData(String newEntry)
