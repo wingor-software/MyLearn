@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-
+            subjectDataBaseHelper.dropTable();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
@@ -191,5 +191,4 @@ public class MainActivity extends AppCompatActivity
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
-
 }

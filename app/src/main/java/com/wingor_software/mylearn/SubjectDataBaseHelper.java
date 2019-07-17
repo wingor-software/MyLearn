@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SubjectDataBaseHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "subjects";
@@ -50,5 +53,42 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + TABLE_NAME;
         Cursor data = db.rawQuery(query, null);
         return data;
+    }
+
+    public List<Subject> getSubjectsList() throws EmptyDataBaseException
+    {
+        Cursor data = this.getData();
+        List<Subject> subjects = new ArrayList<>();
+        while(data.moveToNext())
+        {
+            subjects.add(new Subject(data.getInt(0), data.getString(1)));
+        }
+        if (subjects.size() == 0) throw new EmptyDataBaseException();
+        return subjects;
+    }
+
+    public void dropSubject(int ID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1 + " = " + ID;
+        db.execSQL(query);
+    }
+
+    public Subject getLatelyAddedSubject() throws EmptyDataBaseException
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL1 + " DESC LIMIT 1";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor == null) throw new EmptyDataBaseException();
+        Subject subject = new Subject(cursor.getInt(0), cursor.getString(1));
+        cursor.close();
+        return subject;
+    }
+
+    public void dropTable()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE 1=1";
+        db.execSQL(query);
     }
 }
