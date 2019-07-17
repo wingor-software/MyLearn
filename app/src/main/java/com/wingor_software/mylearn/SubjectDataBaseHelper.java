@@ -80,6 +80,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL1 + " DESC LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor == null) throw new EmptyDataBaseException();
+        cursor.moveToNext();
         Subject subject = new Subject(cursor.getInt(0), cursor.getString(1));
         cursor.close();
         return subject;
