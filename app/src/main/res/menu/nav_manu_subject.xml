@@ -3,7 +3,7 @@
 
     <item android:title = "@string/cards"
         android:id = "@+id/action_cards"
-        android:icon = "@drawable/ic_menu_camera"/>
+        android:icon = "@drawable/ic_menu_camera" />
     <item android:title = "@string/quiz"
         android:id = "@+id/action_quiz"
         android:icon = "@drawable/ic_menu_send"/>

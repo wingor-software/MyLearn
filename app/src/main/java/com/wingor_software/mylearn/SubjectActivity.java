@@ -53,7 +53,7 @@ public class SubjectActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_subject);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab_subject);
         fab.setOnClickListener(new View.OnClickListener() {
