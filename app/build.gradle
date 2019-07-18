@@ -20,7 +20,10 @@ android {
     }
 }
 
+
 dependencies {
+//  ponizej dodana jakas biblioteka do colorpickera
+    implementation 'petrov.kristiyan:colorpicker-library:1.1.10'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.material:material:1.0.0'
@@ -32,3 +35,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
 }
+

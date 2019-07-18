@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,9 +26,18 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -172,7 +182,25 @@ public class MainActivity extends AppCompatActivity
 
     private void drawSubjectButton(Subject subject)
     {
-        Button b =  new Button(MainActivity.this);
+        final Button b =  new Button(MainActivity.this);
+
+        //sekcja wywolana color pickera
+
+        ColorPicker colorPicker = new ColorPicker(MainActivity.this);
+        colorPicker.show();
+        colorPicker.setDefaultColorButton(R.color.colorPrimary);
+        colorPicker.setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
+            @Override
+            public void onChooseColor(int position,int color) {
+                b.setBackgroundColor(color);
+            }
+
+            @Override
+            public void onCancel(){
+                // put code
+            }
+        });
+
         b.setText(subject.getSubjectName());
         b.setTag("subject_" + subject.getSubjectID());
         b.setMinimumWidth(200);
@@ -258,5 +286,7 @@ public class MainActivity extends AppCompatActivity
         myDialog.show();
 
     }
+
+
 
 }
