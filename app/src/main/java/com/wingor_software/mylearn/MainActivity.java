@@ -43,6 +43,9 @@ import org.w3c.dom.Text;
 
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     //tu cos zmieniam
     Dialog myDialog;
     LinearLayout subjectsLayout;
-
+    private TextView warning;
     SubjectDataBaseHelper subjectDataBaseHelper;
 
     @Override
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         subjectDataBaseHelper = new SubjectDataBaseHelper(this);
+        drawAllSubjectButtons();
     }
 
     @Override
@@ -151,7 +155,6 @@ public class MainActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Context context = MainActivity.this;
                 TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetter);
                 String s;
                 if(subjectsLayout==null)
@@ -159,46 +162,18 @@ public class MainActivity extends AppCompatActivity
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
                 Subject subject;
-
                 try {
                     s=nameGetter.getText().toString();
                     addData(s);
                     subject=subjectDataBaseHelper.getLatelyAddedSubject();
                     Log.d("tesciki","dodano do bazy");
-
-                    Button b =  new Button(context);
-
-                    b.setText(subject.getSubjectName());
-                    b.setTag("subject_" + subject.getSubjectID());
-                    b.setMinimumWidth(200);
-                    b.setMinimumHeight(200);
-                    b.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
-                    b.setHighlightColor(getResources().getColor(R.color.colorAccent));
-
-
-                    b.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String s = view.getTag().toString();
-                            String  r_s = s.substring(8);
-                            subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
-                            toastMessage("Poprawnie usunieto przedmiot" + r_s);
-
-                            ((ViewManager)view.getParent()).removeView(view);
-
-                        }
-                    });
-
-
-                    subjectsLayout.addView(b);
+                    drawSubjectButton(subject);
                     Log.d("tesciki","powinno tutaj dodac przycisk");
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
-
                 myDialog.dismiss();
             }
         });
@@ -221,5 +196,58 @@ public class MainActivity extends AppCompatActivity
     private void toastMessage(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void drawSubjectButton(Subject subject)
+    {
+        Button b =  new Button(MainActivity.this);
+        b.setText(subject.getSubjectName());
+        b.setTag("subject_" + subject.getSubjectID());
+        b.setMinimumWidth(200);
+        b.setMinimumHeight(200);
+        b.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
+        b.setHighlightColor(getResources().getColor(R.color.colorAccent));
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s = view.getTag().toString();
+                String  r_s = s.substring(8);
+                subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
+                toastMessage("Poprawnie usunieto przedmiot" + r_s);
+
+                ((ViewManager)view.getParent()).removeView(view);
+            }
+        });
+        subjectsLayout.addView(b);
+    }
+
+    private void drawAllSubjectButtons()
+    {
+        if(warning != null && warning.getParent() != null)
+        {
+            ((ViewManager)warning.getParent()).removeView(warning);
+        }
+
+        try
+        {
+            List<Subject> subjects = subjectDataBaseHelper.getSubjectsList();
+            Iterator it = subjects.iterator();
+            while(it.hasNext())
+            {
+                drawSubjectButton((Subject) it.next());
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(MainActivity.this);
+            warning.setText(R.string.subject_warning);
+            warning.setTag("subject_warning_tag");
+            subjectsLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
