@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorLightPrimary">#b084f4</color>
-    <color name="colorPrimary">#7e56c1</color>
-    <color name="colorPrimaryDark">#4d2b90</color>
+    <!--kolory glowne-->
+    <color name="colorLightPrimary">#8A43BD</color>
+    <color name="colorPrimary">#62148C</color>
+    <color name="colorPrimaryDark">#42005E</color>
 
-    <color name="colorLightAccent">#4fb3bf</color>
-    <color name="colorAccent">#00838f</color>
-    <color name="colorAccentDark">#005662</color>
+    <!--kolory dodatkowe-->
+    <color name="colorLightAccent">#2E03DD</color>
+    <color name="colorAccent">#160181</color>
+    <color name="colorAccentDark">#0D0241</color>
 
-    <color name="colorLightButton">#9D39F5</color>
-    <color name="colorButton">#722AD8</color>
-    <color name="colorButtonDark">#67199E</color>
-    
+    <!--kolory do gradientu side baru -->
+    <color name="colorLightGradient">#69389B</color>
+    <color name="colorGradient">#40105C</color>
+    <color name="colorGradientDark">#290435</color>
 
-    <color name="colorBackground">#E1D5E9</color>
+    <!--kolory do dymkow popup-->
+    <color name="colorLightPopup">#C1B2E0</color>
+    <color name="colorPopup">#A884CE</color>
+    <color name="colorPopupDark">#946EC9</color>
+    <color name="colorPopupBorder">#6221A2</color>
+
+    <!--kolory do przyciskow wyborow-->
+    <color name="colorLightButton">#ECE6F5</color>
+    <color name="colorButton">#D7BCFC</color>
+    <color name="colorButtonDark">#C699F3</color>
+
+    <!--kolory do przyciskow przedmiotow-->
+    <color name="colorLightSubject">#EEE7DF</color>
+    <color name="colorSubject">#FCE9D8</color>
+    <color name="colorSubjectDark">#F8D2B2</color>
 
 </resources>
