@@ -16,9 +16,7 @@
             android:id="@+id/nameGetter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Insert name of new Subject..."
-            android:backgroundTint="@color/colorPopupBorder"
-            android:textColorHint="@color/colorPopupBorder"/>
+            android:hint="Insert name of new Subject..." />
 
     </com.google.android.material.textfield.TextInputLayout>
 

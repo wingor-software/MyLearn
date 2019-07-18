@@ -3,14 +3,10 @@
     <corners
         android:radius="50dp"
         />
-    <gradient
-        android:gradientRadius="100"
-        android:centerX="45%"
-        android:startColor="@color/colorLightPopup"
-        android:centerColor="@color/colorPopup"
-        android:endColor="@color/colorPopupDark"
-        android:type="linear"
+    <solid
+        android:color="@android:color/white"
         />
+
     <padding
         android:left="30dp"
         android:top="30dp"
@@ -18,7 +14,7 @@
         android:bottom="30dp"
         />
     <stroke
-        android:width="2dp"
+        android:width="3dp"
         android:color="@color/colorPopupBorder"
         />
 

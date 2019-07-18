@@ -6,9 +6,9 @@
     <color name="colorPrimaryDark">#42005E</color>
 
     <!--kolory dodatkowe-->
-    <color name="colorLightAccent">#2E03DD</color>
-    <color name="colorAccent">#160181</color>
-    <color name="colorAccentDark">#0D0241</color>
+    <color name="colorLightAccent">#4F03DD</color>
+    <color name="colorAccent">#500181</color>
+    <color name="colorAccentDark">#1F0241</color>
 
     <!--kolory do gradientu side baru -->
     <color name="colorLightGradient">#69389B</color>
@@ -19,12 +19,12 @@
     <color name="colorLightPopup">#C1B2E0</color>
     <color name="colorPopup">#A884CE</color>
     <color name="colorPopupDark">#946EC9</color>
-    <color name="colorPopupBorder">#6221A2</color>
+    <color name="colorPopupBorder">#7A51A3</color>
 
     <!--kolory do przyciskow wyborow-->
     <color name="colorLightButton">#ECE6F5</color>
-    <color name="colorButton">#D7BCFC</color>
-    <color name="colorButtonDark">#C699F3</color>
+    <color name="colorButton">#ECE0FC</color>
+    <color name="colorButtonDark">#E2CDF7</color>
 
     <!--kolory do przyciskow przedmiotow-->
     <color name="colorLightSubject">#EEE7DF</color>
