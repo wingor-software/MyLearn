@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 String s = view.getTag().toString();
-                String  r_s = s.substring(8);
+                String r_s = s.substring(8);
                 subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
