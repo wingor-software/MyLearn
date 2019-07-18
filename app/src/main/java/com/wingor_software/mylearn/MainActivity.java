@@ -208,27 +208,28 @@ public class MainActivity extends AppCompatActivity
         b.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
         b.setHighlightColor(getResources().getColor(R.color.colorAccent));
 
-        b.setOnClickListener(new View.OnClickListener() {
+        b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View view) {
                 String s = view.getTag().toString();
                 String  r_s = s.substring(8);
                 subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
                 ((ViewManager)view.getParent()).removeView(view);
+                return true;
             }
         });
-        subjectsLayout.addView(b);
-    }
-
-    private void drawAllSubjectButtons()
-    {
         if(warning != null && warning.getParent() != null)
         {
             ((ViewManager)warning.getParent()).removeView(warning);
         }
 
+        subjectsLayout.addView(b);
+    }
+
+    private void drawAllSubjectButtons()
+    {
         try
         {
             List<Subject> subjects = subjectDataBaseHelper.getSubjectsList();
