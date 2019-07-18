@@ -141,17 +141,9 @@ public class MainActivity extends AppCompatActivity
     public void showPopup(final View v)
     {
         Log.d("test", "jestem w funkcji showPopup");
-        TextView txtclose;
         Button addButton;
         myDialog.setContentView(R.layout.popup_main);
-        txtclose = myDialog.findViewById(R.id.txtclose);
         addButton = myDialog.findViewById(R.id.addButton);
-        txtclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDialog.dismiss();
-            }
-        });
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,7 +174,6 @@ public class MainActivity extends AppCompatActivity
         myDialog.show();
     }
 
-
     public void addData(String newEntry)
     {
         boolean insertData = subjectDataBaseHelper.addData(newEntry);
@@ -205,18 +196,12 @@ public class MainActivity extends AppCompatActivity
         b.setTag("subject_" + subject.getSubjectID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
-        b.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
-        b.setHighlightColor(getResources().getColor(R.color.colorAccent));
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable));
 
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                String s = view.getTag().toString();
-                String r_s = s.substring(8);
-                subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
-                toastMessage("Poprawnie usunieto przedmiot" + r_s);
-
-                ((ViewManager)view.getParent()).removeView(view);
+                showDeletePopup(view);
                 return true;
             }
         });
@@ -251,4 +236,39 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+    private void showDeletePopup(final View view)
+    {
+        final View subject_view = view;
+        myDialog.setContentView(R.layout.popup_delete_subject);
+        Button no_button = myDialog.findViewById(R.id.no_button);
+        Button yes_button = myDialog.findViewById(R.id.yes_button);
+
+
+        no_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog.dismiss();
+            }
+        });
+
+        yes_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s = subject_view.getTag().toString();
+                String r_s = s.substring(8);
+                subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
+                toastMessage("Poprawnie usunieto przedmiot" + r_s);
+
+                ((ViewManager)subject_view.getParent()).removeView(subject_view);
+
+                myDialog.dismiss();
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+
+    }
+
 }
