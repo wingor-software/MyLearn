@@ -46,6 +46,8 @@ public class SubjectActivity extends AppCompatActivity
     Dialog myDialog;
     private TextView warning;
     NoteDataBaseHelper noteDataBaseHelper;
+    enum colors {red,yellow,green,blue,purple}
+    MainActivity.colors chosen_color= MainActivity.colors.purple;
 
     private enum BarAction {CARDS, QUIZ, NOTES};
     private BarAction whichAction;
@@ -75,8 +77,12 @@ public class SubjectActivity extends AppCompatActivity
                     mTextMessage.setText(R.string.notes);
                     drawAllNoteButtons();
                     return true;
+                default:
+                     clearContent();
+                     addIfNotChildren(mTextMessage);
+                     mTextMessage.setText("wejsciowe");
+                     return true;
             }
-            return false;
         }
     };
 
@@ -99,12 +105,10 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout = findViewById(R.id.subjectActivityLayout);
         myDialog = new Dialog(this);
         noteDataBaseHelper = new NoteDataBaseHelper(this);
-        noteDataBaseHelper.dropTable();
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
         mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
 //        noteDataBaseHelper.addData("Tytuł", "Content", 1);
     }
 
@@ -178,7 +182,7 @@ public class SubjectActivity extends AppCompatActivity
         b.setTag("note_" + note.getID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
-        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable));
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
 
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -187,6 +191,38 @@ public class SubjectActivity extends AppCompatActivity
                 return true;
             }
         });
+
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+
+        switch (chosen_color)
+        {
+            case red:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
+                break;
+            }
+            case yellow:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
+                break;
+            }
+            case green:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
+                break;
+            }
+            case blue:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
+                break;
+            }
+            case purple:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
+                break;
+            }
+        }
+
 //        b.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -202,8 +238,41 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout.addView(b);
     }
 
+    public void choseColor(View view)
+    {
+        switch (view.getId())
+        {
+            case R.id.button_red:
+            {
+                chosen_color= MainActivity.colors.red;
+                break;
+            }
+            case R.id.button_yellow:
+            {
+                chosen_color= MainActivity.colors.yellow;
+                break;
+            }
+            case R.id.button_green:
+            {
+                chosen_color= MainActivity.colors.green;
+                break;
+            }
+            case R.id.button_blue:
+            {
+                chosen_color= MainActivity.colors.blue;
+                break;
+            }
+            case R.id.button_purple:
+            {
+                chosen_color= MainActivity.colors.purple;
+                break;
+            }
+        }
+    }
+
     private void showDeletePopup(final View view)
     {
+        final View noteView = view;
         myDialog.setContentView(R.layout.popup_delete_subject);
         Button no_button = myDialog.findViewById(R.id.no_button);
         Button yes_button = myDialog.findViewById(R.id.yes_button);
@@ -219,12 +288,12 @@ public class SubjectActivity extends AppCompatActivity
         yes_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s = view.getTag().toString();
+                String s = noteView.getTag().toString();
                 String r_s = s.substring(5);
                 noteDataBaseHelper.dropNoteByID(Integer.parseInt(r_s));
                 toastMessage("Poprawnie usunieto notatke" + r_s);
 
-                ((ViewManager)view.getParent()).removeView(view);
+                ((ViewManager)noteView.getParent()).removeView(noteView);
 
                 myDialog.dismiss();
             }
@@ -272,9 +341,21 @@ public class SubjectActivity extends AppCompatActivity
     public void showPopupSubject(final View v)
     {
         Log.d("test", "jestem w funkcji showPopup");
+        //przycisk add
         Button addButton;
+
+        //ustala focus na okienko pop up
         myDialog.setContentView(R.layout.popup_main);
+
+        //wyszukuje powiązania
         addButton = myDialog.findViewById(R.id.addButton);
+
+        Button red_button = myDialog.findViewById(R.id.button_red);
+        Button yellow_button = myDialog.findViewById(R.id.button_yellow);
+        Button green_button = myDialog.findViewById(R.id.button_green);
+        Button blue_button = myDialog.findViewById(R.id.button_blue);
+        Button purple_button = myDialog.findViewById(R.id.button_purple);
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -287,7 +368,7 @@ public class SubjectActivity extends AppCompatActivity
                 Note note;
                 try {
                     s=nameGetter.getText().toString();
-                    addData(s, "test content");
+                    addData(s, "testTitle");
                     note = noteDataBaseHelper.getLatelyAddedNote();
                     Log.d("tesciki","dodano do bazy");
                     drawNoteButton(note);

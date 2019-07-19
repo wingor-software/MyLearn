@@ -25,8 +25,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + " ( " + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + "INTEGER);";
+        String createTable = "CREATE TABLE " + TABLE_NAME + " ( " + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " INTEGER);";
         sqLiteDatabase.execSQL(createTable);
         Log.d("tag test", createTable);
     }
