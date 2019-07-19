@@ -15,6 +15,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "subjects";
     private static final String COL1 = "ID";
     private static final String COL2 = "Subject";
+    private static final String COL3 = "Color";
 
     public SubjectDataBaseHelper(Context context)
     {
@@ -23,7 +24,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COL2 + " TEXT)";
+        String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COL2 + " TEXT, " + COL3 + " INTEGER);";
         sqLiteDatabase.execSQL(createTable);
     }
 
@@ -32,11 +33,12 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
     }
 
-    public boolean addData(String item)
+    public boolean addData(String item, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, item);
+        contentValues.put(COL3, color);
         Log.d("DataBase", "addData : Adding " + item + " to " + TABLE_NAME);
         long result = db.insert(TABLE_NAME, null, contentValues);
 //        if(result ==  -1)
@@ -61,7 +63,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         List<Subject> subjects = new ArrayList<>();
         while(data.moveToNext())
         {
-            subjects.add(new Subject(data.getInt(0), data.getString(1)));
+            subjects.add(new Subject(data.getInt(0), data.getString(1), data.getInt(2)));
         }
         if (subjects.size() == 0) throw new EmptyDataBaseException();
         return subjects;
@@ -81,7 +83,7 @@ public class SubjectDataBaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         if (cursor == null) throw new EmptyDataBaseException();
         cursor.moveToNext();
-        Subject subject = new Subject(cursor.getInt(0), cursor.getString(1));
+        Subject subject = new Subject(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
         cursor.close();
         return subject;
     }

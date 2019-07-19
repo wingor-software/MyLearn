@@ -1,6 +1,5 @@
 package com.wingor_software.mylearn;
 
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,8 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     //tu cos zmieniam
@@ -39,8 +36,8 @@ public class MainActivity extends AppCompatActivity
     LinearLayout subjectsLayout;
     private TextView warning;
     SubjectDataBaseHelper subjectDataBaseHelper;
-    enum colors {red,yellow,green,blue,purple}
-    colors chosen_color=colors.purple;
+
+    EnumColors chosen_color = EnumColors.valueOf(5);
     private static Subject currentSubject;
 
     @Override
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-            addData("Test" + new Random().nextInt());
+            addData("Test" + new Random().nextInt(), 1);
         } else if (id == R.id.nav_gallery) {
             Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
             startActivity(intent);
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity
                 Subject subject;
                 try {
                     s=nameGetter.getText().toString();
-                    addData(s);
+                    addData(s, chosen_color.getValue());
                     subject=subjectDataBaseHelper.getLatelyAddedSubject();
                     Log.d("tesciki","dodano do bazy");
                     drawSubjectButton(subject);
@@ -174,9 +171,9 @@ public class MainActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    public void addData(String newEntry)
+    public void addData(String newEntry, int color)
     {
-        boolean insertData = subjectDataBaseHelper.addData(newEntry);
+        boolean insertData = subjectDataBaseHelper.addData(newEntry, color);
 
         if(insertData)
            toastMessage("Dodano poprawnie - " + newEntry);
@@ -200,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         //ustalam plik w zaleznosci od wybranego wczesniej koloru
 
         b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
-
+        chosen_color = EnumColors.valueOf(subject.getColor());
         switch (chosen_color)
         {
             case red:
@@ -317,27 +314,27 @@ public class MainActivity extends AppCompatActivity
         {
             case R.id.button_red:
             {
-                chosen_color=colors.red;
+                chosen_color=EnumColors.valueOf(1);
                 break;
             }
             case R.id.button_yellow:
             {
-                chosen_color=colors.yellow;
+                chosen_color=EnumColors.valueOf(2);
                 break;
             }
             case R.id.button_green:
             {
-                chosen_color=colors.green;
+                chosen_color=EnumColors.valueOf(3);
                 break;
             }
             case R.id.button_blue:
             {
-                chosen_color=colors.blue;
+                chosen_color=EnumColors.valueOf(4);
                 break;
             }
             case R.id.button_purple:
             {
-                chosen_color=colors.purple;
+                chosen_color=EnumColors.valueOf(5);
                 break;
             }
         }

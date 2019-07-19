@@ -17,6 +17,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
     private static final String COL2 = "Title";
     private static final String COL3 = "Content";
     private static final String COL4 = "SubjectID";
+    private static final String COL5 = "Color";
 
     public NoteDataBaseHelper(Context context)
     {
@@ -25,7 +26,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + " ( " + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " INTEGER);";
+        String createTable = "CREATE TABLE " + TABLE_NAME + " ( " + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " INTEGER, " + COL5 + " INTEGER);";
         sqLiteDatabase.execSQL(createTable);
         Log.d("tag test", createTable);
     }
@@ -35,10 +36,11 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
     }
 
-    public boolean addData(String title, String content, int subjectID)
+    public boolean addData(String title, String content, int subjectID, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(COL5, color);
         contentValues.put(COL4, subjectID);
         contentValues.put(COL3, content);
         contentValues.put(COL2, title);
@@ -61,7 +63,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
         List<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3)));
+            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
         }
         if (notes.size() == 0) throw new EmptyDataBaseException();
         return notes;
@@ -75,7 +77,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
         ArrayList<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3)));
+            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
         }
         if(notes.size() == 0) throw new EmptyDataBaseException();
         data.close();
@@ -110,7 +112,7 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         if (data == null) throw new EmptyDataBaseException();
         data.moveToNext();
-        Note note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3));
+        Note note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4));
         data.close();
         return note;
     }

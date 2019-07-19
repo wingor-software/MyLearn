@@ -46,8 +46,7 @@ public class SubjectActivity extends AppCompatActivity
     Dialog myDialog;
     private TextView warning;
     NoteDataBaseHelper noteDataBaseHelper;
-    enum colors {red,yellow,green,blue,purple}
-    MainActivity.colors chosen_color= MainActivity.colors.purple;
+    EnumColors chosen_color= EnumColors.valueOf(5);
 
     private enum BarAction {CARDS, QUIZ, NOTES};
     private BarAction whichAction;
@@ -77,12 +76,8 @@ public class SubjectActivity extends AppCompatActivity
                     mTextMessage.setText(R.string.notes);
                     drawAllNoteButtons();
                     return true;
-                default:
-                     clearContent();
-                     addIfNotChildren(mTextMessage);
-                     mTextMessage.setText("wejsciowe");
-                     return true;
             }
+            return false;
         }
     };
 
@@ -193,7 +188,7 @@ public class SubjectActivity extends AppCompatActivity
         });
 
         b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
-
+        chosen_color = EnumColors.valueOf(note.getColor());
         switch (chosen_color)
         {
             case red:
@@ -244,27 +239,27 @@ public class SubjectActivity extends AppCompatActivity
         {
             case R.id.button_red:
             {
-                chosen_color= MainActivity.colors.red;
+                chosen_color= EnumColors.valueOf(1);
                 break;
             }
             case R.id.button_yellow:
             {
-                chosen_color= MainActivity.colors.yellow;
+                chosen_color= EnumColors.valueOf(2);
                 break;
             }
             case R.id.button_green:
             {
-                chosen_color= MainActivity.colors.green;
+                chosen_color= EnumColors.valueOf(3);
                 break;
             }
             case R.id.button_blue:
             {
-                chosen_color= MainActivity.colors.blue;
+                chosen_color= EnumColors.valueOf(4);
                 break;
             }
             case R.id.button_purple:
             {
-                chosen_color= MainActivity.colors.purple;
+                chosen_color= EnumColors.valueOf(5);
                 break;
             }
         }
@@ -390,7 +385,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = noteDataBaseHelper.addData(title, content, MainActivity.getCurrentSubject().getSubjectID());
+            boolean insertData = noteDataBaseHelper.addData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else

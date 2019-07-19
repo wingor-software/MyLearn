@@ -4,10 +4,12 @@ public class Subject
 {
     private int subjectID;
     private String subjectName;
+    private int color;
 
-    public Subject(int subjectID, String subjectName) {
+    public Subject(int subjectID, String subjectName, int color) {
         this.subjectID = subjectID;
         this.subjectName = subjectName;
+        this.color = color;
     }
 
     public int getSubjectID() {
@@ -24,5 +26,13 @@ public class Subject
 
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }
