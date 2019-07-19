@@ -37,7 +37,6 @@ import java.util.Random;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -206,29 +205,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //sekcja wywolana color pickera
-
-        ColorPicker colorPicker = new ColorPicker(MainActivity.this);
-        colorPicker.show();
-        colorPicker.setDefaultColorButton(R.color.colorPrimary);
-        colorPicker.setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
-            @Override
-            public void onChooseColor(int position,int color) {
-                b.setBackgroundColor(color);
-                subjectsLayout.addView(b);
-            }
-
-            @Override
-            public void onCancel(){
-                subjectsLayout.addView(b);
-            }
-        });
-
         if(warning != null && warning.getParent() != null)
         {
             ((ViewManager)warning.getParent()).removeView(warning);
         }
-
+        subjectsLayout.addView(b);
 
     }
 
