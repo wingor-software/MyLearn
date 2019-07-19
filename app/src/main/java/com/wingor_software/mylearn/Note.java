@@ -6,12 +6,14 @@ public class Note
     private String title;
     private String content;
     private int subjectID;
+    private int color;
 
-    public Note(int ID, String title, String content, int subjectID) {
+    public Note(int ID, String title, String content, int subjectID, int color) {
         this.ID = ID;
         this.title = title;
         this.content = content;
         this.subjectID = subjectID;
+        this.color = color;
     }
 
     public int getID() {
@@ -44,5 +46,13 @@ public class Note
 
     public void setSubjectID(int subjectID) {
         this.subjectID = subjectID;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }
