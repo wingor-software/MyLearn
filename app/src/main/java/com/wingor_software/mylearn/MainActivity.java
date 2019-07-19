@@ -184,22 +184,6 @@ public class MainActivity extends AppCompatActivity
     {
         final Button b =  new Button(MainActivity.this);
 
-        //sekcja wywolana color pickera
-
-        ColorPicker colorPicker = new ColorPicker(MainActivity.this);
-        colorPicker.show();
-        colorPicker.setDefaultColorButton(R.color.colorPrimary);
-        colorPicker.setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
-            @Override
-            public void onChooseColor(int position,int color) {
-                b.setBackgroundColor(color);
-            }
-
-            @Override
-            public void onCancel(){
-                // put code
-            }
-        });
 
         b.setText(subject.getSubjectName());
         b.setTag("subject_" + subject.getSubjectID());
@@ -221,12 +205,31 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        //sekcja wywolana color pickera
+
+        ColorPicker colorPicker = new ColorPicker(MainActivity.this);
+        colorPicker.show();
+        colorPicker.setDefaultColorButton(R.color.colorPrimary);
+        colorPicker.setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
+            @Override
+            public void onChooseColor(int position,int color) {
+                b.setBackgroundColor(color);
+                subjectsLayout.addView(b);
+            }
+
+            @Override
+            public void onCancel(){
+                subjectsLayout.addView(b);
+            }
+        });
+
         if(warning != null && warning.getParent() != null)
         {
             ((ViewManager)warning.getParent()).removeView(warning);
         }
 
-        subjectsLayout.addView(b);
+
     }
 
     private void drawAllSubjectButtons()
