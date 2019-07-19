@@ -31,4 +31,28 @@
     <color name="colorSubject">#FCE9D8</color>
     <color name="colorSubjectDark">#F8D2B2</color>
 
+    <!--kolory do gradientow przedmiotow wszystkich-->
+    <color name="colorLightRed">#ff5131</color>
+    <color name="colorRed">#d50000</color>
+    <color name="colorDarkRed">#9b0000</color>
+
+    <color name="colorLightYellow">#ffff52</color>
+    <color name="colorYellow">#ffd600</color>
+    <color name="colorDarkYellow">#c7a500</color>
+
+    <color name="colorLightGreen">#5efc82</color>
+    <color name="colorGreen">#00c853</color>
+    <color name="colorDarkGreen">#009624</color>
+
+    <color name="colorLightBlue">#768fff</color>
+    <color name="colorBlue">#2962ff</color>
+    <color name="colorDarkBlue">#0039cb</color>
+
+    <color name="colorLightPurple">#e254ff</color>
+    <color name="colorPurple">#aa00ff</color>
+    <color name="colorDarkPurple">#7200ca</color>
+
+
+
+
 </resources>

@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,16 +25,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 
 public class MainActivity extends AppCompatActivity
@@ -45,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     LinearLayout subjectsLayout;
     private TextView warning;
     SubjectDataBaseHelper subjectDataBaseHelper;
+    enum colors {red,yellow,green,blue,purple}
+    colors chosen_color=colors.purple;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,9 +127,21 @@ public class MainActivity extends AppCompatActivity
     public void showPopup(final View v)
     {
         Log.d("test", "jestem w funkcji showPopup");
+        //przycisk add
         Button addButton;
+
+        //ustala focus na okienko pop up
         myDialog.setContentView(R.layout.popup_main);
+
+        //wyszukuje powiązania
         addButton = myDialog.findViewById(R.id.addButton);
+
+        Button red_button = myDialog.findViewById(R.id.button_red);
+        Button yellow_button = myDialog.findViewById(R.id.button_yellow);
+        Button green_button = myDialog.findViewById(R.id.button_green);
+        Button blue_button = myDialog.findViewById(R.id.button_blue);
+        Button purple_button = myDialog.findViewById(R.id.button_purple);
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,12 +191,42 @@ public class MainActivity extends AppCompatActivity
     {
         final Button b =  new Button(MainActivity.this);
 
-
         b.setText(subject.getSubjectName());
         b.setTag("subject_" + subject.getSubjectID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
-        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable));
+        //ustalam plik w zaleznosci od wybranego wczesniej koloru
+
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+
+        switch (chosen_color)
+        {
+            case red:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
+                break;
+            }
+            case yellow:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
+                break;
+            }
+            case green:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
+                break;
+            }
+            case blue:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
+                break;
+            }
+            case purple:
+            {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
+                break;
+            }
+        }
 
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -271,6 +309,38 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void choseColor(View view)
+    {
+        switch (view.getId())
+        {
+            case R.id.button_red:
+            {
+                chosen_color=colors.red;
+                break;
+            }
+            case R.id.button_yellow:
+            {
+                chosen_color=colors.yellow;
+                break;
+            }
+            case R.id.button_green:
+            {
+                chosen_color=colors.green;
+                break;
+            }
+            case R.id.button_blue:
+            {
+                chosen_color=colors.blue;
+                break;
+            }
+            case R.id.button_purple:
+            {
+                chosen_color=colors.purple;
+                break;
+            }
+        }
+    }
 
 
 }
+
