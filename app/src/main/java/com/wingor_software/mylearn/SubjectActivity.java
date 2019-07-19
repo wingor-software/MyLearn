@@ -178,7 +178,7 @@ public class SubjectActivity extends AppCompatActivity
         b.setTag("note_" + note.getID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
-        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable));
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
 
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
