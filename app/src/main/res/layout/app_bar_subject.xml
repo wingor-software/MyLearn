@@ -30,6 +30,7 @@
         android:layout_marginTop="@dimen/fab_margin"
         android:layout_marginEnd="70dp"
         android:layout_marginRight="70dp"
+        android:onClick="showPopupSubject"
         app:rippleColor="#00B11E1E"
         app:srcCompat="@android:drawable/ic_input_add" />
 

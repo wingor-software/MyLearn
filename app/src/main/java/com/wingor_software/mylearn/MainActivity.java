@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     LinearLayout subjectsLayout;
     private TextView warning;
     SubjectDataBaseHelper subjectDataBaseHelper;
+    private static Subject currentSubject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void drawSubjectButton(Subject subject)
+    private void drawSubjectButton(final Subject subject)
     {
         final Button b =  new Button(MainActivity.this);
 
@@ -200,6 +201,7 @@ public class MainActivity extends AppCompatActivity
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setCurrentSubject(subject);
                 Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
                 startActivity(intent);
             }
@@ -210,7 +212,6 @@ public class MainActivity extends AppCompatActivity
             ((ViewManager)warning.getParent()).removeView(warning);
         }
         subjectsLayout.addView(b);
-
     }
 
     private void drawAllSubjectButtons()
@@ -271,6 +272,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public static Subject getCurrentSubject() throws Exception
+    {
+        try
+        {
+            return currentSubject;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new Exception();
+        }
+    }
 
-
+    private static void setCurrentSubject(Subject subject)
+    {
+        currentSubject = subject;
+    }
 }
