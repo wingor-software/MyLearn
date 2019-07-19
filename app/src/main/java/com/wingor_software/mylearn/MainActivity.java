@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
             subjectDataBaseHelper.dropTable();
+            subjectsLayout.removeAllViews();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
@@ -340,7 +341,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
 
 }
 
