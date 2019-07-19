@@ -19,5 +19,6 @@
     <string name="notes">Notes</string>
 
     <string name="subject_warning">Looks like you don\'t have any subjects</string>
+    <string name="note_warning">Looks like you don\'t have any notes</string>
     <string name="title_activity_subject">SubjectActivity</string>
 </resources>
