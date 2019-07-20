@@ -26,7 +26,7 @@ public class CardDataBaseHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " ( " + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + "INTEGER)";
+                + COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " INTEGER)";
         sqLiteDatabase.execSQL(createTable);
     }
 
