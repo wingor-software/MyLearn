@@ -45,11 +45,12 @@ public class SubjectActivity extends AppCompatActivity
     private ConstraintLayout subjectLayout;
     Dialog myDialog;
     private TextView warning;
-    NoteDataBaseHelper noteDataBaseHelper;
+    static NoteDataBaseHelper noteDataBaseHelper;
     EnumColors chosen_color= EnumColors.valueOf(5);
 
     private enum BarAction {CARDS, QUIZ, NOTES};
     private BarAction whichAction;
+    private static Note currentNote;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -105,6 +106,19 @@ public class SubjectActivity extends AppCompatActivity
         mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 //        noteDataBaseHelper.addData("Tytuł", "Content", 1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try
+        {
+            this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
+        }
+        catch(Exception e)
+        {
+            this.setTitle(R.string.title_activity_subject);
+        }
     }
 
     @Override
@@ -169,7 +183,7 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout.removeAllViewsInLayout();
     }
 
-    private void drawNoteButton(Note note)
+    private void drawNoteButton(final Note note)
     {
         final Button b =  new Button(SubjectActivity.this);
 
@@ -184,6 +198,15 @@ public class SubjectActivity extends AppCompatActivity
             public boolean onLongClick(View view) {
                 showDeletePopup(view);
                 return true;
+            }
+        });
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentNote = note;
+                Intent intent = new Intent(SubjectActivity.this, NoteActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -217,14 +240,6 @@ public class SubjectActivity extends AppCompatActivity
                 break;
             }
         }
-
-//        b.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
-//                startActivity(intent);
-//            }
-//        });
 
         if(warning != null && warning.getParent() != null)
         {
@@ -363,7 +378,7 @@ public class SubjectActivity extends AppCompatActivity
                 Note note;
                 try {
                     s=nameGetter.getText().toString();
-                    addData(s, "testTitle");
+                    addData(s, "Empty note");
                     note = noteDataBaseHelper.getLatelyAddedNote();
                     Log.d("tesciki","dodano do bazy");
                     drawNoteButton(note);
@@ -395,5 +410,23 @@ public class SubjectActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+    }
+
+    public static void dropAllSubjectNotes(int subjectID)
+    {
+        noteDataBaseHelper.dropNotesBySubjectID(subjectID);
+    }
+
+    public static Note getCurrentNote() {
+        return currentNote;
+    }
+
+    public static void setCurrentNote(Note currentNote) {
+        SubjectActivity.currentNote = currentNote;
+    }
+
+    public static void updateNoteContent(int noteID, String newContent)
+    {
+        noteDataBaseHelper.updateNoteContent(noteID, newContent);
     }
 }
