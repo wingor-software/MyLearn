@@ -45,11 +45,19 @@ public class SubjectActivity extends AppCompatActivity
     private ConstraintLayout subjectLayout;
     Dialog myDialog;
     private TextView warning;
-    NoteDataBaseHelper noteDataBaseHelper;
-    EnumColors chosen_color= EnumColors.valueOf(5);
 
-    private enum BarAction {CARDS, QUIZ, NOTES};
+    static NoteDataBaseHelper noteDataBaseHelper;
+    static CardDataBaseHelper cardDataBaseHelper;
+
+    EnumColors chosen_color = EnumColors.valueOf(5);
+
+    private enum BarAction {CARDS, QUIZ, NOTES}
+
+    ;
     private BarAction whichAction;
+
+    private static Note currentNote;
+    private static Card currentCard;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -62,6 +70,7 @@ public class SubjectActivity extends AppCompatActivity
                     clearContent();
                     addIfNotChildren(mTextMessage);
                     mTextMessage.setText(R.string.cards);
+                    drawAllCardButtons();
                     return true;
                 case R.id.action_quiz:
                     whichAction = BarAction.QUIZ;
@@ -99,12 +108,24 @@ public class SubjectActivity extends AppCompatActivity
 
         subjectLayout = findViewById(R.id.subjectActivityLayout);
         myDialog = new Dialog(this);
+
         noteDataBaseHelper = new NoteDataBaseHelper(this);
+        cardDataBaseHelper = new CardDataBaseHelper(this);
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
         mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 //        noteDataBaseHelper.addData("Tytuł", "Content", 1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
+        } catch (Exception e) {
+            this.setTitle(R.string.title_activity_subject);
+        }
     }
 
     @Override
@@ -164,14 +185,12 @@ public class SubjectActivity extends AppCompatActivity
         return true;
     }
 
-    private void clearContent()
-    {
+    private void clearContent() {
         subjectLayout.removeAllViewsInLayout();
     }
 
-    private void drawNoteButton(Note note)
-    {
-        final Button b =  new Button(SubjectActivity.this);
+    private void drawNoteButton(final Note note) {
+        final Button b = new Button(SubjectActivity.this);
 
         b.setText(note.getTitle());
         b.setTag("note_" + note.getID());
@@ -187,87 +206,107 @@ public class SubjectActivity extends AppCompatActivity
             }
         });
 
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentNote = note;
+                Intent intent = new Intent(SubjectActivity.this, NoteActivity.class);
+                startActivity(intent);
+            }
+        });
+
         b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
         chosen_color = EnumColors.valueOf(note.getColor());
-        switch (chosen_color)
-        {
-            case red:
-            {
+        switch (chosen_color) {
+            case red: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
                 break;
             }
-            case yellow:
-            {
+            case yellow: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
                 break;
             }
-            case green:
-            {
+            case green: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
                 break;
             }
-            case blue:
-            {
+            case blue: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
                 break;
             }
-            case purple:
-            {
+            case purple: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
                 break;
             }
         }
 
-//        b.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
-        if(warning != null && warning.getParent() != null)
-        {
-            ((ViewManager)warning.getParent()).removeView(warning);
+        if (warning != null && warning.getParent() != null) {
+            ((ViewManager) warning.getParent()).removeView(warning);
         }
         subjectLayout.addView(b);
     }
 
-    public void choseColor(View view)
-    {
-        switch (view.getId())
-        {
-            case R.id.button_red:
-            {
-                chosen_color= EnumColors.valueOf(1);
+    private void drawCardButton(final Card card) {
+        final Button b = new Button(SubjectActivity.this);
+
+        b.setText(card.getWord());
+        b.setTag("card_" + card.getID());
+        b.setMinimumWidth(200);
+        b.setMinimumHeight(200);
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+
+        b.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showDeletePopup(view);
+                return true;
+            }
+        });
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toastMessage("Nic sie nie dzieje");
+//                currentCard = card;
+//                Intent intent = new Intent(SubjectActivity.this, CardActivity.class);
+//                startActivity(intent);
+            }
+        });
+
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+
+        if (warning != null && warning.getParent() != null) {
+            ((ViewManager) warning.getParent()).removeView(warning);
+        }
+        subjectLayout.addView(b);
+    }
+
+    public void choseColor(View view) {
+        switch (view.getId()) {
+            case R.id.button_red: {
+                chosen_color = EnumColors.valueOf(1);
                 break;
             }
-            case R.id.button_yellow:
-            {
-                chosen_color= EnumColors.valueOf(2);
+            case R.id.button_yellow: {
+                chosen_color = EnumColors.valueOf(2);
                 break;
             }
-            case R.id.button_green:
-            {
-                chosen_color= EnumColors.valueOf(3);
+            case R.id.button_green: {
+                chosen_color = EnumColors.valueOf(3);
                 break;
             }
-            case R.id.button_blue:
-            {
-                chosen_color= EnumColors.valueOf(4);
+            case R.id.button_blue: {
+                chosen_color = EnumColors.valueOf(4);
                 break;
             }
-            case R.id.button_purple:
-            {
-                chosen_color= EnumColors.valueOf(5);
+            case R.id.button_purple: {
+                chosen_color = EnumColors.valueOf(5);
                 break;
             }
         }
     }
 
-    private void showDeletePopup(final View view)
-    {
-        final View noteView = view;
+    private void showDeletePopup(final View viewButton) {
         myDialog.setContentView(R.layout.popup_delete_subject);
         Button no_button = myDialog.findViewById(R.id.no_button);
         Button yes_button = myDialog.findViewById(R.id.yes_button);
@@ -283,19 +322,47 @@ public class SubjectActivity extends AppCompatActivity
         yes_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s = noteView.getTag().toString();
-                String r_s = s.substring(5);
-                noteDataBaseHelper.dropNoteByID(Integer.parseInt(r_s));
-                toastMessage("Poprawnie usunieto notatke" + r_s);
-
-                ((ViewManager)noteView.getParent()).removeView(noteView);
-
-                myDialog.dismiss();
+                switch (whichAction) {
+                    case CARDS: {
+                        cardDeletingOnClick(viewButton);
+                        break;
+                    }
+                    case QUIZ: {
+                        break;
+                    }
+                    case NOTES: {
+                        noteDeletingOnClick(viewButton);
+                        break;
+                    }
+                }
             }
         });
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
+    }
+
+    private void noteDeletingOnClick(View viewButton) {
+        String s = viewButton.getTag().toString();
+        String r_s = s.substring(5);
+        noteDataBaseHelper.dropNoteByID(Integer.parseInt(r_s));
+        toastMessage("Poprawnie usunieto notatke" + r_s);
+
+        ((ViewManager) viewButton.getParent()).removeView(viewButton);
+
+        myDialog.dismiss();
+    }
+
+    private void cardDeletingOnClick(View viewButton)
+    {
+        String s = viewButton.getTag().toString();
+        String r_s = s.substring(5);
+        cardDataBaseHelper.dropCardByID(Integer.parseInt(r_s));
+        toastMessage("Poprawnie usunieto fiszke" + r_s);
+
+        ((ViewManager) viewButton.getParent()).removeView(viewButton);
+
+        myDialog.dismiss();
     }
 
     private void toastMessage(String message)
@@ -319,6 +386,30 @@ public class SubjectActivity extends AppCompatActivity
             warning = new TextView(SubjectActivity.this);
             warning.setText(R.string.note_warning);
             warning.setTag("note_warning_tag");
+            subjectLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void drawAllCardButtons()
+    {
+        try
+        {
+            List<Card> cards = cardDataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
+            Iterator it = cards.iterator();
+            while(it.hasNext())
+            {
+                drawCardButton((Card) it.next());
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(SubjectActivity.this);
+            warning.setText(R.string.card_warning);
+            warning.setTag("card_warning_tag");
             subjectLayout.addView(warning);
         }
         catch(Exception e)
@@ -355,23 +446,26 @@ public class SubjectActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetter);
-                String s;
                 if(subjectLayout==null)
                 {
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
-                Note note;
-                try {
-                    s=nameGetter.getText().toString();
-                    addData(s, "testTitle");
-                    note = noteDataBaseHelper.getLatelyAddedNote();
-                    Log.d("tesciki","dodano do bazy");
-                    drawNoteButton(note);
-                    Log.d("tesciki","powinno tutaj dodac przycisk");
-                }
-                catch (Exception e)
+                switch(whichAction)
                 {
-                    e.printStackTrace();
+                    case CARDS:
+                    {
+                        cardAddingOnClick(nameGetter);
+                        break;
+                    }
+                    case QUIZ:
+                    {
+                        break;
+                    }
+                    case NOTES:
+                    {
+                        noteAddingOnClick(nameGetter);
+                        break;
+                    }
                 }
                 myDialog.dismiss();
             }
@@ -381,7 +475,44 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    public void addData(String title, String content)
+    private void noteAddingOnClick(TextInputEditText nameGetter)
+    {
+        Note note;
+        String s;
+        try {
+            s=nameGetter.getText().toString();
+            addNoteData(s, "Empty note");
+            note = noteDataBaseHelper.getLatelyAddedNote();
+            Log.d("tesciki","dodano do bazy");
+            drawNoteButton(note);
+            Log.d("tesciki","powinno tutaj dodac przycisk");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void cardAddingOnClick(TextInputEditText nameGetter)
+    {
+        Card card;
+        String s;
+        try
+        {
+            s = nameGetter.getText().toString();
+            addCardData(s+" word", s + " answer");
+            card = cardDataBaseHelper.getLatelyAddedCard();
+            Log.d("cardAdding", "dodano do bazy");
+            drawCardButton(card);
+            Log.d("cardAdding", "powinnoo dodac przycisk fiszkki");
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+
+    public void addNoteData(String title, String content)
     {
         try
         {
@@ -395,5 +526,52 @@ public class SubjectActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+    }
+
+    public void addCardData(String word, String answer)
+    {
+        try
+        {
+            boolean insertData = cardDataBaseHelper.addData(word, answer, MainActivity.getCurrentSubject().getSubjectID());
+            if(insertData)
+                toastMessage("Dodano poprawnie - " + word + ", " + answer);
+            else
+                toastMessage("Cos sie wysralo");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void dropAllSubjectNotes(int subjectID)
+    {
+        noteDataBaseHelper.dropNotesBySubjectID(subjectID);
+    }
+
+    public static void dropAllSubjectCards(int subjectID)
+    {
+        cardDataBaseHelper.dropCardsBySubjectID(subjectID);
+    }
+
+    public static Note getCurrentNote() {
+        return currentNote;
+    }
+
+    public static void setCurrentNote(Note currentNote) {
+        SubjectActivity.currentNote = currentNote;
+    }
+
+    public static void updateNoteContent(int noteID, String newContent)
+    {
+        noteDataBaseHelper.updateNoteContent(noteID, newContent);
+    }
+
+    public static Card getCurrentCard() {
+        return currentCard;
+    }
+
+    public static void setCurrentCard(Card currentCard) {
+        SubjectActivity.currentCard = currentCard;
     }
 }

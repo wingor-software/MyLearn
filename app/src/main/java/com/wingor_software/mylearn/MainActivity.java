@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    //tu cos zmieniam
+
     Dialog myDialog;
     LinearLayout subjectsLayout;
     private TextView warning;
@@ -274,13 +274,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showDeletePopup(final View view)
+    private void showDeletePopup(final View subject_view)
     {
-        final View subject_view = view;
         myDialog.setContentView(R.layout.popup_delete_subject);
         Button no_button = myDialog.findViewById(R.id.no_button);
         Button yes_button = myDialog.findViewById(R.id.yes_button);
-
 
         no_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +292,10 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 String s = subject_view.getTag().toString();
                 String r_s = s.substring(8);
-                subjectDataBaseHelper.dropSubject(Integer.parseInt(r_s));
+                int subjectID = Integer.parseInt(r_s);
+                subjectDataBaseHelper.dropSubject(subjectID);
+                SubjectActivity.dropAllSubjectNotes(subjectID);
+                SubjectActivity.dropAllSubjectCards(subjectID);
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
                 ((ViewManager)subject_view.getParent()).removeView(subject_view);

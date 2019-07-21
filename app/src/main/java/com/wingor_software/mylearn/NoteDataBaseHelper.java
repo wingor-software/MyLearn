@@ -116,4 +116,11 @@ public class NoteDataBaseHelper extends SQLiteOpenHelper
         data.close();
         return note;
     }
+
+    public void updateNoteContent(int noteID, String newContent)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL3 + " = '" + newContent + "' WHERE " + COL1 + " = " + noteID + ";";
+        db.execSQL(query);
+    }
 }
