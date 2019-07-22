@@ -316,25 +316,55 @@ public class MainActivity extends AppCompatActivity
             case R.id.button_red:
             {
                 chosen_color=EnumColors.valueOf(1);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(1f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
             case R.id.button_yellow:
             {
                 chosen_color=EnumColors.valueOf(2);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
             case R.id.button_green:
             {
                 chosen_color=EnumColors.valueOf(3);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(1f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
             case R.id.button_blue:
             {
                 chosen_color=EnumColors.valueOf(4);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(1f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
             case R.id.button_purple:
             {
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(1f);
+
                 chosen_color=EnumColors.valueOf(5);
                 break;
             }

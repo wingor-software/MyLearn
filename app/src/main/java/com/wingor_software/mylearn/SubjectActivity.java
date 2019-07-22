@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +34,8 @@ import java.util.List;
 public class SubjectActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private TextView mTextMessage;
-    private ConstraintLayout subjectLayout;
+    //private ConstraintLayout subjectLayout;
+    private LinearLayout subjectLayout;
     Dialog myDialog;
     private TextView warning;
 
@@ -59,21 +60,15 @@ public class SubjectActivity extends AppCompatActivity
                 case R.id.action_cards:
                     whichAction = BarAction.CARDS;
                     clearContent();
-                    addIfNotChildren(mTextMessage);
-                    mTextMessage.setText(R.string.cards);
                     drawAllCardButtons();
                     return true;
                 case R.id.action_quiz:
                     whichAction = BarAction.QUIZ;
                     clearContent();
-                    addIfNotChildren(mTextMessage);
-                    mTextMessage.setText(R.string.quiz);
                     return true;
                 case R.id.action_notes:
                     whichAction = BarAction.NOTES;
                     clearContent();
-                    addIfNotChildren(mTextMessage);
-                    mTextMessage.setText(R.string.notes);
                     drawAllNoteButtons();
                     return true;
             }
@@ -103,7 +98,6 @@ public class SubjectActivity extends AppCompatActivity
         dataBaseHelper = new DataBaseHelper(this);
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
-        mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
@@ -270,26 +264,63 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout.addView(b);
     }
 
-    public void choseColor(View view) {
-        switch (view.getId()) {
-            case R.id.button_red: {
-                chosen_color = EnumColors.valueOf(1);
+    public void choseColor(View view)
+    {
+        switch (view.getId())
+        {
+            case R.id.button_red:
+            {
+                chosen_color=EnumColors.valueOf(1);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(1f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
-            case R.id.button_yellow: {
-                chosen_color = EnumColors.valueOf(2);
+            case R.id.button_yellow:
+            {
+                chosen_color=EnumColors.valueOf(2);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
-            case R.id.button_green: {
-                chosen_color = EnumColors.valueOf(3);
+            case R.id.button_green:
+            {
+                chosen_color=EnumColors.valueOf(3);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(1f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
-            case R.id.button_blue: {
-                chosen_color = EnumColors.valueOf(4);
+            case R.id.button_blue:
+            {
+                chosen_color=EnumColors.valueOf(4);
+
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(1f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
                 break;
             }
-            case R.id.button_purple: {
-                chosen_color = EnumColors.valueOf(5);
+            case R.id.button_purple:
+            {
+                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(1f);
+
+                chosen_color=EnumColors.valueOf(5);
                 break;
             }
         }

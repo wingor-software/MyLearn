@@ -9,6 +9,7 @@ import android.widget.ViewSwitcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -66,5 +67,36 @@ public class NoteActivity extends AppCompatActivity {
         super.onResume();
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
+        CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout);
+        int color_of_subject = SubjectActivity.getCurrentNote().getColor();
+        switch (color_of_subject)
+        {
+            case 1:
+            {
+                tolbar_layout.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                break;
+            }
+            case 2:
+            {
+                tolbar_layout.setBackgroundColor(getResources().getColor(R.color.colorYellow));
+                break;
+            }
+            case 3:
+            {
+                tolbar_layout.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+                break;
+            }
+            case 4:
+            {
+                tolbar_layout.setBackgroundColor(getResources().getColor(R.color.colorBlue));
+                break;
+            }
+            case 5:
+            {
+                tolbar_layout.setBackgroundColor(getResources().getColor(R.color.colorPurple));
+                break;
+            }
+        }
+
     }
 }
