@@ -24,7 +24,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -35,7 +34,8 @@ public class MainActivity extends AppCompatActivity
     Dialog myDialog;
     LinearLayout subjectsLayout;
     private TextView warning;
-    SubjectDataBaseHelper subjectDataBaseHelper;
+
+    DataBaseHelper dataBaseHelper;
 
     EnumColors chosen_color = EnumColors.valueOf(5);
     private static Subject currentSubject;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        subjectDataBaseHelper = new SubjectDataBaseHelper(this);
+        dataBaseHelper = new DataBaseHelper(this);
         drawAllSubjectButtons();
     }
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-            subjectDataBaseHelper.dropTable();
+            dataBaseHelper.dropSubjectTable();
             subjectsLayout.removeAllViews();
         } else if (id == R.id.nav_tools) {
 
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity
                 try {
                     s=nameGetter.getText().toString();
                     addData(s, chosen_color.getValue());
-                    subject=subjectDataBaseHelper.getLatelyAddedSubject();
+                    subject = dataBaseHelper.getLatelyAddedSubject();
                     Log.d("tesciki","dodano do bazy");
                     drawSubjectButton(subject);
                     Log.d("tesciki","powinno tutaj dodac przycisk");
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity
 
     public void addData(String newEntry, int color)
     {
-        boolean insertData = subjectDataBaseHelper.addData(newEntry, color);
+        boolean insertData = dataBaseHelper.addSubjectData(newEntry, color);
 
         if(insertData)
            toastMessage("Dodano poprawnie - " + newEntry);
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity
     {
         try
         {
-            List<Subject> subjects = subjectDataBaseHelper.getSubjectsList();
+            List<Subject> subjects = dataBaseHelper.getSubjectsList();
             Iterator it = subjects.iterator();
             while(it.hasNext())
             {
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity
                 String s = subject_view.getTag().toString();
                 String r_s = s.substring(8);
                 int subjectID = Integer.parseInt(r_s);
-                subjectDataBaseHelper.dropSubject(subjectID);
+                dataBaseHelper.dropSubject(subjectID);
                 SubjectActivity.dropAllSubjectNotes(subjectID);
                 SubjectActivity.dropAllSubjectCards(subjectID);
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
