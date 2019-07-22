@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class ListDataActivity extends AppCompatActivity
 {
-    SubjectDataBaseHelper subjectDataBaseHelper;
+    DataBaseHelper dataBaseHelper;
     private ListView listView;
 
     @Override
@@ -23,7 +23,7 @@ public class ListDataActivity extends AppCompatActivity
         setContentView(R.layout.list_layout);
 
         listView = (ListView) findViewById(R.id.listView);
-        subjectDataBaseHelper = new SubjectDataBaseHelper(this);
+        dataBaseHelper = new DataBaseHelper(this);
 
         populateListView();
     }
@@ -31,7 +31,7 @@ public class ListDataActivity extends AppCompatActivity
     private void populateListView()
     {
         Log.d("ListView", "populateListView : Displaying data in the ListView");
-        Cursor data = subjectDataBaseHelper.getData();
+        Cursor data = dataBaseHelper.getSubjectData();
         ArrayList<String> listData = new ArrayList<>();
         while(data.moveToNext())
         {

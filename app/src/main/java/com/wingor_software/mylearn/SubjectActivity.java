@@ -5,35 +5,27 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewManager;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.GravityCompat;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-
-import android.view.MenuItem;
-
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.Menu;
-import android.view.ViewManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +38,7 @@ public class SubjectActivity extends AppCompatActivity
     Dialog myDialog;
     private TextView warning;
 
-    static NoteDataBaseHelper noteDataBaseHelper;
-    static CardDataBaseHelper cardDataBaseHelper;
+    static DataBaseHelper dataBaseHelper;
 
     EnumColors chosen_color = EnumColors.valueOf(5);
 
@@ -109,13 +100,11 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout = findViewById(R.id.subjectActivityLayout);
         myDialog = new Dialog(this);
 
-        noteDataBaseHelper = new NoteDataBaseHelper(this);
-        cardDataBaseHelper = new CardDataBaseHelper(this);
+        dataBaseHelper = new DataBaseHelper(this);
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
         mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-//        noteDataBaseHelper.addData("Tytuł", "Content", 1);
     }
 
     @Override
@@ -345,7 +334,7 @@ public class SubjectActivity extends AppCompatActivity
     private void noteDeletingOnClick(View viewButton) {
         String s = viewButton.getTag().toString();
         String r_s = s.substring(5);
-        noteDataBaseHelper.dropNoteByID(Integer.parseInt(r_s));
+        dataBaseHelper.dropNoteByID(Integer.parseInt(r_s));
         toastMessage("Poprawnie usunieto notatke" + r_s);
 
         ((ViewManager) viewButton.getParent()).removeView(viewButton);
@@ -357,7 +346,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         String s = viewButton.getTag().toString();
         String r_s = s.substring(5);
-        cardDataBaseHelper.dropCardByID(Integer.parseInt(r_s));
+        dataBaseHelper.dropCardByID(Integer.parseInt(r_s));
         toastMessage("Poprawnie usunieto fiszke" + r_s);
 
         ((ViewManager) viewButton.getParent()).removeView(viewButton);
@@ -374,7 +363,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            List<Note> notes = noteDataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID());
+            List<Note> notes = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID());
             Iterator it = notes.iterator();
             while(it.hasNext())
             {
@@ -398,7 +387,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            List<Card> cards = cardDataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
+            List<Card> cards = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
             Iterator it = cards.iterator();
             while(it.hasNext())
             {
@@ -482,7 +471,7 @@ public class SubjectActivity extends AppCompatActivity
         try {
             s=nameGetter.getText().toString();
             addNoteData(s, "Empty note");
-            note = noteDataBaseHelper.getLatelyAddedNote();
+            note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
             drawNoteButton(note);
             Log.d("tesciki","powinno tutaj dodac przycisk");
@@ -501,7 +490,7 @@ public class SubjectActivity extends AppCompatActivity
         {
             s = nameGetter.getText().toString();
             addCardData(s+" word", s + " answer");
-            card = cardDataBaseHelper.getLatelyAddedCard();
+            card = dataBaseHelper.getLatelyAddedCard();
             Log.d("cardAdding", "dodano do bazy");
             drawCardButton(card);
             Log.d("cardAdding", "powinnoo dodac przycisk fiszkki");
@@ -516,7 +505,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = noteDataBaseHelper.addData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
+            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
@@ -532,7 +521,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = cardDataBaseHelper.addData(word, answer, MainActivity.getCurrentSubject().getSubjectID());
+            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
             else
@@ -546,12 +535,12 @@ public class SubjectActivity extends AppCompatActivity
 
     public static void dropAllSubjectNotes(int subjectID)
     {
-        noteDataBaseHelper.dropNotesBySubjectID(subjectID);
+        dataBaseHelper.dropNotesBySubjectID(subjectID);
     }
 
     public static void dropAllSubjectCards(int subjectID)
     {
-        cardDataBaseHelper.dropCardsBySubjectID(subjectID);
+        dataBaseHelper.dropCardsBySubjectID(subjectID);
     }
 
     public static Note getCurrentNote() {
@@ -564,7 +553,7 @@ public class SubjectActivity extends AppCompatActivity
 
     public static void updateNoteContent(int noteID, String newContent)
     {
-        noteDataBaseHelper.updateNoteContent(noteID, newContent);
+        dataBaseHelper.updateNoteContent(noteID, newContent);
     }
 
     public static Card getCurrentCard() {
