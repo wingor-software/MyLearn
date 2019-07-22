@@ -13,6 +13,9 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+/**
+ * Klasa odpowiadająca za interakcje z notatkami
+ */
 public class NoteActivity extends AppCompatActivity {
 
     private ViewSwitcher viewSwitcher;
@@ -62,6 +65,9 @@ public class NoteActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Metoda ustawiająca tytul gornego pasaka na nazwe przedmiotu i zmieniajaca kolor w zaleznosci od koloru przedmiotu
+     */
     @Override
     protected void onResume() {
         super.onResume();

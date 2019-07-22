@@ -28,16 +28,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Główna klasa aplikacji
+ */
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
+    //słuzy jako odnosnik do aktualnej sceny
     Dialog myDialog;
+
+    //odnosnik do layoutu przechowujacego przedmioty
     LinearLayout subjectsLayout;
+
+    //odnoscnik do pola tekstowego ostrzezenia
     private TextView warning;
 
+    //pomocnik do bazy danych
     DataBaseHelper dataBaseHelper;
 
+    //wartosc wybranego koloru z popupu
     EnumColors chosen_color = EnumColors.valueOf(5);
+
+    //aktualny przedmiot
     private static Subject currentSubject;
 
     @Override
@@ -45,7 +59,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //o i tutaj
         myDialog = new Dialog(this);
         subjectsLayout = findViewById(R.id.subjectsLayout);
 
@@ -62,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         dataBaseHelper = new DataBaseHelper(this);
         drawAllSubjectButtons();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -123,6 +137,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Metoda odpowiadająca za wyskakujace okienko przy tworzeniu przedmiotu
+     * @param v
+     */
     public void showPopup(final View v)
     {
         Log.d("test", "jestem w funkcji showPopup");
@@ -152,8 +170,13 @@ public class MainActivity extends AppCompatActivity
                 }
                 Subject subject;
                 try {
+                    //pobiera wpisana nazwe przedmiotu z pola tekstowego
                     s=nameGetter.getText().toString();
+
+                    //dodaje wpis do tabeli
                     addData(s, chosen_color.getValue());
+
+                    //pobiera ostatnio dodany i go rysuje
                     subject = dataBaseHelper.getLatelyAddedSubject();
                     Log.d("tesciki","dodano do bazy");
                     drawSubjectButton(subject);
@@ -186,6 +209,10 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Metoda dodająca graficznie przedmiot do sceny
+     * @param subject przedmiot do narsowania
+     */
     private void drawSubjectButton(final Subject subject)
     {
         final Button b =  new Button(MainActivity.this);
@@ -250,6 +277,9 @@ public class MainActivity extends AppCompatActivity
         subjectsLayout.addView(b);
     }
 
+    /**
+     * Metoda rysująca wszystkie przedmioty (uzywanie np. przy restarcie aplikacji)
+     */
     private void drawAllSubjectButtons()
     {
         try
@@ -273,6 +303,11 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+    /**
+     * Metoda pokazujaca okienko przy usuwaniu przemiotu
+     * @param subject_view
+     */
 
     private void showDeletePopup(final View subject_view)
     {
@@ -309,6 +344,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Metoda ustawiająca kolor w zaleznosci od wybranego przycisku z kolorem i zmieniajaca opacity pozostałych buttonow
+     * @param view
+     */
     public void choseColor(View view)
     {
         switch (view.getId())

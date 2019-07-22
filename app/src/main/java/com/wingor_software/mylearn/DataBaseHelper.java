@@ -10,8 +10,13 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa odpowiadająca za połączenie z bazą danych SQLite
+ */
+
 public class DataBaseHelper extends SQLiteOpenHelper
 {
+
     private static final String DATABASENAME = "MyLearn_DB";
 
     //PRZEDMIOTY---------------------------------------------------
@@ -40,6 +45,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         super(context, DATABASENAME, null, 1);
     }
 
+    /**
+     * Metoda która tworzy baze danych wraz z tabelami
+     * @param sqLiteDatabase jest odnosnikiem do bazy SQLite
+     */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER);";
@@ -52,6 +61,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(createTableNote);
     }
 
+    /**
+     * Metoda dropujaca tabele jeśli istnieja
+     * @param sqLiteDatabase  jest odnosnikiem do bazy SQLite
+     * @param i nwm
+     * @param i1 nwm
+     */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SUBJECT_TABLE_NAME);
@@ -61,6 +76,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     //SUBJECT METHODS------------------------------------
 
+    /**
+     * Metoda dodająca wpis "Przedmiotu" do odpowiedniej tabeli
+     * @param item informuje o nazwie przedmiotu
+     * @param color informuje o kolorze przedmiotu
+     * @return zwraca true jeżeli operacja sie powiodłą
+     */
     public boolean addSubjectData(String item, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -72,6 +93,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return (result != -1);
     }
 
+    /**
+     * Metoda pobierająca nazwe przedmiotu
+     * @return zwraca nazwe przedmiotu
+     */
+
     public Cursor getSubjectData()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -79,6 +105,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         return data;
     }
+
+    /**
+     * Metoda pobierająca liste wszystkich przedmiotów
+     * @return zwraca liste przedmiotów
+     * @throws EmptyDataBaseException w przypadku gdy tabela z przedmiotami jest pusta
+     */
 
     public List<Subject> getSubjectsList() throws EmptyDataBaseException
     {
@@ -92,12 +124,23 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return subjects;
     }
 
+    /**
+     * Metoda usuwa wpis przedmiotu z tabeli
+     * @param ID odnosi sie do ID usuwanego przedmiotu
+     */
+
     public void dropSubject(int ID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + SUBJECT_TABLE_NAME+ " WHERE " + SUBJECT_COL1 + " = " + ID;
         db.execSQL(query);
     }
+
+    /**
+     * Metoda zwraca ostatnio dodany przedmiot
+     * @return zwraca dany przedmiot
+     * @throws EmptyDataBaseException w przypadku pustej tabeli
+     */
 
     public Subject getLatelyAddedSubject() throws EmptyDataBaseException
     {
@@ -111,6 +154,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return subject;
     }
 
+    /**
+     * Metoda usuwa tabele przedmiotow
+     */
+
     public void dropSubjectTable()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -122,6 +169,14 @@ public class DataBaseHelper extends SQLiteOpenHelper
     //---------------------------------------------------
 
     //CARD METHODS----------------------------------------
+
+    /**
+     * Metoda dodająca fiszke do tabeli
+     * @param word informuje o słowie głównym
+     * @param answer informuje o odpowiedzi na słowo główne
+     * @param subjectID informuje o ID przedmiotu do którego jest przypisana fiszka
+     * @return zwraca true jesli dodano poprawnie
+     */
 
     public boolean addCardData(String word, String answer, int subjectID)
     {
@@ -135,6 +190,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return (result != -1);
     }
 
+    /**
+     * Metoda pobierajaca fiszki
+     * @return zwraca fiszki
+     */
+
     public Cursor getCardData()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -142,6 +202,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         return data;
     }
+
+    /**
+     * Metoda zwracajaca liste fiszek
+     * @return lista fiszek
+     * @throws EmptyDataBaseException jesli baza jest pusta
+     */
 
     public List<Card> getCardList() throws EmptyDataBaseException
     {
@@ -154,6 +220,13 @@ public class DataBaseHelper extends SQLiteOpenHelper
         if (cards.size() == 0) throw new EmptyDataBaseException();
         return cards;
     }
+
+    /**
+     * Metoda zwracająca fiszki nalezace do danego przedmiotu
+     * @param subjectID informuje o ID przedmiotu z któego chcemy pobrac fiszki
+     * @return fiszki przedmoitu
+     * @throws EmptyDataBaseException jesli baza pusta
+     */
 
     public List<Card> getCardList(int subjectID) throws EmptyDataBaseException
     {
@@ -170,6 +243,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return cards;
     }
 
+    /**
+     * Metoda usuwa fiszke z tabeli
+     * @param ID Id usuwanej fiszki
+     */
+
     public void dropCardByID(int ID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -177,6 +255,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
+    /**
+     * Metoda usuwa fiszki powiązane z danym przedmiotem
+     * @param subjectID id przedmiotu z ktorego maja byc usuniete fiszki
+     */
     public void dropCardsBySubjectID(int subjectID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -184,6 +266,9 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
+    /**
+     * Metoda usuwa tabele z fiszkami
+     */
     public void dropCardTable()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -191,6 +276,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
+    /**
+     * Metoda zwraca ostatnio dodaną fiszke
+     * @return zwraca tą fiszke
+     * @throws EmptyDataBaseException gdy pusta tabela fiszek
+     */
     public Card getLatelyAddedCard() throws EmptyDataBaseException
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -207,6 +297,15 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     //NOTE METHODS-------------------------------------------
 
+    /**
+     * Metoda dodająca notatke do tabeli
+     * @param title tytul notatki
+     * @param content zawartosc notatki
+     * @param subjectID id przedmiotu do którego jest przypisana notatka
+     * @param color color notatki
+     * @return true jesli poprawnie dodano
+     */
+
     public boolean addNoteData(String title, String content, int subjectID, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -220,6 +319,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return (result != -1);
     }
 
+    /**
+     * Metoda zwracajaca notatke
+     * @return zwraca dane notatki
+     */
+
     public Cursor getNoteData()
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -227,6 +331,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         return data;
     }
+
+    /**
+     * Metoda zwracajaca liste notatek z bazy danych
+     * @return zwraca liste notatek
+     * @throws EmptyDataBaseException jesli baza pusta
+     */
 
     public List<Note> getNoteList() throws EmptyDataBaseException
     {
@@ -239,6 +349,13 @@ public class DataBaseHelper extends SQLiteOpenHelper
         if (notes.size() == 0) throw new EmptyDataBaseException();
         return notes;
     }
+
+    /**
+     * Metoda zwracajaca liste notatek nalezacych do danego przedmiotu
+     * @param subjectID informuje o id przedmotu
+     * @return zwraca liste notatek
+     * @throws EmptyDataBaseException gdy przedmot nie ma notatek
+     */
 
     public List<Note> getNoteList(int subjectID) throws EmptyDataBaseException
     {
@@ -255,12 +372,22 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return notes;
     }
 
+    /**
+     * Metoda usuwajaca notatke
+     * @param ID id usuwanej notatki
+     */
+
     public void dropNoteByID(int ID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + NOTE_TABLE_NAME + " WHERE " + NOTE_COL1 + " = " + ID;
         db.execSQL(query);
     }
+
+    /**
+     * Metoda usuwająca notatki należace do danego przedmiotu
+     * @param subjectID id przedmiotu z ktorego maja byc usuniete notatki
+     */
 
     public void dropNotesBySubjectID(int subjectID)
     {
@@ -269,12 +396,22 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
+    /**
+     * Metoda usuwajaca tabele notatek
+     */
+
     public void dropNoteTable()
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + NOTE_TABLE_NAME + " WHERE 1=1";
         db.execSQL(query);
     }
+
+    /**
+     * Metoda zwracająca ostatnio dodana notatke
+     * @return zwraca dana notatke
+     * @throws EmptyDataBaseException gdy nie ma notatek w tabeli
+     */
 
     public Note getLatelyAddedNote() throws EmptyDataBaseException
     {
@@ -288,6 +425,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return note;
     }
 
+    /**
+     * Metoda zmieniająca zawartość notatki
+     * @param noteID id modyfikowanej notatki
+     * @param newContent nowa zawartosc notatki
+     */
     public void updateNoteContent(int noteID, String newContent)
     {
         SQLiteDatabase db = this.getWritableDatabase();

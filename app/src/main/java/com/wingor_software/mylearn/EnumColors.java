@@ -3,6 +3,9 @@ package com.wingor_software.mylearn;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Enum przechowujący kolory wraz z odpowiadającymi im wartościom liczbowym w Hashmapie
+ */
 public enum EnumColors
 {
     red(1),

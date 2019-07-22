@@ -12,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+/**
+ * Klasa odpowiadająca za wyswietlanie struktury bazy danych
+ */
+
 public class ListDataActivity extends AppCompatActivity
 {
     DataBaseHelper dataBaseHelper;

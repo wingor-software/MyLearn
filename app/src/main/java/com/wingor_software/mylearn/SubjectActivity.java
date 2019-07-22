@@ -31,6 +31,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Klasa słuzaca do interakcji z przedmiotami
+ */
 public class SubjectActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

@@ -1,5 +1,9 @@
 package com.wingor_software.mylearn;
 
+/**
+ * Klasa odpowiadająca za informacje o fiszce
+ */
+
 public class Card
 {
     private int ID;

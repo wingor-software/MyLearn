@@ -1,5 +1,8 @@
 package com.wingor_software.mylearn;
 
+/**
+ * Klasa odpowiadająca za informacje o notatce
+ */
 public class Note
 {
     private int ID;
