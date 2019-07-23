@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity
         drawAllSubjectButtons();
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -328,9 +327,9 @@ public class MainActivity extends AppCompatActivity
                 String s = subject_view.getTag().toString();
                 String r_s = s.substring(8);
                 int subjectID = Integer.parseInt(r_s);
+                dataBaseHelper.dropNotesBySubjectID(subjectID);
+                dataBaseHelper.dropCardsBySubjectID(subjectID);
                 dataBaseHelper.dropSubject(subjectID);
-                SubjectActivity.dropAllSubjectNotes(subjectID);
-                SubjectActivity.dropAllSubjectCards(subjectID);
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
                 ((ViewManager)subject_view.getParent()).removeView(subject_view);

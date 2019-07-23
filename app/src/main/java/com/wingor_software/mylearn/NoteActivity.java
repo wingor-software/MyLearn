@@ -1,6 +1,7 @@
 package com.wingor_software.mylearn;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -40,7 +41,15 @@ public class NoteActivity extends AppCompatActivity {
                     String newText = editNote.getText().toString();
                     noteContent.setText(newText);
                     Note newNote = SubjectActivity.getCurrentNote();
-                    newNote.setContent(newText);
+                    try
+                    {
+                        newNote.setContent(newText);
+                    }
+                    catch(NotThisTypeOfNoteException e)
+                    {
+                        e.printStackTrace();
+                        Log.d("Note", "Notatka w innym stanie!");
+                    }
                     SubjectActivity.setCurrentNote(newNote);
                     SubjectActivity.updateNoteContent(SubjectActivity.getCurrentNote().getID(), editNote.getText().toString());
                 } else {
@@ -72,7 +81,16 @@ public class NoteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
-        noteContent.setText(SubjectActivity.getCurrentNote().getContent());
+        try
+        {
+            noteContent.setText(SubjectActivity.getCurrentNote().getContent());
+        }
+        catch(NotThisTypeOfNoteException e)
+        {
+            e.printStackTrace();
+            Log.d("Note", "Blad w trakcie pobierania tesktu z notatki w innym stanie");
+            noteContent.setText("An error occured");
+        }
         CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout);
         int color_of_subject = SubjectActivity.getCurrentNote().getColor();
         switch (color_of_subject)

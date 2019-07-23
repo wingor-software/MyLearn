@@ -1,11 +1,13 @@
 package com.wingor_software.mylearn;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String NOTE_COL3 = "Content";
     private static final String NOTE_COL4 = "SubjectID";
     private static final String NOTE_COL5 = "Color";
+    private static final String NOTE_COL6 = "PhotoPath";
 
 
     public DataBaseHelper(Context context) {
@@ -54,7 +57,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER);";
         String createTableCard = "CREATE TABLE " + CARD_TABLE_NAME + " ( " + CARD_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER)";
-        String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, " + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER);";
+        String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, " + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT);";
 
         sqLiteDatabase.execSQL(createTableSubject);
         sqLiteDatabase.execSQL(createTableCard);
@@ -306,13 +309,26 @@ public class DataBaseHelper extends SQLiteOpenHelper
      * @return true jesli poprawnie dodano
      */
 
-    public boolean addNoteData(String title, String content, int subjectID, int color)
+    public boolean addTextNoteData(String title, String content, int subjectID, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NOTE_COL5, color);
         contentValues.put(NOTE_COL4, subjectID);
         contentValues.put(NOTE_COL3, content);
+        contentValues.put(NOTE_COL2, title);
+        Log.d("DataBase", "addData : Adding " + title + ", " + subjectID + ", " + " to " + NOTE_TABLE_NAME);
+        long result = db.insert(NOTE_TABLE_NAME, null, contentValues);
+        return (result != -1);
+    }
+
+    public boolean addPhotoNoteData(String title, String filePath, int subjectID, int color)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NOTE_COL5, color);
+        contentValues.put(NOTE_COL4, subjectID);
+        contentValues.put(NOTE_COL6, filePath);
         contentValues.put(NOTE_COL2, title);
         Log.d("DataBase", "addData : Adding " + title + ", " + subjectID + ", " + " to " + NOTE_TABLE_NAME);
         long result = db.insert(NOTE_TABLE_NAME, null, contentValues);
@@ -344,7 +360,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         List<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
+            if(data.getString(5).equals(""))
+                notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
+            else
+                notes.add(new Note(data.getInt(0), data.getString(1), data.getInt(3), data.getInt(4), data.getString(5)));
         }
         if (notes.size() == 0) throw new EmptyDataBaseException();
         return notes;
@@ -365,7 +384,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         ArrayList<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
+            if(data.getString(5) == null)
+                notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4)));
+            else
+                notes.add(new Note(data.getInt(0), data.getString(1), data.getInt(3), data.getInt(4), data.getString(5)));
         }
         if(notes.size() == 0) throw new EmptyDataBaseException();
         data.close();
@@ -420,7 +442,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         if (data == null) throw new EmptyDataBaseException();
         data.moveToNext();
-        Note note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4));
+        Note note;
+        if (data.getString(5) == null)
+            note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4));
+        else
+            note = new Note(data.getInt(0), data.getString(1), data.getInt(3), data.getInt(4), data.getString(5));
         data.close();
         return note;
     }
@@ -432,9 +458,31 @@ public class DataBaseHelper extends SQLiteOpenHelper
      */
     public void updateNoteContent(int noteID, String newContent)
     {
+        Note note = getNoteByID(noteID);
+        if(note == null || note.isPhotoNote())
+        {
+            Log.d("NoteUpdate", "Blad przy aktualizowaniu contentu notatki");
+            return;
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " + NOTE_TABLE_NAME + " SET " + NOTE_COL3 + " = '" + newContent + "' WHERE " + NOTE_COL1 + " = " + noteID + ";";
         db.execSQL(query);
+    }
+
+    private Note getNoteByID(int noteID)
+    {
+        Cursor data = getNoteData();
+        while(data.moveToNext())
+        {
+            if(data.getInt(0) == noteID)
+            {
+                if(data.getString(5) == null)
+                    return new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4));
+                else
+                    return new Note(data.getInt(0), data.getString(1), data.getInt(3), data.getInt(4), data.getString(5));
+            }
+        }
+        return null;
     }
 
     //-------------------------------------------------------
