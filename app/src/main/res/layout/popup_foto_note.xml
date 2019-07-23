@@ -108,9 +108,20 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <LinearLayout
+            android:id="@+id/fotos_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
     <Button
         android:id="@+id/selectFotoButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
@@ -118,13 +129,6 @@
         android:gravity="center"
         android:padding="10dp"
         android:text="select foto..." />
-
-    <ImageView
-        android:id="@+id/fotoView"
-        android:layout_width="245dp"
-        android:layout_height="100dp"
-        android:maxWidth="245dp"
-        android:maxHeight="100dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addButton"
