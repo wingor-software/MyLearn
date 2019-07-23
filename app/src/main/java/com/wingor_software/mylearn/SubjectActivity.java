@@ -36,6 +36,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -61,6 +62,7 @@ public class SubjectActivity extends AppCompatActivity
     private static Card currentCard;
 
     private Uri imageUri;
+    private Vector uriVector = new Vector();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -457,35 +459,6 @@ public class SubjectActivity extends AppCompatActivity
 
     public void showPopupSubject(View view)
     {
-        Log.d("test","popup wyboru typu notatki");
-        myDialog.setContentView(R.layout.popup_add_note);
-
-        RadioGroup radioGroup;
-        final Button selectButton = myDialog.findViewById(R.id.selectButton);
-        final RadioButton simpleNoteButton=myDialog.findViewById(R.id.text_radio_button);
-        final RadioButton fotoButton=myDialog.findViewById(R.id.foto_radio_button);
-
-        selectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(simpleNoteButton.isChecked())
-                {
-                    showPopupSubjectSimpleNote();
-                }
-                else if(fotoButton.isChecked())
-                {
-                    showPopupSubjectFotoNote();
-                }
-            }
-        });
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-
-
-    }
-    public void showPopupSubjectFotoNote()
-    {
         myDialog.setContentView(R.layout.popup_foto_note);
         Button select_foto = myDialog.findViewById(R.id.selectFotoButton);
         Button addButtonFoto = myDialog.findViewById(R.id.addButton);
@@ -494,6 +467,7 @@ public class SubjectActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 startActivityForResult(gallery,100);
             }
         });
@@ -536,6 +510,8 @@ public class SubjectActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK && requestCode==100)
         {
+            String s = data.getClipData().toString();
+            Log.d("test","s==" + s);
             imageUri=data.getData();
             toastMessage(imageUri.toString());
             ImageView imageView = myDialog.findViewById(R.id.fotoView);
@@ -543,50 +519,6 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void showPopupSubjectSimpleNote()
-    {
-        Log.d("test", "jestem w funkcji showPopup");
-        //przycisk add
-        Button addButton;
-
-        //ustala focus na okienko pop up
-        myDialog.setContentView(R.layout.popup_main);
-
-        //wyszukuje powiązania
-        addButton = myDialog.findViewById(R.id.addButton);
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetter);
-                if(subjectLayout==null)
-                {
-                    Log.d("tesciki","subjectslayout jest nullem");
-                }
-                 switch(whichAction)
-                {
-                    case CARDS:
-                    {
-                        cardAddingOnClick(nameGetter);
-                        break;
-                    }
-                    case QUIZ:
-                    {
-                        break;
-                    }
-                    case NOTES:
-                    {
-                        noteAddingOnClick(nameGetter);
-                        break;
-                    }
-                }
-                myDialog.dismiss();
-            }
-        });
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
 
     private void noteAddingOnClickFoto(TextInputEditText nameGetter)
     {

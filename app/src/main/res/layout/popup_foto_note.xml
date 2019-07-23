@@ -121,9 +121,10 @@
 
     <ImageView
         android:id="@+id/fotoView"
-        android:layout_width="wrap_content"
-        android:layout_height="175dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        android:layout_width="245dp"
+        android:layout_height="100dp"
+        android:maxWidth="245dp"
+        android:maxHeight="100dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addButton"
