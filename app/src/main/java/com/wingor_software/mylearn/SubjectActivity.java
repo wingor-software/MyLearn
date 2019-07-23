@@ -34,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -62,7 +63,7 @@ public class SubjectActivity extends AppCompatActivity
     private static Card currentCard;
 
     private Uri imageUri;
-    private Vector uriVector = new Vector();
+    private ArrayList<Uri> uriList;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -112,6 +113,7 @@ public class SubjectActivity extends AppCompatActivity
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        uriList = new ArrayList<>();
     }
 
     @Override
@@ -492,7 +494,7 @@ public class SubjectActivity extends AppCompatActivity
                     }
                     case NOTES:
                     {
-                        noteAddingOnClickFoto(nameGetter);
+                        noteAddingOnClick(nameGetter);
                         break;
                     }
                 }
@@ -511,6 +513,7 @@ public class SubjectActivity extends AppCompatActivity
         if(resultCode==RESULT_OK && requestCode==100)
         {
             String s = data.getClipData().toString();
+            setCurrentUriList(data);
             Log.d("test","s==" + s);
             imageUri=data.getData();
             toastMessage(imageUri.toString());
@@ -519,33 +522,35 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
+    private void setCurrentUriList(Intent data)
+    {
+        uriList.clear();
+        for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+            Uri uri = data.getClipData().getItemAt(i).getUri();
+            uriList.add(uri);
+        }
+    }
 
-    private void noteAddingOnClickFoto(TextInputEditText nameGetter)
+    private String getStringFromUriList()
+    {
+        StringBuilder uriString = new StringBuilder();
+        for (int i = 0; i < uriList.size(); i++) {
+            if(uriString.length() != 0)
+                uriString.append("\n");
+            uriString.append(uriList.get(i).toString());
+        }
+        return uriString.toString();
+    }
+
+    private void noteAddingOnClick(TextInputEditText nameGetter)
     {
         //tooooo zienic zeby dzialalo ze zdjeciami, uri do zdjecia jest globalnie
         Note note;
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", null);     //tu zmienic zeby dodawalo uri przy podaniu
-            note = dataBaseHelper.getLatelyAddedNote();
-            Log.d("tesciki","dodano do bazy");
-            drawNoteButton(note);
-            Log.d("tesciki","powinno tutaj dodac przycisk");
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }}
-
-
-    private void noteAddingOnClick(TextInputEditText nameGetter)
-    {
-        Note note;
-        String s;
-        try {
-            s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", null);
+            addNoteData(s, "Empty note", getStringFromUriList());     //tu zmienic zeby dodawalo uri przy podaniu
+            Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
             drawNoteButton(note);

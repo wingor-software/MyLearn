@@ -1,5 +1,7 @@
 package com.wingor_software.mylearn;
 
+import android.net.Uri;
+import java.util.ArrayList;
 /**
  * Klasa odpowiadająca za informacje o notatce
  */
@@ -70,5 +72,20 @@ public class Note
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    private String[] filesPathsToStringArray()
+    {
+        return filePath.split("\n");
+    }
+
+    public ArrayList<Uri> getPhotoUris()
+    {
+        String[] str = filesPathsToStringArray();
+        ArrayList<Uri> uriArrayList = new ArrayList<>();
+        for (int i = 0; i < str.length; i++) {
+            uriArrayList.add(Uri.parse(str[i]));
+        }
+        return uriArrayList;
     }
 }
