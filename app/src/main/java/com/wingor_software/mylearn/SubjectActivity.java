@@ -613,7 +613,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note");
+            addTextNoteData(s, "Empty note");
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
             drawNoteButton(note);
@@ -644,11 +644,11 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void addNoteData(String title, String content)
+    public void addTextNoteData(String title, String content)
     {
         try
         {
-            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
+            boolean insertData = dataBaseHelper.addTextNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
@@ -674,16 +674,6 @@ public class SubjectActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-    }
-
-    public static void dropAllSubjectNotes(int subjectID)
-    {
-        dataBaseHelper.dropNotesBySubjectID(subjectID);
-    }
-
-    public static void dropAllSubjectCards(int subjectID)
-    {
-        dataBaseHelper.dropCardsBySubjectID(subjectID);
     }
 
     public static Note getCurrentNote() {
