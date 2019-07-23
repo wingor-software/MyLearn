@@ -517,10 +517,19 @@ public class SubjectActivity extends AppCompatActivity
             Log.d("test","s==" + s);
             imageUri=data.getData();
             toastMessage(imageUri.toString());
-            ImageView imageView = myDialog.findViewById(R.id.fotoView);
-            imageView.setImageURI(imageUri);
+
+            LinearLayout fotosLayout = myDialog.findViewById(R.id.fotos_layout);
+
+            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+
+                ImageView imageView = new ImageView(SubjectActivity.this);
+                imageView.setMaxHeight(150);
+                imageView.setImageURI(data.getClipData().getItemAt(i).getUri());
+                fotosLayout.addView(imageView);
+            }
         }
     }
+
 
     private void setCurrentUriList(Intent data)
     {
@@ -541,6 +550,8 @@ public class SubjectActivity extends AppCompatActivity
         }
         return uriString.toString();
     }
+
+
 
     private void noteAddingOnClick(TextInputEditText nameGetter)
     {
