@@ -1,11 +1,16 @@
 package com.wingor_software.mylearn;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +31,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -34,6 +41,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +73,7 @@ public class SubjectActivity extends AppCompatActivity
 
     private Uri imageUri;
     private ArrayList<Uri> uriList;
+    private Intent gallery;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -468,7 +478,7 @@ public class SubjectActivity extends AppCompatActivity
         select_foto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 startActivityForResult(gallery,100);
             }
@@ -524,7 +534,13 @@ public class SubjectActivity extends AppCompatActivity
 
                 ImageView imageView = new ImageView(SubjectActivity.this);
                 imageView.setMaxHeight(150);
-                imageView.setImageURI(data.getClipData().getItemAt(i).getUri());
+                try {
+                    imageView.setImageBitmap(getBitmapFromUri(data.getClipData().getItemAt(i).getUri()));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
                 fotosLayout.addView(imageView);
             }
         }
@@ -644,4 +660,14 @@ public class SubjectActivity extends AppCompatActivity
     public static void setCurrentCard(Card currentCard) {
         SubjectActivity.currentCard = currentCard;
     }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
+    }
+
 }

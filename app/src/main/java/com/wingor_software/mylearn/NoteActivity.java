@@ -1,18 +1,32 @@
 package com.wingor_software.mylearn;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
 
 /**
  * Klasa odpowiadająca za interakcje z notatkami
@@ -26,7 +40,9 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +88,25 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //tytul
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
+        //zdjecia
+
+        LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
+
+        for (Uri u:SubjectActivity.getCurrentNote().getPhotoUris()) {
+            ImageView i = new ImageView(NoteActivity.this);
+            try {
+                i.setImageBitmap(getBitmapFromUri(u));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            fotosLayout.addView(i);
+        }
+
+        //tresc notatki
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
         CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout);
         int color_of_subject = SubjectActivity.getCurrentNote().getColor();
@@ -106,4 +140,25 @@ public class NoteActivity extends AppCompatActivity {
         }
 
     }
+
+
+    //pozwolenia
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 120);
+        }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 121);
+        }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
+    }
+
 }
