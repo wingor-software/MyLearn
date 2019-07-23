@@ -52,7 +52,7 @@
     <color name="colorPurple">#aa00ff</color>
     <color name="colorDarkPurple">#7200ca</color>
 
-
+    <color name="black_overlay">#66000000</color>
 
 
 </resources>

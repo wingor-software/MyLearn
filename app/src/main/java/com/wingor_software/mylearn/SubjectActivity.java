@@ -595,7 +595,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note");
+            addNoteData(s, "Empty note", null);     //tu zmienic zeby dodawalo uri przy podaniu
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
             drawNoteButton(note);
@@ -613,7 +613,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addTextNoteData(s, "Empty note");
+            addNoteData(s, "Empty note", null);
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
             drawNoteButton(note);
@@ -644,11 +644,11 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void addTextNoteData(String title, String content)
+    public void addNoteData(String title, String content, String filePath)
     {
         try
         {
-            boolean insertData = dataBaseHelper.addTextNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue());
+            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), filePath);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
