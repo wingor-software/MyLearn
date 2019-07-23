@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     LinearLayout subjectsLayout;
 
     //odnoscnik do pola tekstowego ostrzezenia
-    private TextView warning;
+    TextView warning;
 
     //pomocnik do bazy danych
     DataBaseHelper dataBaseHelper;

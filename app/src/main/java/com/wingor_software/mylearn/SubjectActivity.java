@@ -4,18 +4,24 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -53,6 +59,8 @@ public class SubjectActivity extends AppCompatActivity
 
     private static Note currentNote;
     private static Card currentCard;
+
+    private Uri imageUri;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -447,7 +455,95 @@ public class SubjectActivity extends AppCompatActivity
             subjectLayout.addView(view);
     }
 
-    public void showPopupSubject(final View v)
+    public void showPopupSubject(View view)
+    {
+        Log.d("test","popup wyboru typu notatki");
+        myDialog.setContentView(R.layout.popup_add_note);
+
+        RadioGroup radioGroup;
+        final Button selectButton = myDialog.findViewById(R.id.selectButton);
+        final RadioButton simpleNoteButton=myDialog.findViewById(R.id.text_radio_button);
+        final RadioButton fotoButton=myDialog.findViewById(R.id.foto_radio_button);
+
+        selectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(simpleNoteButton.isChecked())
+                {
+                    showPopupSubjectSimpleNote();
+                }
+                else if(fotoButton.isChecked())
+                {
+                    showPopupSubjectFotoNote();
+                }
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+
+
+    }
+    public void showPopupSubjectFotoNote()
+    {
+        myDialog.setContentView(R.layout.popup_foto_note);
+        Button select_foto = myDialog.findViewById(R.id.selectFotoButton);
+        Button addButtonFoto = myDialog.findViewById(R.id.addButton);
+
+        select_foto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery,100);
+            }
+        });
+        addButtonFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetterfoto);
+                if(subjectLayout==null)
+                {
+                    Log.d("tesciki","subjectslayout jest nullem");
+                }
+                switch(whichAction)
+                {
+                    case CARDS:
+                    {
+                        cardAddingOnClick(nameGetter);
+                        break;
+                    }
+                    case QUIZ:
+                    {
+                        break;
+                    }
+                    case NOTES:
+                    {
+                        noteAddingOnClickFoto(nameGetter);
+                        break;
+                    }
+                }
+                myDialog.dismiss();
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK && requestCode==100)
+        {
+            imageUri=data.getData();
+            toastMessage(imageUri.toString());
+            ImageView imageView = myDialog.findViewById(R.id.fotoView);
+            imageView.setImageURI(imageUri);
+        }
+    }
+
+    public void showPopupSubjectSimpleNote()
     {
         Log.d("test", "jestem w funkcji showPopup");
         //przycisk add
@@ -459,12 +555,6 @@ public class SubjectActivity extends AppCompatActivity
         //wyszukuje powiązania
         addButton = myDialog.findViewById(R.id.addButton);
 
-        Button red_button = myDialog.findViewById(R.id.button_red);
-        Button yellow_button = myDialog.findViewById(R.id.button_yellow);
-        Button green_button = myDialog.findViewById(R.id.button_green);
-        Button blue_button = myDialog.findViewById(R.id.button_blue);
-        Button purple_button = myDialog.findViewById(R.id.button_purple);
-
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -473,7 +563,7 @@ public class SubjectActivity extends AppCompatActivity
                 {
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
-                switch(whichAction)
+                 switch(whichAction)
                 {
                     case CARDS:
                     {
@@ -497,6 +587,25 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
     }
+
+    private void noteAddingOnClickFoto(TextInputEditText nameGetter)
+    {
+        //tooooo zienic zeby dzialalo ze zdjeciami, uri do zdjecia jest globalnie
+        Note note;
+        String s;
+        try {
+            s=nameGetter.getText().toString();
+            addNoteData(s, "Empty note");
+            note = dataBaseHelper.getLatelyAddedNote();
+            Log.d("tesciki","dodano do bazy");
+            drawNoteButton(note);
+            Log.d("tesciki","powinno tutaj dodac przycisk");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }}
+
 
     private void noteAddingOnClick(TextInputEditText nameGetter)
     {
