@@ -2,8 +2,11 @@ package com.wingor_software.mylearn;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -99,6 +102,7 @@ public class SubjectActivity extends AppCompatActivity
             return false;
         }
     };
+    StringBuilder path_to_save = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -480,7 +484,13 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
                 gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+                setResult(RESULT_OK);
+
                 startActivityForResult(gallery,100);
+
+                setResult(RESULT_OK);
+
+
             }
         });
         addButtonFoto.setOnClickListener(new View.OnClickListener() {
@@ -522,10 +532,21 @@ public class SubjectActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK && requestCode==100)
         {
-            String s = data.getClipData().toString();
+
+            String s;
+            try {
+                s = data.getClipData().toString();
+            }
+            catch (NullPointerException e)
+            {
+                e.printStackTrace();
+                return;
+            }
             setCurrentUriList(data);
             Log.d("test","s==" + s);
+
             imageUri=data.getData();
+
             toastMessage(imageUri.toString());
 
             LinearLayout fotosLayout = myDialog.findViewById(R.id.fotos_layout);
@@ -534,8 +555,15 @@ public class SubjectActivity extends AppCompatActivity
 
                 ImageView imageView = new ImageView(SubjectActivity.this);
                 imageView.setMaxHeight(150);
+
                 try {
-                    imageView.setImageBitmap(getBitmapFromUri(data.getClipData().getItemAt(i).getUri()));
+                    Bitmap b = BitmapFactory.decodeFile(getRealPathFromURI(SubjectActivity.this,data.getClipData().getItemAt(i).getUri()));
+                    if(!path_to_save.toString().equals(""))
+                    {
+                        path_to_save.append("\n");
+                    }
+                    path_to_save.append(getRealPathFromURI(SubjectActivity.this,data.getClipData().getItemAt(i).getUri()));
+                    imageView.setImageBitmap(b);
                 }
                 catch (Exception e)
                 {
@@ -576,7 +604,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", getStringFromUriList());     //tu zmienic zeby dodawalo uri przy podaniu
+            addNoteData(s, "Empty note", path_to_save.toString());     //tu zmienic zeby dodawalo uri przy podaniu
             Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
@@ -661,13 +689,21 @@ public class SubjectActivity extends AppCompatActivity
         SubjectActivity.currentCard = currentCard;
     }
 
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor =
-                getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        parcelFileDescriptor.close();
-        return image;
+    private String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            Log.e("test", "getRealPathFromURI Exception : " + e.toString());
+            return "";
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
-
 }
