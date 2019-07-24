@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,7 +31,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
@@ -97,24 +95,25 @@ public class NoteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //tytul
-        checkPermission();
 
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
         //zdjecia
 
         LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
 
-//        for (Uri u:SubjectActivity.getCurrentNote().getPhotoUris()) {
-//            ImageView i = new ImageView(NoteActivity.this);
-//            try {
-//                i.setImageURI(u);
-//            }
-//            catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            }
-//            fotosLayout.addView(i);
-//        }
+        Intent intent = getIntent();
+
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        //intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+
+
+
+
+        final int takeFlags = getIntent().getFlags();
+
 
         ContentResolver resolver = NoteActivity.this.getContentResolver();
 
@@ -166,17 +165,6 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
-
-    //pozwolenia
-    private void checkPermission() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 120);
-        }
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 121);
-        }
-    }
-
     private String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
@@ -194,6 +182,5 @@ public class NoteActivity extends AppCompatActivity {
             }
         }
     }
-
 
 }
