@@ -116,31 +116,6 @@ public class NoteActivity extends AppCompatActivity {
 //            fotosLayout.addView(i);
 //        }
 
-        for (String s : SubjectActivity.getCurrentNote().filesPathsToStringArray())
-        {
-            ImageView i = new ImageView(NoteActivity.this);
-//            i.setImageURI(Uri.fromFile(new File(s)));
-            fotosLayout.addView(i);
-            File sd = Environment.getExternalStorageDirectory();
-            File image = new File("/data/media/0/DCIM/Camera/IMG_20190722_103207.jpg");
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-            bitmap = Bitmap.createScaledBitmap(bitmap, i.getWidth(), i.getHeight(), true);
-            i.setImageBitmap(bitmap);
-        Intent intent = getIntent();
-
-
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        //intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-
-
-
-
-        final int takeFlags = getIntent().getFlags();
-
-
         ContentResolver resolver = NoteActivity.this.getContentResolver();
 
         Log.d("test","MOZLIWE POZWOLENIA CO JE MOZNA ZABRAC" + resolver.getPersistedUriPermissions().toString());
