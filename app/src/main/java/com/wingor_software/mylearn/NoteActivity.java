@@ -1,11 +1,16 @@
 package com.wingor_software.mylearn;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -93,6 +98,7 @@ public class NoteActivity extends AppCompatActivity {
         super.onResume();
         //tytul
         checkPermission();
+
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
         //zdjecia
 
@@ -121,7 +127,34 @@ public class NoteActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
             bitmap = Bitmap.createScaledBitmap(bitmap, i.getWidth(), i.getHeight(), true);
             i.setImageBitmap(bitmap);
+        Intent intent = getIntent();
+
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        //intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+
+
+
+
+        final int takeFlags = getIntent().getFlags();
+
+
+        ContentResolver resolver = NoteActivity.this.getContentResolver();
+
+        Log.d("test","MOZLIWE POZWOLENIA CO JE MOZNA ZABRAC" + resolver.getPersistedUriPermissions().toString());
+
+
+        for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
+        {
+                Bitmap b = BitmapFactory.decodeFile(s);
+                ImageView i = new ImageView(this);
+                i.setImageBitmap(b);
+                fotosLayout.addView(i);
         }
+
+
 
         //tresc notatki
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
@@ -158,6 +191,7 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
+
     //pozwolenia
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -167,4 +201,24 @@ public class NoteActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 121);
         }
     }
+
+    private String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            Log.e("test", "getRealPathFromURI Exception : " + e.toString());
+            return "";
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+
 }

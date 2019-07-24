@@ -1,6 +1,9 @@
 package com.wingor_software.mylearn;
 
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
+
 import java.util.ArrayList;
 /**
  * Klasa odpowiadająca za informacje o notatce
@@ -88,4 +91,5 @@ public class Note
         }
         return uriArrayList;
     }
+
 }
