@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -33,6 +34,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.PathUtils;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -41,6 +43,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -535,7 +538,7 @@ public class SubjectActivity extends AppCompatActivity
                 ImageView imageView = new ImageView(SubjectActivity.this);
                 imageView.setMaxHeight(150);
                 try {
-                    imageView.setImageBitmap(getBitmapFromUri(data.getClipData().getItemAt(i).getUri()));
+                    imageView.setImageURI(data.getClipData().getItemAt(i).getUri());
                 }
                 catch (Exception e)
                 {
@@ -567,7 +570,26 @@ public class SubjectActivity extends AppCompatActivity
         return uriString.toString();
     }
 
+    private String getStringPath()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < uriList.size(); i++) {
+            if(stringBuilder.length() != 0)
+                stringBuilder.append("\n");
+//            stringBuilder.append(uriList.get(i).getPath());
+            stringBuilder.append(getRealPathFromURI(uriList.get(i)));
+        }
+        return stringBuilder.toString();
+    }
 
+    public String getRealPathFromURI(Uri contentUri)
+    {
+        String[] proj = { MediaStore.Audio.Media.DATA };
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
 
     private void noteAddingOnClick(TextInputEditText nameGetter)
     {
@@ -576,7 +598,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", getStringFromUriList());     //tu zmienic zeby dodawalo uri przy podaniu
+            addNoteData(s, "Empty note", getStringPath());     //tu zmienic zeby dodawalo uri przy podaniu
             Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
@@ -660,14 +682,4 @@ public class SubjectActivity extends AppCompatActivity
     public static void setCurrentCard(Card currentCard) {
         SubjectActivity.currentCard = currentCard;
     }
-
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor =
-                getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        parcelFileDescriptor.close();
-        return image;
-    }
-
 }

@@ -74,7 +74,7 @@ public class Note
         this.color = color;
     }
 
-    private String[] filesPathsToStringArray()
+    public String[] filesPathsToStringArray()
     {
         return filePath.split("\n");
     }

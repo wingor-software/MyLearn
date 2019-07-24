@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -25,6 +27,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
@@ -89,21 +92,35 @@ public class NoteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //tytul
+        checkPermission();
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
         //zdjecia
 
         LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
 
-        for (Uri u:SubjectActivity.getCurrentNote().getPhotoUris()) {
+//        for (Uri u:SubjectActivity.getCurrentNote().getPhotoUris()) {
+//            ImageView i = new ImageView(NoteActivity.this);
+//            try {
+//                i.setImageURI(u);
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//            fotosLayout.addView(i);
+//        }
+
+        for (String s : SubjectActivity.getCurrentNote().filesPathsToStringArray())
+        {
             ImageView i = new ImageView(NoteActivity.this);
-            try {
-                i.setImageBitmap(getBitmapFromUri(u));
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+//            i.setImageURI(Uri.fromFile(new File(s)));
             fotosLayout.addView(i);
+            File sd = Environment.getExternalStorageDirectory();
+            File image = new File("/data/media/0/DCIM/Camera/IMG_20190722_103207.jpg");
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+            bitmap = Bitmap.createScaledBitmap(bitmap, i.getWidth(), i.getHeight(), true);
+            i.setImageBitmap(bitmap);
         }
 
         //tresc notatki
@@ -141,7 +158,6 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
-
     //pozwolenia
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -151,14 +167,4 @@ public class NoteActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 121);
         }
     }
-
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor =
-                getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        parcelFileDescriptor.close();
-        return image;
-    }
-
 }
