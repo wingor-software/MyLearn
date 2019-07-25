@@ -2,6 +2,7 @@ package com.wingor_software.mylearn;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -484,11 +485,9 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
                 gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
-                setResult(RESULT_OK);
 
                 startActivityForResult(gallery,100);
-
-                setResult(RESULT_OK);
+                setResult(RESULT_OK,gallery);
 
 
             }
@@ -529,40 +528,40 @@ public class SubjectActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Intent intent = getIntent();
+        setResult(RESULT_OK,intent);
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK && requestCode==100)
         {
+            ClipData cd = data.getClipData();
 
-            String s;
-            try {
-                s = data.getClipData().toString();
+            if ( cd == null ) {
+                Uri uri = data.getData();
+                uriList.add(uri);
             }
-            catch (NullPointerException e)
-            {
-                e.printStackTrace();
-                return;
+            else {
+                for (int i = 0; i < cd.getItemCount(); i++) {
+                    ClipData.Item item = cd.getItemAt(i);
+                    Uri uri = item.getUri();
+                    uriList.add(uri);
+                }
             }
-            setCurrentUriList(data);
-            Log.d("test","s==" + s);
 
-            imageUri=data.getData();
-
-            toastMessage(imageUri.toString());
 
             LinearLayout fotosLayout = myDialog.findViewById(R.id.fotos_layout);
 
-            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+            for (int i = 0; i < uriList.size(); i++) {
 
                 ImageView imageView = new ImageView(SubjectActivity.this);
                 imageView.setMaxHeight(150);
 
                 try {
-                    Bitmap b = BitmapFactory.decodeFile(getRealPathFromURI(SubjectActivity.this,data.getClipData().getItemAt(i).getUri()));
+                    Bitmap b = BitmapFactory.decodeFile(getRealPathFromURI(SubjectActivity.this,uriList.get(i)));
                     if(!path_to_save.toString().equals(""))
                     {
                         path_to_save.append("\n");
                     }
-                    path_to_save.append(getRealPathFromURI(SubjectActivity.this,data.getClipData().getItemAt(i).getUri()));
+                    path_to_save.append(getRealPathFromURI(SubjectActivity.this,uriList.get(i)));
                     imageView.setImageBitmap(b);
                 }
                 catch (Exception e)
@@ -574,15 +573,6 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-
-    private void setCurrentUriList(Intent data)
-    {
-        uriList.clear();
-        for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-            Uri uri = data.getClipData().getItemAt(i).getUri();
-            uriList.add(uri);
-        }
-    }
 
     private String getStringFromUriList()
     {
