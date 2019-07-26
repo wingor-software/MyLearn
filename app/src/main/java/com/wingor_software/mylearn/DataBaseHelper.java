@@ -460,5 +460,18 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return null;
     }
 
+    public void updateNotePhotosByID(int noteID, String photosPaths)
+    {
+        Note note = getNoteByID(noteID);
+        if(note == null)
+        {
+            Log.d("NoteUpdate", "Blad przy aktualizowaniu contentu notatki");
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + NOTE_TABLE_NAME + " SET " + NOTE_COL6 + " = '" + photosPaths + "' WHERE " + NOTE_COL1 + " = " + noteID + ";";
+        db.execSQL(query);
+    }
+
     //-------------------------------------------------------
 }

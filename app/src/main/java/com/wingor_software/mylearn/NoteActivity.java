@@ -44,11 +44,14 @@ public class NoteActivity extends AppCompatActivity {
     private TextView noteContent;
     private EditText editNote;
     private boolean isTextBeingEdited = false;
+    DataBaseHelper dataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        dataBaseHelper = new DataBaseHelper(this);
 
         setContentView(R.layout.activity_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -202,4 +205,17 @@ public class NoteActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    private void addPhoto(String photoPath)
+    {
+        Note note = SubjectActivity.getCurrentNote();
+        note.addPhoto(photoPath);
+        dataBaseHelper.updateNotePhotosByID(note.getID(), note.getFilePath());
+    }
+
+    private void deletePhoto(String photoPath)
+    {
+        Note note = SubjectActivity.getCurrentNote();
+        note.deletePhoto(photoPath);
+        dataBaseHelper.updateNotePhotosByID(note.getID(), note.getFilePath());
+    }
 }

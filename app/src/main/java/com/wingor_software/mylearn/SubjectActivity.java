@@ -38,6 +38,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.PathUtils;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -46,6 +47,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -592,8 +594,6 @@ public class SubjectActivity extends AppCompatActivity
         return uriString.toString();
     }
 
-
-
     private void noteAddingOnClick(TextInputEditText nameGetter)
     {
         //tooooo zienic zeby dzialalo ze zdjeciami, uri do zdjecia jest globalnie
@@ -601,7 +601,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", path_to_save.toString());     //tu zmienic zeby dodawalo uri przy podaniu
+            addNoteData(s, "Empty note", path_to_save.toString());
             Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
