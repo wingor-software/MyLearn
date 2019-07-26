@@ -123,9 +123,12 @@ public class NoteActivity extends AppCompatActivity {
         for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
         {
                 Bitmap b = BitmapFactory.decodeFile(s);
-                ImageView i = new ImageView(this);
-                i.setImageBitmap(b);
-                fotosLayout.addView(i);
+                ImageView imageView = new ImageView(this);
+                imageView.setMaxHeight(250);
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setImageBitmap(b);
+                fotosLayout.addView(imageView);
         }
 
 

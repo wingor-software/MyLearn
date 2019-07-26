@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -480,6 +481,10 @@ public class SubjectActivity extends AppCompatActivity
         Button select_foto = myDialog.findViewById(R.id.selectFotoButton);
         Button addButtonFoto = myDialog.findViewById(R.id.addButton);
 
+        //usuwam zapisane uri po narysoaniu zdjec
+        uriList.clear();
+        path_to_save=new StringBuilder();
+
         select_foto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -553,8 +558,6 @@ public class SubjectActivity extends AppCompatActivity
             for (int i = 0; i < uriList.size(); i++) {
 
                 ImageView imageView = new ImageView(SubjectActivity.this);
-                imageView.setMaxHeight(150);
-
                 try {
                     Bitmap b = BitmapFactory.decodeFile(getRealPathFromURI(SubjectActivity.this,uriList.get(i)));
                     if(!path_to_save.toString().equals(""))
@@ -562,6 +565,9 @@ public class SubjectActivity extends AppCompatActivity
                         path_to_save.append("\n");
                     }
                     path_to_save.append(getRealPathFromURI(SubjectActivity.this,uriList.get(i)));
+                    imageView.setMaxHeight(450);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     imageView.setImageBitmap(b);
                 }
                 catch (Exception e)
@@ -570,6 +576,7 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 fotosLayout.addView(imageView);
             }
+
         }
     }
 
