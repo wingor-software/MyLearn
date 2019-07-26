@@ -587,27 +587,6 @@ public class SubjectActivity extends AppCompatActivity
         return uriString.toString();
     }
 
-    private String getStringPath()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < uriList.size(); i++) {
-            if(stringBuilder.length() != 0)
-                stringBuilder.append("\n");
-//            stringBuilder.append(uriList.get(i).getPath());
-            stringBuilder.append(getRealPathFromURI(uriList.get(i)));
-        }
-        return stringBuilder.toString();
-    }
-
-    public String getRealPathFromURI(Uri contentUri)
-    {
-        String[] proj = { MediaStore.Audio.Media.DATA };
-        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
     private void noteAddingOnClick(TextInputEditText nameGetter)
     {
         //tooooo zienic zeby dzialalo ze zdjeciami, uri do zdjecia jest globalnie
@@ -615,7 +594,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", path_to_save.toString());     //tu zmienic zeby dodawalo uri przy podaniu
+            addNoteData(s, "Empty note", path_to_save.toString());
             Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
