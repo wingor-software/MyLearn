@@ -123,27 +123,15 @@ public class NoteActivity extends AppCompatActivity {
 
         Log.d("test","MOZLIWE POZWOLENIA CO JE MOZNA ZABRAC" + resolver.getPersistedUriPermissions().toString());
 
-
+        int i = 1;
         for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
         {
-                Bitmap b = BitmapFactory.decodeFile(s);
-                final ImageView imageView = new ImageView(this);
-                imageView.setMaxHeight(250);
-                imageView.setAdjustViewBounds(true);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setImageBitmap(b);
-
-                //funkcja do powiekszania zdjecia po kliknieciu
-                imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toastMessage(imageView.toString());
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                }
-            });
-
-
-                fotosLayout.addView(imageView);
+            ImageView imageView = new ImageView(this);
+            imageView.setMaxHeight(250);
+            imageView.setAdjustViewBounds(true);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setImageBitmap(decodeSampledBitmapFromResource(s, 150, 150));
+            fotosLayout.addView(imageView);
         }
 
 
@@ -217,5 +205,42 @@ public class NoteActivity extends AppCompatActivity {
         Note note = SubjectActivity.getCurrentNote();
         note.deletePhoto(photoPath);
         dataBaseHelper.updateNotePhotosByID(note.getID(), note.getFilePath());
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(String s, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(s, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(s, options);
     }
 }
