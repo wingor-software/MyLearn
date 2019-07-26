@@ -171,6 +171,7 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
+
     private String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
