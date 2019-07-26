@@ -92,4 +92,16 @@ public class Note
         return uriArrayList;
     }
 
+    public void addPhoto(String newPhotoPath)
+    {
+        filePath += ("\n" + newPhotoPath);
+    }
+
+    public void deletePhoto(String photoPath)
+    {
+        if(filePath.contains(photoPath))
+        {
+            filePath = filePath.replace(photoPath, "");
+        }
+    }
 }
