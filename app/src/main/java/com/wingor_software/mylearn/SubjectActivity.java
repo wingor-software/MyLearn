@@ -490,11 +490,21 @@ public class SubjectActivity extends AppCompatActivity
         select_foto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+//                //gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+//                gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+//
+//                startActivityForResult(gallery,100);
+//                setResult(RESULT_OK,gallery);
 
-                startActivityForResult(gallery,100);
-                setResult(RESULT_OK,gallery);
+
+                gallery = new Intent();
+// Show only images, no videos or anything else
+                gallery.setType("image/*");
+                gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+                gallery.setAction(Intent.ACTION_PICK);
+// Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(gallery, "Select Picture"),100);
+
 
 
             }
