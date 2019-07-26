@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -123,11 +124,22 @@ public class NoteActivity extends AppCompatActivity {
         for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
         {
                 Bitmap b = BitmapFactory.decodeFile(s);
-                ImageView imageView = new ImageView(this);
+                final ImageView imageView = new ImageView(this);
                 imageView.setMaxHeight(250);
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setImageBitmap(b);
+
+                //funkcja do powiekszania zdjecia po kliknieciu
+                imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toastMessage(imageView.toString());
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                }
+            });
+
+
                 fotosLayout.addView(imageView);
         }
 
@@ -184,6 +196,10 @@ public class NoteActivity extends AppCompatActivity {
                 cursor.close();
             }
         }
+    }
+    private void toastMessage(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
 }
