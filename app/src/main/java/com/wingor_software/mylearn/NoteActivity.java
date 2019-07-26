@@ -45,6 +45,8 @@ public class NoteActivity extends AppCompatActivity {
     private EditText editNote;
     private boolean isTextBeingEdited = false;
     DataBaseHelper dataBaseHelper;
+    private boolean isImageFitToScreen = false;
+    private static String currentPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,9 +115,6 @@ public class NoteActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         //intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
 
-
-
-
         final int takeFlags = getIntent().getFlags();
 
 
@@ -123,18 +122,24 @@ public class NoteActivity extends AppCompatActivity {
 
         Log.d("test","MOZLIWE POZWOLENIA CO JE MOZNA ZABRAC" + resolver.getPersistedUriPermissions().toString());
 
-        int i = 1;
         for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
         {
+            final String finals = s;
             ImageView imageView = new ImageView(this);
             imageView.setMaxHeight(250);
             imageView.setAdjustViewBounds(true);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setImageBitmap(decodeSampledBitmapFromResource(s, 150, 150));
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    currentPath = finals;
+                    Intent intent = new Intent(NoteActivity.this, PhotoActivity.class);
+                    startActivity(intent);
+                }
+            });
             fotosLayout.addView(imageView);
         }
-
-
 
         //tresc notatki
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
@@ -171,6 +176,12 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {           //bo sie od nowa rysuja przy powrocie z PhotoActivity
+        super.onStop();
+        LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
+        fotosLayout.removeAllViewsInLayout();
+    }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
@@ -243,5 +254,10 @@ public class NoteActivity extends AppCompatActivity {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(s, options);
+    }
+
+    public static String getCurrentPath()
+    {
+        return currentPath;
     }
 }
