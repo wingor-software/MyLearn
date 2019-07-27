@@ -1,5 +1,9 @@
 package com.wingor_software.mylearn;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Klasa odpowiadająca za informacje o fiszce
  */
@@ -10,12 +14,23 @@ public class Card
     private String word;
     private String answer;
     private int subjectID;
+    private ArrayList<Integer> notesList;
 
     public Card(int ID, String word, String answer, int subjectID) {
         this.ID = ID;
         this.word = word;
         this.answer = answer;
         this.subjectID = subjectID;
+        this.notesList = new ArrayList<>();
+    }
+
+    public Card(int ID, String word, String answer, int subjectID, Integer[] attachedNotes)
+    {
+        this.ID = ID;
+        this.word = word;
+        this.answer = answer;
+        this.subjectID = subjectID;
+        this.notesList = new ArrayList<>(Arrays.asList(attachedNotes));
     }
 
     public int getID() {
@@ -48,5 +63,15 @@ public class Card
 
     public void setSubjectID(int subjectID) {
         this.subjectID = subjectID;
+    }
+
+    public void attachNote(int noteID)
+    {
+        notesList.add(noteID);
+    }
+
+    public void deleteNoteAttachment(int noteID)
+    {
+        notesList.remove(noteID);
     }
 }
