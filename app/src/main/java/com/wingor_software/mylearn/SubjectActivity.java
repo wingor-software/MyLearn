@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -72,7 +73,7 @@ public class SubjectActivity extends AppCompatActivity
 
     private enum BarAction {CARDS, QUIZ, NOTES}
 
-    ;
+    private SharedPreferences sharedPref;
     private BarAction whichAction;
 
     private static Note currentNote;
@@ -87,26 +88,49 @@ public class SubjectActivity extends AppCompatActivity
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            sharedPref = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
             switch (item.getItemId()) {
                 case R.id.action_cards:
-                    whichAction = BarAction.CARDS;
-                    clearContent();
-                    drawAllCardButtons();
+                    actionCards(editor);
                     return true;
                 case R.id.action_quiz:
-                    whichAction = BarAction.QUIZ;
-                    clearContent();
+                    actionQuiz(editor);
                     return true;
                 case R.id.action_notes:
-                    whichAction = BarAction.NOTES;
-                    clearContent();
-                    drawAllNoteButtons();
+                    actionNotes(editor);
                     return true;
             }
             return false;
         }
     };
     StringBuilder path_to_save = new StringBuilder();
+
+    private void actionCards(SharedPreferences.Editor editor)
+    {
+        whichAction = BarAction.CARDS;
+        editor.putInt(getString(R.string.preference), 1);
+        editor.apply();     //albo commit ale to moze zawiesic UI
+        clearContent();
+        drawAllCardButtons();
+    }
+
+    private void actionQuiz(SharedPreferences.Editor editor)
+    {
+        whichAction = BarAction.QUIZ;
+        editor.putInt(getString(R.string.preference), 2);
+        editor.apply();
+        clearContent();
+    }
+
+    private void actionNotes(SharedPreferences.Editor editor)
+    {
+        whichAction = BarAction.NOTES;
+        editor.putInt(getString(R.string.preference), 3);
+        editor.apply();
+        clearContent();
+        drawAllNoteButtons();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +165,29 @@ public class SubjectActivity extends AppCompatActivity
             this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
         } catch (Exception e) {
             this.setTitle(R.string.title_activity_subject);
+        }
+
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        int defaultValue = 3;
+        int submenuValue = sharedPref.getInt(getString(R.string.preference), defaultValue);
+        switch(submenuValue)
+        {
+            case 1:
+            {
+                actionCards(editor);
+                break;
+            }
+            case 2:
+            {
+                actionQuiz(editor);
+                break;
+            }
+            case 3:
+            {
+                actionNotes(editor);
+                break;
+            }
         }
     }
 
@@ -631,7 +678,7 @@ public class SubjectActivity extends AppCompatActivity
         try
         {
             s = nameGetter.getText().toString();
-            addCardData(s+" word", s + " answer");
+            addCardData(s+" word", s + " answer", "");
             card = dataBaseHelper.getLatelyAddedCard();
             Log.d("cardAdding", "dodano do bazy");
             drawCardButton(card);
@@ -659,11 +706,11 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void addCardData(String word, String answer)
+    public void addCardData(String word, String answer, String attachedNotes)
     {
         try
         {
-            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID());
+            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
             else

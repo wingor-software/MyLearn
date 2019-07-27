@@ -183,13 +183,14 @@ public class DataBaseHelper extends SQLiteOpenHelper
      * @return zwraca true jesli dodano poprawnie
      */
 
-    public boolean addCardData(String word, String answer, int subjectID)
+    public boolean addCardData(String word, String answer, int subjectID, String noteIDs)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(CARD_COL2, word);
         contentValues.put(CARD_COL3, answer);
         contentValues.put(CARD_COL4, subjectID);
+        contentValues.put(CARD_COL5, noteIDs);
         Log.d("Card DataBase", "addData : Adding " + word + ", " + answer + ", " + subjectID);
         long result = db.insert(CARD_TABLE_NAME, null, contentValues);
         return (result != -1);
@@ -308,7 +309,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return card;
     }
 
+    public void updateNotesAttachedToCard(Integer[] noteIDs)
+    {
 
+    }
 
     //-------------------------------------------------------
 

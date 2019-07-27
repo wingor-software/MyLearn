@@ -74,4 +74,16 @@ public class Card
     {
         notesList.remove(noteID);
     }
+
+    public String notesListToString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Integer noteID : notesList)
+        {
+            if(stringBuilder.length() != 0)
+                stringBuilder.append("\n");
+            stringBuilder.append(noteID);
+        }
+        return stringBuilder.toString();
+    }
 }
