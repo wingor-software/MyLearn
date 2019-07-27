@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -17,6 +18,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.github.chrisbanes.photoview.OnMatrixChangedListener;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -43,6 +47,8 @@ public class PhotoActivity extends AppCompatActivity {
     private static int rotations = 1;
     private final Handler mHideHandler = new Handler();
     private ImageView mContentView;
+    private PhotoView mAttacher;
+    private boolean lock = false;
     private Button rotateButton;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -128,7 +134,15 @@ public class PhotoActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.rotate_button).setOnTouchListener(mDelayHideTouchListener);
-        mContentView.setImageBitmap(BitmapFactory.decodeFile(NoteActivity.getCurrentPath()));
+//        mContentView.setImageBitmap(BitmapFactory.decodeFile(NoteActivity.getCurrentPath()));
+        mAttacher = findViewById(R.id.fullscreen_content);
+        mAttacher.setImageBitmap(BitmapFactory.decodeFile(NoteActivity.getCurrentPath()));
+        mAttacher.setOnMatrixChangeListener(new OnMatrixChangedListener() {
+            @Override
+            public void onMatrixChanged(RectF rect) {
+                lock = mAttacher.getScale() > 1;
+            }
+        });
     }
 
     @Override
@@ -152,10 +166,13 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
+        if(!lock)
+        {
+            if (mVisible) {
+                hide();
+            } else {
+                show();
+            }
         }
     }
 
