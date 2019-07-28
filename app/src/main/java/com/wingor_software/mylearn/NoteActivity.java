@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -32,8 +33,18 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Locale;
 
 /**
  * Klasa odpowiadająca za interakcje z notatkami
@@ -45,8 +56,8 @@ public class NoteActivity extends AppCompatActivity {
     private EditText editNote;
     private boolean isTextBeingEdited = false;
     DataBaseHelper dataBaseHelper;
-    private boolean isImageFitToScreen = false;
     private static String currentPath;
+    private static final int REQUEST_CODE_READING_FILE = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +84,12 @@ public class NoteActivity extends AppCompatActivity {
                     SubjectActivity.setCurrentNote(newNote);
                     SubjectActivity.updateNoteContent(SubjectActivity.getCurrentNote().getID(), editNote.getText().toString());
                 } else {
-                    Snackbar.make(view, "W trybie edycji przycisk zapisuje zmiany", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    /*Snackbar.make(view, "W trybie edycji przycisk zapisuje zmiany", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();*/
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("text/*");
+                    startActivityForResult(intent, REQUEST_CODE_READING_FILE);
                 }
             }
         });
@@ -181,6 +196,37 @@ public class NoteActivity extends AppCompatActivity {
         super.onStop();
         LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
         fotosLayout.removeAllViewsInLayout();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE)
+        {
+            StringBuilder textfromFile = new StringBuilder();
+            if(data != null)
+            {
+                Note currentNote = SubjectActivity.getCurrentNote();
+                String str;
+                try
+                {
+                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    while((str = bufferedReader.readLine()) != null)
+                    {
+                        textfromFile.append(str + "\n");
+                    }
+                    inputStream.close();
+                    noteContent.setText(textfromFile.toString());
+                    currentNote.setContent(textfromFile.toString());
+                    dataBaseHelper.updateNoteContent(currentNote.getID(), textfromFile.toString());
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {

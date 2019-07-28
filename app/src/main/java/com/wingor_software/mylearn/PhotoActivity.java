@@ -174,6 +174,8 @@ public class PhotoActivity extends AppCompatActivity {
                 show();
             }
         }
+        else if(mVisible)
+            hide();
     }
 
     private void hide() {
