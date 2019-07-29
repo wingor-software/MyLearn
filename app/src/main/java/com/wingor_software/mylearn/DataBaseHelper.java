@@ -1,16 +1,13 @@
 package com.wingor_software.mylearn;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +32,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String CARD_COL3 = "Answer";
     private static final String CARD_COL4 = "SubjectID";
     private static final String CARD_COL5 = "AttachedNoteIDs";
+    private static final String CARD_COL6 = "Color";
 
     //NOTATKI--------------------------------------------------------
     private static final String NOTE_TABLE_NAME = "notes";
@@ -58,7 +56,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER);";
         String createTableCard = "CREATE TABLE " + CARD_TABLE_NAME + " ( " + CARD_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER, " + CARD_COL5 + " TEXT);";
+                + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER, " + CARD_COL5 + " TEXT, " + CARD_COL6 + " INTEGER);";
         String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, " + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT);";
 
         sqLiteDatabase.execSQL(createTableSubject);
@@ -183,7 +181,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
      * @return zwraca true jesli dodano poprawnie
      */
 
-    public boolean addCardData(String word, String answer, int subjectID, String noteIDs)
+    public boolean addCardData(String word, String answer, int subjectID, String noteIDs, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -191,6 +189,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         contentValues.put(CARD_COL3, answer);
         contentValues.put(CARD_COL4, subjectID);
         contentValues.put(CARD_COL5, noteIDs);
+        contentValues.put(CARD_COL6, color);
         Log.d("Card DataBase", "addData : Adding " + word + ", " + answer + ", " + subjectID);
         long result = db.insert(CARD_TABLE_NAME, null, contentValues);
         return (result != -1);
@@ -221,20 +220,31 @@ public class DataBaseHelper extends SQLiteOpenHelper
         List<Card> cards = new ArrayList<>();
         while(data.moveToNext())
         {
-            cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4))));
+            try
+            {
+                cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4)), data.getInt(5)));
+            }
+            catch(Exception e)
+            {
+                cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(5)));
+            }
         }
         if (cards.size() == 0) throw new EmptyDataBaseException();
         return cards;
     }
 
-    private Integer[] attachedNotesToArrayList(String notes)
+    private Integer[] attachedNotesToArrayList(String notes) throws Exception
     {
-        String[] notesStr = notes.split("\n");
-        Integer[] noteIDs = new Integer[notesStr.length];
-        for (int i = 0; i < notesStr.length; i++) {
-            noteIDs[i] = Integer.parseInt(notesStr[i]);
+        if(!notes.equals(""))
+        {
+            String[] notesStr = notes.split("\n");
+            Integer[] noteIDs = new Integer[notesStr.length];
+            for (int i = 0; i < notesStr.length; i++) {
+                noteIDs[i] = Integer.parseInt(notesStr[i]);
+            }
+            return noteIDs;
         }
-        return noteIDs;
+        throw new Exception();
     }
 
     /**
@@ -252,7 +262,14 @@ public class DataBaseHelper extends SQLiteOpenHelper
         ArrayList<Card> cards = new ArrayList<>();
         while(data.moveToNext())
         {
-            cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4))));
+            try
+            {
+                cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4)), data.getInt(5)));
+            }
+            catch(Exception e)
+            {
+                cards.add(new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(5)));
+            }
         }
         if(cards.size() == 0) throw new EmptyDataBaseException();
         data.close();
@@ -304,7 +321,15 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         if (data == null) throw new EmptyDataBaseException();
         data.moveToNext();
-        Card card = new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4)));
+        Card card;
+        try
+        {
+            card = new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), attachedNotesToArrayList(data.getString(4)), data.getInt(5));
+        }
+        catch(Exception e)
+        {
+            card = new Card(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(5));
+        }
         data.close();
         return card;
     }

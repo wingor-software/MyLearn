@@ -1,33 +1,29 @@
 package com.wingor_software.mylearn;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,10 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.PathUtils;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -48,13 +40,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -329,14 +317,36 @@ public class SubjectActivity extends AppCompatActivity
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toastMessage("Nic sie nie dzieje");
-//                currentCard = card;
-//                Intent intent = new Intent(SubjectActivity.this, CardActivity.class);
-//                startActivity(intent);
+//                toastMessage(card.getWord() + " " + card.getAnswer());
+                currentCard = card;
+                showOpenCardPopup();
             }
         });
 
         b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+        chosen_color = EnumColors.valueOf(card.getColor());
+        switch (chosen_color) {
+            case red: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
+                break;
+            }
+            case yellow: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
+                break;
+            }
+            case green: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
+                break;
+            }
+            case blue: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
+                break;
+            }
+            case purple: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
+                break;
+            }
+        }
 
         if (warning != null && warning.getParent() != null) {
             ((ViewManager) warning.getParent()).removeView(warning);
@@ -524,6 +534,28 @@ public class SubjectActivity extends AppCompatActivity
             subjectLayout.addView(view);
     }
 
+    public void addingContent(View view)
+    {
+        switch(whichAction)
+        {
+            case CARDS:
+            {
+                showPopupNoteAdding(view);
+                break;
+            }
+            case QUIZ:
+            {
+
+                break;
+            }
+            case NOTES:
+            {
+                showPopupSubject(view);
+                break;
+            }
+        }
+    }
+
     public void showPopupSubject(View view)
     {
         myDialog.setContentView(R.layout.popup_foto_note);
@@ -564,30 +596,82 @@ public class SubjectActivity extends AppCompatActivity
                 {
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
-                switch(whichAction)
-                {
-                    case CARDS:
-                    {
-                        cardAddingOnClick(nameGetter);
-                        break;
-                    }
-                    case QUIZ:
-                    {
-                        break;
-                    }
-                    case NOTES:
-                    {
-                        noteAddingOnClick(nameGetter);
-                        break;
-                    }
-                }
+                noteAddingOnClick(nameGetter);
                 myDialog.dismiss();
             }
         });
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
+    }
 
+    private void showPopupNoteAdding(View view)
+    {
+        myDialog.setContentView(R.layout.popup_add_card);
+        Button addButton = myDialog.findViewById(R.id.addCardButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
+                TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
+                cardAddingOnClick(wordGetter, answerGetter);
+                myDialog.dismiss();
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    private void showOpenCardPopup()
+    {
+        myDialog.setContentView(R.layout.popup_open_card);
+        Button check = myDialog.findViewById(R.id.checkCardButton);
+        final TextView word = myDialog.findViewById(R.id.wordText);
+        final TextInputEditText answer = myDialog.findViewById(R.id.openCardAnswerGetter);
+        word.setText(currentCard.getWord());
+
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog.dismiss();
+                if(answer.getText().toString().equalsIgnoreCase(currentCard.getAnswer()))
+                    showResultCardPopup(true);
+                else
+                    showResultCardPopup(false);
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    private void showResultCardPopup(boolean correct)
+    {
+        myDialog.setContentView(R.layout.popup_result_card);
+        Button okButton = myDialog.findViewById(R.id.okCardButton);
+        TextView result = myDialog.findViewById(R.id.resultText);
+        TextView correctAnswer = myDialog.findViewById(R.id.correctAnswer);
+        if(correct)
+        {
+            result.setText("Correct!");
+            result.setTextColor(Color.GREEN);
+            correctAnswer.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            result.setText("Wrong!");
+            result.setTextColor(Color.RED);
+            correctAnswer.setVisibility(View.VISIBLE);
+            correctAnswer.setText("Correct answer is : '" + currentCard.getAnswer() + "'");
+        }
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
     @Override
@@ -671,14 +755,17 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    private void cardAddingOnClick(TextInputEditText nameGetter)
+    private void cardAddingOnClick(TextInputEditText wordGetter, TextInputEditText answerGetter)
     {
         Card card;
-        String s;
+        String word;
+        String answer;
         try
         {
-            s = nameGetter.getText().toString();
-            addCardData(s+" word", s + " answer", "");
+            word = wordGetter.getText().toString();
+            answer = answerGetter.getText().toString();
+
+            addCardData(word, answer, "");
             card = dataBaseHelper.getLatelyAddedCard();
             Log.d("cardAdding", "dodano do bazy");
             drawCardButton(card);
@@ -686,7 +773,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch(Exception e)
         {
-
+            e.printStackTrace();
         }
     }
 
@@ -710,7 +797,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes);
+            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
             else
