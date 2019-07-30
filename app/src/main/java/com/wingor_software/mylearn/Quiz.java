@@ -8,16 +8,18 @@ public class Quiz
     private String question;
     private ArrayList<String> goodAnswers;
     private ArrayList<String> badAnswers;
-    private ArrayList<Integer> attachedNotes;
     private int subjectID;
+    private ArrayList<Integer> attachedNotes;
+    private int color;
 
-    public Quiz(int ID, String question, ArrayList<String> goodAnswers, ArrayList<String> badAnswers, ArrayList<Integer> attachedNotes, int subjectID) {
+    public Quiz(int ID, String question, ArrayList<String> goodAnswers, ArrayList<String> badAnswers, int subjectID, ArrayList<Integer> attachedNotes, int color) {
         this.ID = ID;
         this.question = question;
         this.goodAnswers = goodAnswers;
         this.badAnswers = badAnswers;
-        this.attachedNotes = attachedNotes;
         this.subjectID = subjectID;
+        this.attachedNotes = attachedNotes;
+        this.color = color;
     }
 
     public int getID() {
@@ -66,6 +68,14 @@ public class Quiz
 
     public void setSubjectID(int subjectID) {
         this.subjectID = subjectID;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public String attachedNotesToString()

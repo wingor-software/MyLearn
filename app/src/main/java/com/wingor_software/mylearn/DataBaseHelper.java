@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,6 +44,16 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String NOTE_COL5 = "Color";
     private static final String NOTE_COL6 = "PhotoPath";
 
+    //QUIZ----------------------------------------------------------
+    private static final String QUIZ_TABLE_NAME = "quiz";
+    private static final String QUIZ_COL1 = "ID";
+    private static final String QUIZ_COL2 = "Question";
+    private static final String QUIZ_COL3 = "GoodAnswers";
+    private static final String QUIZ_COL4 = "BadAnswers";
+    private static final String QUIZ_COL5 = "SubjectID";
+    private static final String QUIZ_COL6 = "AttachedNoteIDs";
+    private static final String QUIZ_COL7 = "Color";
+
 
     public DataBaseHelper(Context context) {
         super(context, DATABASENAME, null, 1);
@@ -55,13 +66,20 @@ public class DataBaseHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER);";
+
         String createTableCard = "CREATE TABLE " + CARD_TABLE_NAME + " ( " + CARD_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER, " + CARD_COL5 + " TEXT, " + CARD_COL6 + " INTEGER);";
-        String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, " + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT);";
+
+        String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, "
+                + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT);";
+
+        String createTableQuiz = "CREATE TABLE " + QUIZ_TABLE_NAME + " ( " + QUIZ_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QUIZ_COL2 + " TEXT, " + QUIZ_COL3 + " TEXT, "
+                + QUIZ_COL4 + " TEXT, " + QUIZ_COL5 + " INTEGER, " + QUIZ_COL6 + " TEXT, " + QUIZ_COL7 + " INTEGER);";
 
         sqLiteDatabase.execSQL(createTableSubject);
         sqLiteDatabase.execSQL(createTableCard);
         sqLiteDatabase.execSQL(createTableNote);
+        sqLiteDatabase.execSQL(createTableQuiz);
     }
 
     /**
@@ -516,4 +534,97 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
     //-------------------------------------------------------
+    //QUIZ METHODS ------------------------------------------
+
+    public boolean addQuizData(String question, String goodAnswers, String badAnswers, int subjectID, String attachedNotes, int color)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(QUIZ_COL2, question);
+        contentValues.put(QUIZ_COL3, goodAnswers);
+        contentValues.put(QUIZ_COL4, badAnswers);
+        contentValues.put(QUIZ_COL5, subjectID);
+        contentValues.put(QUIZ_COL6, attachedNotes);
+        contentValues.put(QUIZ_COL7, color);
+        Log.d("DataBase", "addData : Adding " + question + ", " + subjectID + ", " + " to " + QUIZ_TABLE_NAME);
+        long result = db.insert(NOTE_TABLE_NAME, null, contentValues);
+        return (result != -1);
+    }
+
+    public Cursor getQuizData()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + QUIZ_TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+    public List<Quiz> getQuizList(int subjectID) throws EmptyDataBaseException
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + QUIZ_TABLE_NAME+ " WHERE " + QUIZ_COL5 + " = " + subjectID;
+        Cursor data = db.rawQuery(query, null);
+        ArrayList<Quiz> quizzes = new ArrayList<>();
+        while(data.moveToNext())
+        {
+            quizzes.add(new Quiz(data.getInt(0), data.getString(1), fromStringToStringArrayList(data.getString(2)), fromStringToStringArrayList(data.getString(3)), data.getInt(4), noteIDsToArrayList(data.getString(5)), data.getInt(6)));
+        }
+        if(quizzes.size() == 0) throw new EmptyDataBaseException();
+        data.close();
+        return quizzes;
+    }
+
+    private ArrayList<Integer> noteIDsToArrayList(String noteIDs)
+    {
+        ArrayList<Integer> notes = new ArrayList<>();
+        if(!noteIDs.equals(""))
+        {
+            String[] x = noteIDs.split("\n");
+            for (int i = 0; i < x.length; i++) {
+                notes.add(Integer.parseInt(x[i]));
+            }
+            return notes;
+        }
+        return null;
+    }
+
+    private ArrayList<String> fromStringToStringArrayList(String text)
+    {
+        ArrayList<String> list = new ArrayList<>();
+        if(!text.equals(""))
+        {
+            String[] x = text.split("\n");
+            for (int i = 0; i < x.length; i++) {
+                list.add(x[i]);
+                return list;
+            }
+        }
+        return null;
+    }
+
+    public void dropQuizByID(int ID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + QUIZ_TABLE_NAME + " WHERE " + QUIZ_COL1 + " = " + ID;
+        db.execSQL(query);
+    }
+
+    public void dropQuizBySubjectID(int subjectID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + QUIZ_TABLE_NAME + " WHERE " + QUIZ_COL5 + " = " + subjectID;
+        db.execSQL(query);
+    }
+
+    public Quiz getLatelyAddedqUIZ() throws EmptyDataBaseException
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + QUIZ_TABLE_NAME + " ORDER BY " + QUIZ_COL1 + " DESC LIMIT 1";
+        Cursor data = db.rawQuery(query, null);
+        if (data == null) throw new EmptyDataBaseException();
+        data.moveToNext();
+        Quiz quiz = new Quiz(data.getInt(0), data.getString(1), fromStringToStringArrayList(data.getString(2)), fromStringToStringArrayList(data.getString(3)), data.getInt(4), noteIDsToArrayList(data.getString(5)), data.getInt(6));
+        data.close();
+        return quiz;
+    }
 }
