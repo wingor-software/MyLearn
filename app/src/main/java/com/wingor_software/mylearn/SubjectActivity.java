@@ -66,6 +66,7 @@ public class SubjectActivity extends AppCompatActivity
 
     private static Note currentNote;
     private static Card currentCard;
+    private static Quiz currentQuiz;
 
     private Uri imageUri;
     private ArrayList<Uri> uriList;
@@ -109,6 +110,7 @@ public class SubjectActivity extends AppCompatActivity
         editor.putInt(getString(R.string.preference), 2);
         editor.apply();
         clearContent();
+        drawAllQuizButtons();
     }
 
     private void actionNotes(SharedPreferences.Editor editor)
@@ -143,6 +145,7 @@ public class SubjectActivity extends AppCompatActivity
 
         BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         uriList = new ArrayList<>();
     }
 
@@ -204,11 +207,51 @@ public class SubjectActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_subject_search) {
+            showPopupSearch();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showPopupSearch()
+    {
+        myDialog.setContentView(R.layout.popup_search);
+        final TextInputEditText textInputEditText = myDialog.findViewById(R.id.searchGetter);
+        Button button = myDialog.findViewById(R.id.searchButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!textInputEditText.getText().toString().equals(""))
+                {
+                    switch(whichAction)
+                    {
+                        case CARDS:
+                        {
+                            clearContent();
+                            drawAllCardButtonsContaining(textInputEditText.getText().toString());
+                            break;
+                        }
+                        case QUIZ:
+                        {
+                            clearContent();
+                            drawAllQuizButtonsContaining(textInputEditText.getText().toString());
+                            break;
+                        }
+                        case NOTES:
+                        {
+                            clearContent();
+                            drawAllNoteButtonsContaining(textInputEditText.getText().toString());
+                            break;
+                        }
+                    }
+                }
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -325,6 +368,63 @@ public class SubjectActivity extends AppCompatActivity
 
         b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
         chosen_color = EnumColors.valueOf(card.getColor());
+        switch (chosen_color) {
+            case red: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
+                break;
+            }
+            case yellow: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
+                break;
+            }
+            case green: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
+                break;
+            }
+            case blue: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
+                break;
+            }
+            case purple: {
+                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
+                break;
+            }
+        }
+
+        if (warning != null && warning.getParent() != null) {
+            ((ViewManager) warning.getParent()).removeView(warning);
+        }
+        subjectLayout.addView(b);
+    }
+
+    private void drawQuizButton(final Quiz quiz)
+    {
+        final Button b = new Button(SubjectActivity.this);
+
+        b.setText(quiz.getQuestion());
+        b.setTag("quiz_" + quiz.getID());
+        b.setMinimumWidth(200);
+        b.setMinimumHeight(200);
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+
+        b.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showDeletePopup(view);
+                return true;
+            }
+        });
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentQuiz = quiz;
+                Toast.makeText(SubjectActivity.this, "Wyswietlanie quizu", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+        chosen_color = EnumColors.valueOf(quiz.getColor());
         switch (chosen_color) {
             case red: {
                 b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
@@ -504,6 +604,82 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
+    private void drawAllNoteButtonsContaining(String phrase)
+    {
+        try
+        {
+            List<Note> notes = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID());
+            Iterator it = notes.iterator();
+            while(it.hasNext())
+            {
+                Note note = (Note)it.next();
+                if(note.getTitle().toLowerCase().contains(phrase.toLowerCase()))
+                    drawNoteButton(note);
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(SubjectActivity.this);
+            warning.setText("Can't find such a note");
+            warning.setTag("note_warning_tag");
+            subjectLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void drawAllQuizButtons()
+    {
+        try
+        {
+            List<Quiz> quizzes = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID());
+            Iterator it = quizzes.iterator();
+            while(it.hasNext())
+            {
+                drawQuizButton((Quiz)it.next());
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(SubjectActivity.this);
+            warning.setText(R.string.quiz_warning);
+            warning.setTag("quiz_warning_tag");
+            subjectLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void drawAllQuizButtonsContaining(String phrase)
+    {
+        try
+        {
+            List<Quiz> quizzes = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID());
+            Iterator it = quizzes.iterator();
+            while(it.hasNext())
+            {
+                Quiz quiz = (Quiz) it.next();
+                if(quiz.getQuestion().toLowerCase().contains(phrase.toLowerCase()))
+                    drawQuizButton(quiz);
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(SubjectActivity.this);
+            warning.setText(R.string.quiz_warning);
+            warning.setTag("quiz_warning_tag");
+            subjectLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void drawAllCardButtons()
     {
         try
@@ -528,6 +704,32 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
+    private void drawAllCardButtonsContaining(String phrase)
+    {
+        try
+        {
+            List<Card> cards = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
+            Iterator it = cards.iterator();
+            while(it.hasNext())
+            {
+                Card card = (Card)it.next();
+                if(card.getWord().toLowerCase().contains(phrase.toLowerCase()))
+                    drawCardButton(card);
+            }
+        }
+        catch (EmptyDataBaseException em)
+        {
+            warning = new TextView(SubjectActivity.this);
+            warning.setText("Can't find such a card");
+            warning.setTag("card_warning_tag");
+            subjectLayout.addView(warning);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void addIfNotChildren(View view)
     {
         if(!(view.getParent() == subjectLayout))
@@ -540,12 +742,12 @@ public class SubjectActivity extends AppCompatActivity
         {
             case CARDS:
             {
-                showPopupNoteAdding(view);
+                showPopupCardAdding(view);
                 break;
             }
             case QUIZ:
             {
-
+                showPopupQuizAdding(view);
                 break;
             }
             case NOTES:
@@ -605,7 +807,7 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    private void showPopupNoteAdding(View view)
+    private void showPopupCardAdding(View view)
     {
         myDialog.setContentView(R.layout.popup_add_card);
         Button addButton = myDialog.findViewById(R.id.addCardButton);
@@ -615,6 +817,28 @@ public class SubjectActivity extends AppCompatActivity
                 TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
                 TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
                 cardAddingOnClick(wordGetter, answerGetter);
+                myDialog.dismiss();
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    private void showPopupQuizAdding(View view)
+    {
+        myDialog.setContentView(R.layout.popup_add_quiz);
+        Button addButton = myDialog.findViewById(R.id.addQuizButton);
+        final TextInputEditText question = myDialog.findViewById(R.id.questionGetter);
+        final TextInputEditText goodAnswer = myDialog.findViewById(R.id.goodAnswerGetter);
+        final TextInputEditText badAnswer1 = myDialog.findViewById(R.id.badAnswer1Getter);
+        final TextInputEditText badAnswer2 = myDialog.findViewById(R.id.badAnswer2Getter);
+        final TextInputEditText badAnswer3 = myDialog.findViewById(R.id.badAnswer3Getter);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quizAddingOnClick(question.getText().toString(), goodAnswer.getText().toString(), badAnswer1.getText().toString(), badAnswer2.getText().toString(), badAnswer3.getText().toString());
                 myDialog.dismiss();
             }
         });
@@ -777,6 +1001,23 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
+    private void quizAddingOnClick(String question, String goodAnswer, String badAnswer1, String badAnswer2, String badAnswer3)
+    {
+        Quiz quiz;
+        try
+        {
+            addQuizData(question, goodAnswer, badAnswer1, badAnswer2, badAnswer3, "");
+            quiz = dataBaseHelper.getLatelyAddedQuiz();
+            Log.d("quizAdding", "dodano do bazy");
+            drawQuizButton(quiz);
+            Log.d("quizAdding", "powinnoo dodac przycisk quizu");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void addNoteData(String title, String content, String filePath)
     {
         try
@@ -800,6 +1041,23 @@ public class SubjectActivity extends AppCompatActivity
             boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
             if(insertData)
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
+            else
+                toastMessage("Cos sie wysralo");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void addQuizData(String question, String goodAnswer, String badAnswer1, String badAnswer2, String badAnswer3, String attachedNotes)
+    {
+        String badAnswers = badAnswer1 + "\n" + badAnswer2 + "\n" + badAnswer3;
+        try
+        {
+            boolean insertData = dataBaseHelper.addQuizData(question, goodAnswer, badAnswers, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
+            if(insertData)
+                toastMessage("Dodano poprawnie - " + question);
             else
                 toastMessage("Cos sie wysralo");
         }
@@ -884,5 +1142,4 @@ public class SubjectActivity extends AppCompatActivity
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(s, options);
     }
-
 }

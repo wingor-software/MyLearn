@@ -22,6 +22,7 @@
     <string name="subject_warning">Looks like you don\'t have any subjects</string>
     <string name="note_warning">Looks like you don\'t have any notes</string>
     <string name="card_warning">Looks like you don\'t have any cards</string>
+    <string name="quiz_warning">Looks like you don\'t have any quizzes</string>
 
     <string name="title_activity_subject">SubjectActivity</string>
     <string name="title_activity_note">NoteActivity</string>

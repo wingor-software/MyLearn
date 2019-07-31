@@ -18,7 +18,8 @@ import java.util.List;
 public class DataBaseHelper extends SQLiteOpenHelper
 {
 
-    private static final String DATABASENAME = "MyLearn_DB";
+    private static final String DATABASE_NAME = "MyLearn_DB";
+    private static final int DATABASE_VERSION = 2;
 
     //PRZEDMIOTY---------------------------------------------------
     private static final String SUBJECT_TABLE_NAME = "subjects";
@@ -56,7 +57,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
 
     public DataBaseHelper(Context context) {
-        super(context, DATABASENAME, null, 1);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     /**
@@ -93,6 +94,9 @@ public class DataBaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SUBJECT_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CARD_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QUIZ_TABLE_NAME);
+
+        onCreate(sqLiteDatabase);
     }
 
     //SUBJECT METHODS------------------------------------
@@ -547,7 +551,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         contentValues.put(QUIZ_COL6, attachedNotes);
         contentValues.put(QUIZ_COL7, color);
         Log.d("DataBase", "addData : Adding " + question + ", " + subjectID + ", " + " to " + QUIZ_TABLE_NAME);
-        long result = db.insert(NOTE_TABLE_NAME, null, contentValues);
+        long result = db.insert(QUIZ_TABLE_NAME, null, contentValues);
         return (result != -1);
     }
 
@@ -616,7 +620,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(query);
     }
 
-    public Quiz getLatelyAddedqUIZ() throws EmptyDataBaseException
+    public Quiz getLatelyAddedQuiz() throws EmptyDataBaseException
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + QUIZ_TABLE_NAME + " ORDER BY " + QUIZ_COL1 + " DESC LIMIT 1";
