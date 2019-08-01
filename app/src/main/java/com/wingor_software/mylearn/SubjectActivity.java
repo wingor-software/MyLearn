@@ -13,17 +13,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -538,6 +537,7 @@ public class SubjectActivity extends AppCompatActivity
                         break;
                     }
                     case QUIZ: {
+                        quizDeletingOnClick(viewButton);
                         break;
                     }
                     case NOTES: {
@@ -574,6 +574,19 @@ public class SubjectActivity extends AppCompatActivity
 
         myDialog.dismiss();
     }
+
+    private void quizDeletingOnClick(View viewButton)
+    {
+        String s = viewButton.getTag().toString();
+        String r_s = s.substring(5);
+        dataBaseHelper.dropQuizByID(Integer.parseInt(r_s));
+        toastMessage("Poprawnie usunieto quiz" + r_s);
+
+        ((ViewManager) viewButton.getParent()).removeView(viewButton);
+
+        myDialog.dismiss();
+    }
+
 
     private void toastMessage(String message)
     {
@@ -747,7 +760,7 @@ public class SubjectActivity extends AppCompatActivity
             }
             case QUIZ:
             {
-                showPopupQuizAdding(view);
+                showPopupQuizAdding_1(view);
                 break;
             }
             case NOTES:
@@ -825,21 +838,70 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    private void showPopupQuizAdding(View view)
+    private void showPopupQuizAdding_1(View view)
     {
-        myDialog.setContentView(R.layout.popup_add_quiz);
-        Button addButton = myDialog.findViewById(R.id.addQuizButton);
+        final View view1 = view;
+        myDialog.setContentView(R.layout.popup_add_quiz_1);
+        Button nextButton = myDialog.findViewById(R.id.nextQuizButton);
+
         final TextInputEditText question = myDialog.findViewById(R.id.questionGetter);
-        final TextInputEditText goodAnswer = myDialog.findViewById(R.id.goodAnswerGetter);
-        final TextInputEditText badAnswer1 = myDialog.findViewById(R.id.badAnswer1Getter);
-        final TextInputEditText badAnswer2 = myDialog.findViewById(R.id.badAnswer2Getter);
-        final TextInputEditText badAnswer3 = myDialog.findViewById(R.id.badAnswer3Getter);
+
+
+        final Spinner spinner1= myDialog.findViewById(R.id.spinner1);
+        final Spinner spinner2= myDialog.findViewById(R.id.spinner2);
+
+
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupQuizAdding_2(view1,Integer.parseInt(spinner1.getSelectedItem().toString()),Integer.parseInt(spinner2.getSelectedItem().toString()),question.getText().toString());
+            }
+        });
+
+
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();}
+
+    private void showPopupQuizAdding_2(View view, int good_answers, int bad_answers, final String name_of_quiz)
+    {
+        myDialog.setContentView(R.layout.popup_add_quiz_2);
+        Button addButton = myDialog.findViewById(R.id.addQuizButton);
+
+        LinearLayout answers_layout = myDialog.findViewById(R.id.answers_layout);
+
+        final StringBuilder good_answers_strings = new StringBuilder();
+        final StringBuilder bad_answers_strings = new StringBuilder();
+
+        for(int i=0;i<good_answers;i++)
+        {
+            TextInputEditText t = new TextInputEditText(SubjectActivity.this);
+            t.setHint("Correct answer #" + (i+1));
+            t.setId(i+1);
+            answers_layout.addView(t);
+
+            good_answers_strings.append(t.getText());
+        }
+        for(int i=good_answers;i<bad_answers+good_answers;i++)
+        {
+            TextInputEditText t = new TextInputEditText(SubjectActivity.this);
+            t.setHint("Incorrect answer #" + (i+1-good_answers));
+            t.setId(i+1-good_answers);
+            answers_layout.addView(t);
+
+            bad_answers_strings.append(t.getText());
+
+        }
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                quizAddingOnClick(question.getText().toString(), goodAnswer.getText().toString(), badAnswer1.getText().toString(), badAnswer2.getText().toString(), badAnswer3.getText().toString());
-                myDialog.dismiss();
+                Log.d("test",name_of_quiz);
+                Log.d("test",good_answers_strings.toString());
+                Log.d("test",bad_answers_strings.toString());
+                //quizAddingOnClick(name_of_quiz, goodAnswer.getText().toString(), badAnswer1.getText().toString(), badAnswer2.getText().toString(), badAnswer3.getText().toString());
+                //myDialog.dismiss();
             }
         });
 

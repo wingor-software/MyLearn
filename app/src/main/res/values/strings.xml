@@ -120,4 +120,13 @@
     <string name="rotate_button">Rotate</string>
 
     <string name="title_activity_photo">PhotoActivity</string>
+
+    <string name="default_number_of_answers">1</string>
+
+    <string-array name="answers_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
 </resources>
