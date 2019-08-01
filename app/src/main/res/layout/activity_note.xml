@@ -33,7 +33,9 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_note" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_note" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_note"
@@ -43,5 +45,42 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@android:drawable/ic_dialog_email" />
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_bar_height"
+        app:fab_addButtonColorNormal="@color/colorPrimary"
+        app:fab_addButtonColorPressed="@color/colorPrimaryDark"
+        app:fab_addButtonPlusIconColor="@color/white"
+        app:fab_expandDirection="up"
+        android:layout_gravity="end|bottom"
+        app:fab_labelStyle="@style/customFab">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="fab_action1" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="fab_action2" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="fab_action3" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
