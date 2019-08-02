@@ -59,7 +59,7 @@ public class SubjectActivity extends AppCompatActivity
 
     EnumColors chosen_color = EnumColors.valueOf(5);
 
-    private enum BarAction {CARDS, QUIZ, NOTES}
+    private enum BarAction {CARDS, QUIZ, NOTES, EXAMS}
 
     private SharedPreferences sharedPref;
     private BarAction whichAction;
@@ -72,6 +72,7 @@ public class SubjectActivity extends AppCompatActivity
     private ArrayList<Uri> uriList;
     private Intent gallery;
 
+    private BottomNavigationView navView;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -88,6 +89,9 @@ public class SubjectActivity extends AppCompatActivity
                     return true;
                 case R.id.action_notes:
                     actionNotes(editor);
+                    return true;
+                case R.id.action_exams:
+                    actionExams(editor);
                     return true;
             }
             return false;
@@ -122,6 +126,14 @@ public class SubjectActivity extends AppCompatActivity
         drawAllNoteButtons();
     }
 
+    private void actionExams(SharedPreferences.Editor editor)
+    {
+        whichAction = BarAction.EXAMS;
+        editor.putInt(getString(R.string.preference), 4);
+        editor.apply();
+        clearContent();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +155,7 @@ public class SubjectActivity extends AppCompatActivity
 
         dataBaseHelper = new DataBaseHelper(this);
 
-        BottomNavigationView navView = findViewById(R.id.nav_bottom_view);
+        navView = findViewById(R.id.nav_bottom_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         uriList = new ArrayList<>();
@@ -166,17 +178,26 @@ public class SubjectActivity extends AppCompatActivity
         {
             case 1:
             {
+                navView.setSelectedItemId(R.id.action_cards);
                 actionCards(editor);
                 break;
             }
             case 2:
             {
+                navView.setSelectedItemId(R.id.action_quiz);
                 actionQuiz(editor);
                 break;
             }
             case 3:
             {
+                navView.setSelectedItemId(R.id.action_notes);
                 actionNotes(editor);
+                break;
+            }
+            case 4:
+            {
+                navView.setSelectedItemId(R.id.action_exams);
+                actionQuiz(editor);
                 break;
             }
         }
@@ -753,6 +774,10 @@ public class SubjectActivity extends AppCompatActivity
             case NOTES:
             {
                 showPopupSubject(view);
+                break;
+            }
+            case EXAMS:
+            {
                 break;
             }
         }

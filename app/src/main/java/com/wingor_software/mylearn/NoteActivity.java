@@ -1,8 +1,10 @@
 package com.wingor_software.mylearn;
 
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  * Klasa odpowiadająca za interakcje z notatkami
@@ -41,6 +44,9 @@ public class NoteActivity extends AppCompatActivity{
     DataBaseHelper dataBaseHelper;
     private static String currentPath;
     private static final int REQUEST_CODE_READING_FILE = 50;
+    private static final int REQUEST_CODE_GALLERY_PICK = 100;
+
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,33 +59,11 @@ public class NoteActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_note);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isTextBeingEdited) {
-                    viewSwitcher.showNext();
-                    isTextBeingEdited = false;
-                    String newText = editNote.getText().toString();
-                    noteContent.setText(newText);
-                    Note newNote = SubjectActivity.getCurrentNote();
-                    newNote.setContent(newText);
-                    SubjectActivity.setCurrentNote(newNote);
-                    SubjectActivity.updateNoteContent(SubjectActivity.getCurrentNote().getID(), editNote.getText().toString());
-                } else {
-                    /*Snackbar.make(view, "W trybie edycji przycisk zapisuje zmiany", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();*/
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("text/*");
-                    startActivityForResult(intent, REQUEST_CODE_READING_FILE);
-                }
-            }
-        });
-
         viewSwitcher = (ViewSwitcher) findViewById(R.id.noteViewSwitcher);
         noteContent = (TextView) findViewById(R.id.noteContent);
         editNote = (EditText) findViewById(R.id.editNote);
+
+        initFabButtons();
 
         noteContent.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -103,7 +87,7 @@ public class NoteActivity extends AppCompatActivity{
         this.setTitle(SubjectActivity.getCurrentNote().getTitle());
         //zdjecia
 
-        LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
+        final LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
 
         Intent intent = getIntent();
 
@@ -141,6 +125,13 @@ public class NoteActivity extends AppCompatActivity{
 
         //tresc notatki
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        int defaultValue = 18;
+        int textSize = sharedPref.getInt(getString(R.string.preference_text_size), defaultValue);
+        noteContent.setTextSize(textSize);
+        editNote.setTextSize(textSize);
+
         CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout);
         int color_of_subject = SubjectActivity.getCurrentNote().getColor();
         switch (color_of_subject)
@@ -184,7 +175,7 @@ public class NoteActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE)
+        if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE)     //dla wczytywania  notatek z plikow txt
         {
             StringBuilder textfromFile = new StringBuilder();
             if(data != null)
@@ -210,6 +201,41 @@ public class NoteActivity extends AppCompatActivity{
                 }
             }
         }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_GALLERY_PICK) {
+            ArrayList<Uri> uriList = new ArrayList<>();
+            StringBuilder path_to_save = new StringBuilder();
+            ClipData cd = data.getClipData();
+            if(cd == null) {
+                Uri uri = data.getData();
+                uriList.add(uri);
+            }
+            else{
+                for (int i = 0; i < cd.getItemCount(); i++) {
+                    ClipData.Item item = cd.getItemAt(i);
+                    Uri uri = item.getUri();
+                    uriList.add(uri);
+                }
+            }
+
+            for (int i = 0; i < uriList.size(); i++) {
+                try {
+                    if (!path_to_save.toString().equals("")) {
+                        path_to_save.append("\n");
+                    }
+                    path_to_save.append(getRealPathFromURI(NoteActivity.this, uriList.get(i)));
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            Note currentNote = SubjectActivity.getCurrentNote();
+            String path = currentNote.getFilePath();
+            if(path.equals("")) path = path_to_save.toString();
+            else path += "\n" + path_to_save.toString();
+            currentNote.setFilePath(path);
+            dataBaseHelper.updateNotePhotosByID(currentNote.getID(), currentNote.getFilePath());
+            SubjectActivity.setCurrentNote(currentNote);
+        }       //dla dodawania zdjec
     }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {
@@ -232,13 +258,6 @@ public class NoteActivity extends AppCompatActivity{
     private void toastMessage(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    private void addPhoto(String photoPath)
-    {
-        Note note = SubjectActivity.getCurrentNote();
-        note.addPhoto(photoPath);
-        dataBaseHelper.updateNotePhotosByID(note.getID(), note.getFilePath());
     }
 
     private void deletePhoto(String photoPath)
@@ -288,5 +307,88 @@ public class NoteActivity extends AppCompatActivity{
     public static String getCurrentPath()
     {
         return currentPath;
+    }
+
+    private void initFabButtons()
+    {
+        FloatingActionButton fab_edit = (FloatingActionButton) findViewById(R.id.fab_edit);
+        fab_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isTextBeingEdited) {
+                    viewSwitcher.showPrevious();
+                    isTextBeingEdited = false;
+                    String newText = editNote.getText().toString();
+                    noteContent.setText(newText);
+                    Note newNote = SubjectActivity.getCurrentNote();
+                    newNote.setContent(newText);
+                    SubjectActivity.setCurrentNote(newNote);
+                    SubjectActivity.updateNoteContent(SubjectActivity.getCurrentNote().getID(), editNote.getText().toString());
+                } else {
+                    viewSwitcher.showNext();
+                    isTextBeingEdited = true;
+                    editNote.setText(noteContent.getText().toString());
+                }
+            }
+        });
+
+        com.getbase.floatingactionbutton.FloatingActionButton fabAddPhoto = findViewById(R.id.fab_add_photo);
+        fabAddPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gallery = new Intent();
+                gallery.setType("image/*");
+                gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+                gallery.setAction(Intent.ACTION_PICK);
+                startActivityForResult(Intent.createChooser(gallery, "Select Picture"),REQUEST_CODE_GALLERY_PICK);
+            }
+        });
+
+        com.getbase.floatingactionbutton.FloatingActionButton fabAddFromFile = findViewById(R.id.fab_add_from_file);
+        fabAddFromFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/*");
+                startActivityForResult(intent, REQUEST_CODE_READING_FILE);
+            }
+        });
+
+        com.getbase.floatingactionbutton.FloatingActionButton fabZoomIn = findViewById(R.id.fab_zoom_in);
+        fabZoomIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                int defaultValue = 18;
+                int textSize = sharedPref.getInt(getString(R.string.preference_text_size), defaultValue);
+                if (textSize <= 42)
+                {
+                    noteContent.setTextSize(++textSize);
+                    editNote.setTextSize(textSize);
+                    editor.putInt(getString(R.string.preference_text_size), textSize);
+                    editor.apply();
+                }
+            }
+        });
+
+        com.getbase.floatingactionbutton.FloatingActionButton fabZoomOut = findViewById(R.id.fab_zoom_out);
+        fabZoomOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                int defaultValue = 18;
+                int textSize = sharedPref.getInt(getString(R.string.preference_text_size), defaultValue);
+                if(textSize >= 12)
+                {
+                    noteContent.setTextSize(--textSize);
+                    editNote.setTextSize(textSize);
+                    editor.putInt(getString(R.string.preference_text_size), textSize);
+                    editor.apply();
+                }
+            }
+        });
     }
 }
