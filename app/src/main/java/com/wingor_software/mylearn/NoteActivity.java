@@ -112,12 +112,27 @@ public class NoteActivity extends AppCompatActivity{
             imageView.setAdjustViewBounds(true);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setImageBitmap(decodeSampledBitmapFromResource(s, 150, 150));
+            imageView.setTag(s);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     currentPath = finals;
                     Intent intent = new Intent(NoteActivity.this, PhotoActivity.class);
                     startActivity(intent);
+                }
+            });
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    fotosLayout.removeView(view);
+                    Note currentNote = SubjectActivity.getCurrentNote();
+                    String path = currentNote.getFilePath();
+                    path = path.replace("\n" + view.getTag().toString(), "");
+                    path = path.replace(view.getTag().toString() + "\n", "");
+                    dataBaseHelper.updateNotePhotosByID(currentNote.getID(), path);
+                    currentNote.setFilePath(path);
+                    SubjectActivity.setCurrentNote(currentNote);
+                    return true;
                 }
             });
             fotosLayout.addView(imageView);
