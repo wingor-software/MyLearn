@@ -33,15 +33,78 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_note" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_note" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_note"
+        android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/baseline_edit_white_48dp" />
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_bar_height"
+        app:fab_addButtonColorNormal="@color/colorPrimary"
+        app:fab_addButtonColorPressed="@color/colorPrimaryDark"
+        app:fab_addButtonPlusIconColor="@color/white"
+        app:fab_expandDirection="up"
+        android:layout_gravity="end|bottom"
+        app:fab_labelStyle="@style/customFab">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_add_photo_alternate_white_18"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="Add photos"
+            app:maxImageSize="24dp" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_from_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_note_add_white_48dp"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="Add note from file"
+            app:maxImageSize="24dp" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_zoom_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_add_white_48dp"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="Zoom in"
+            app:maxImageSize="24dp" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_zoom_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_remove_white_48dp"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="Zoom out"
+            app:maxImageSize="18dp" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

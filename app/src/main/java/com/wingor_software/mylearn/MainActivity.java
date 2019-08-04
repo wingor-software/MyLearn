@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity
                 int subjectID = Integer.parseInt(r_s);
                 dataBaseHelper.dropNotesBySubjectID(subjectID);
                 dataBaseHelper.dropCardsBySubjectID(subjectID);
+                dataBaseHelper.dropQuizBySubjectID(subjectID);
                 dataBaseHelper.dropSubject(subjectID);
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
@@ -443,11 +444,6 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 100);
         }
-
-
-
     }
-
-
 }
 

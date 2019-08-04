@@ -3,12 +3,15 @@
 
     <item android:title = "@string/cards"
         android:id = "@+id/action_cards"
-        android:icon = "@drawable/ic_menu_camera" />
+        android:icon = "@drawable/baseline_call_to_action_white_48" />
     <item android:title = "@string/quiz"
         android:id = "@+id/action_quiz"
-        android:icon = "@drawable/ic_menu_send"/>
+        android:icon = "@drawable/baseline_speaker_notes_white_48"/>
     <item android:title = "@string/notes"
         android:id = "@+id/action_notes"
-        android:icon = "@drawable/ic_menu_slideshow"/>
+        android:icon = "@drawable/baseline_note_white_48"/>
+    <item android:title="Exams"
+        android:id="@+id/action_exams"
+        android:icon="@drawable/baseline_school_white_48"/>
 
 </menu>
