@@ -889,12 +889,12 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();}
 
-    private void showPopupQuizAdding_2(View view, int good_answers, int bad_answers, final String name_of_quiz)
+    private void showPopupQuizAdding_2(View view, final int good_answers, final int bad_answers, final String name_of_quiz)
     {
         myDialog.setContentView(R.layout.popup_add_quiz_2);
         Button addButton = myDialog.findViewById(R.id.addQuizButton);
 
-        LinearLayout answers_layout = myDialog.findViewById(R.id.answers_layout);
+        final LinearLayout answers_layout = myDialog.findViewById(R.id.answers_layout);
 
         final StringBuilder good_answers_strings = new StringBuilder();
         final StringBuilder bad_answers_strings = new StringBuilder();
@@ -904,29 +904,46 @@ public class SubjectActivity extends AppCompatActivity
             TextInputEditText t = new TextInputEditText(SubjectActivity.this);
             t.setHint("Correct answer #" + (i+1));
             t.setId(i+1);
+            t.setTag("good answer");
             answers_layout.addView(t);
-
-            good_answers_strings.append(t.getText());
         }
         for(int i=good_answers;i<bad_answers+good_answers;i++)
         {
             TextInputEditText t = new TextInputEditText(SubjectActivity.this);
             t.setHint("Incorrect answer #" + (i+1-good_answers));
-            t.setId(i+1-good_answers);
+            t.setId(i+1);
+            t.setTag("bad answer");
             answers_layout.addView(t);
-
-            bad_answers_strings.append(t.getText());
-
         }
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                for (int i=1;i<good_answers+bad_answers+1;i++)
+                {
+                    TextInputEditText t = myDialog.findViewById(i);
+                    Log.d("test",t.getId()+"");
+                    if(t.getTag().equals("good answer"))
+                    {
+                        good_answers_strings.append(t.getText());
+                        good_answers_strings.append("\n");
+                    }
+                    else if(t.getTag().equals("bad answer"))
+                    {
+                        bad_answers_strings.append(t.getText());
+                        bad_answers_strings.append("\n");
+                    }
+                }
+
                 Log.d("test",name_of_quiz);
                 Log.d("test",good_answers_strings.toString());
                 Log.d("test",bad_answers_strings.toString());
-                //quizAddingOnClick(name_of_quiz, goodAnswer.getText().toString(), badAnswer1.getText().toString(), badAnswer2.getText().toString(), badAnswer3.getText().toString());
-                //myDialog.dismiss();
+
+
+
+                quizAddingOnClick(name_of_quiz, good_answers_strings.toString(),bad_answers_strings.toString());
+                myDialog.dismiss();
             }
         });
 
@@ -1088,12 +1105,12 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    private void quizAddingOnClick(String question, String goodAnswer, String badAnswer1, String badAnswer2, String badAnswer3)
+    private void quizAddingOnClick(String question, String goodAnswer,String badAnswer)
     {
         Quiz quiz;
         try
         {
-            addQuizData(question, goodAnswer, badAnswer1, badAnswer2, badAnswer3, "");
+            addQuizData(question, goodAnswer, badAnswer, "");
             quiz = dataBaseHelper.getLatelyAddedQuiz();
             Log.d("quizAdding", "dodano do bazy");
             drawQuizButton(quiz);
@@ -1137,9 +1154,8 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void addQuizData(String question, String goodAnswer, String badAnswer1, String badAnswer2, String badAnswer3, String attachedNotes)
+    public void addQuizData(String question, String goodAnswer, String badAnswers, String attachedNotes)
     {
-        String badAnswers = badAnswer1 + "\n" + badAnswer2 + "\n" + badAnswer3;
         try
         {
             boolean insertData = dataBaseHelper.addQuizData(question, goodAnswer, badAnswers, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
