@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="300dp"
+    android:layout_gravity="center"
+    android:background="@drawable/popup_window_drawable">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <LinearLayout
+            android:id="@+id/answers_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <Button
+            android:id="@+id/button_red"
+            style="@android:style/Widget.Holo.Button.Borderless.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_red_dark"
+            android:onClick="choseColor"
+            android:shadowColor="#00000000"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
+
+        <Button
+            android:id="@+id/button_yellow"
+            style="@android:style/Widget.Holo.Button.Borderless.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_orange_light"
+            android:onClick="choseColor"
+            android:shadowColor="#00000000"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
+
+        <Button
+            android:id="@+id/button_green"
+            style="@android:style/Widget.Holo.Button.Borderless.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_green_light"
+            android:onClick="choseColor"
+            android:shadowColor="#00000000"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
+
+        <Button
+            android:id="@+id/button_blue"
+            style="@android:style/Widget.Holo.Button.Borderless.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_blue_dark"
+            android:onClick="choseColor"
+            android:shadowColor="#00000000"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
+
+        <Button
+            android:id="@+id/button_purple"
+            style="@android:style/Widget.Holo.Button.Borderless.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_purple"
+            android:onClick="choseColor"
+            android:shadowColor="#00000000"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/addQuizButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_drawable"
+        android:gravity="center"
+        android:padding="10dp"
+
+        android:text="add" />
+
+</LinearLayout>
