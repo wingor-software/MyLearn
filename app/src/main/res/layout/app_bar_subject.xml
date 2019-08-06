@@ -32,6 +32,6 @@
         android:layout_marginRight="70dp"
         android:onClick="addingContent"
         app:rippleColor="#00B11E1E"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/baseline_add_white_48dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

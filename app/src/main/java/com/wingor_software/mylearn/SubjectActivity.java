@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -958,9 +959,58 @@ public class SubjectActivity extends AppCompatActivity
     private void showOpenCardPopup()
     {
         myDialog.setContentView(R.layout.popup_open_card);
+
         Button check = myDialog.findViewById(R.id.checkCardButton);
+
         final TextView word = myDialog.findViewById(R.id.wordText);
         final TextInputEditText answer = myDialog.findViewById(R.id.openCardAnswerGetter);
+
+        final ImageButton leftArrow = myDialog.findViewById(R.id.leftArrow);
+        final ImageButton rightArrow = myDialog.findViewById(R.id.rightArrow);
+
+
+
+
+        try
+        {
+            int id_of_current_card=currentCard.getID();
+            int index_in_array_of_current_card=0;
+
+            Log.d("test","ID kartki z bazy danych wynosi: " + id_of_current_card);
+
+            List <Card> list = dataBaseHelper.getCardList(currentCard.getSubjectID());
+
+
+
+            for(int i=0;i<list.size();i++)
+            {
+                if(list.get(i).getID()==id_of_current_card)
+                {
+                    index_in_array_of_current_card=i;
+                    Log.d("test","znaleziono index w liscie: " + index_in_array_of_current_card );
+                    break;
+
+                }
+            }
+            if(index_in_array_of_current_card==0)
+            {
+                leftArrow.setAlpha(0.2f);
+                leftArrow.setClickable(false);
+            }
+            else if(index_in_array_of_current_card==list.size()-1)
+            {
+                rightArrow.setAlpha(0.2f);
+                rightArrow.setClickable(false);
+            }
+
+        }
+        catch (Exception e)
+        {
+
+        }
+
+
+
         word.setText(currentCard.getWord());
 
         check.setOnClickListener(new View.OnClickListener() {
@@ -971,6 +1021,103 @@ public class SubjectActivity extends AppCompatActivity
                     showResultCardPopup(true);
                 else
                     showResultCardPopup(false);
+            }
+        });
+        leftArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("test","lewa strzalka");
+                rightArrow.setAlpha(1f);
+                rightArrow.setClickable(true);
+                try
+                {
+                    int id_of_current_card=currentCard.getID();
+                    int index_in_array_of_current_card=0;
+
+                    Log.d("test","ID kartki z bazy danych wynosi: " + id_of_current_card);
+
+                    List <Card> list = dataBaseHelper.getCardList(currentCard.getSubjectID());
+
+
+
+                    for(int i=0;i<list.size();i++)
+                    {
+                        if(list.get(i).getID()==id_of_current_card)
+                        {
+                            index_in_array_of_current_card=i;
+                            Log.d("test","znaleziono index w liscie: " + index_in_array_of_current_card );
+                            break;
+
+                        }
+                    }
+                    if(index_in_array_of_current_card>0)
+                    {
+
+                        currentCard = list.get(index_in_array_of_current_card-1);
+                        if(index_in_array_of_current_card-1==0)
+                        {
+                            leftArrow.setAlpha(0.2f);
+                            leftArrow.setClickable(false);
+                        }
+                        Log.d("test","id nowej kartki: " + currentCard.getID());
+                        word.setText(currentCard.getWord());
+
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+
+            }
+        });
+        rightArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("test","prawa strzalka");
+
+                try
+                {
+                    leftArrow.setAlpha(1f);
+                    leftArrow.setClickable(true);
+                    int id_of_current_card=currentCard.getID();
+                    int index_in_array_of_current_card=0;
+
+                    Log.d("test","ID kartki z bazy danych wynosi: " + id_of_current_card);
+
+                    List <Card> list = dataBaseHelper.getCardList(currentCard.getSubjectID());
+
+
+
+                    for(int i=0;i<list.size();i++)
+                    {
+                        if(list.get(i).getID()==id_of_current_card)
+                        {
+                            index_in_array_of_current_card=i;
+                            Log.d("test","znaleziono index w liscie: " + index_in_array_of_current_card );
+                            break;
+
+                        }
+                    }
+                    if(index_in_array_of_current_card<list.size()-1)
+                    {
+                        currentCard = list.get(index_in_array_of_current_card+1);
+                        if(index_in_array_of_current_card+1==list.size()-1)
+                        {
+                            rightArrow.setAlpha(0.2f);
+                            rightArrow.setClickable(false);
+                        }
+                        Log.d("test","id nowej kartki: " + currentCard.getID());
+                        word.setText(currentCard.getWord());
+
+                    }
+
+                }
+                catch (Exception e)
+                {
+
+                }
+
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
