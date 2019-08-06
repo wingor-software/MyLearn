@@ -129,6 +129,7 @@ public class NoteActivity extends AppCompatActivity{
                     String path = currentNote.getFilePath();
                     path = path.replace("\n" + view.getTag().toString(), "");
                     path = path.replace(view.getTag().toString() + "\n", "");
+                    path = path.replace(view.getTag().toString(), "");
                     dataBaseHelper.updateNotePhotosByID(currentNote.getID(), path);
                     currentNote.setFilePath(path);
                     SubjectActivity.setCurrentNote(currentNote);
@@ -216,7 +217,7 @@ public class NoteActivity extends AppCompatActivity{
                 }
             }
         }
-        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_GALLERY_PICK) {
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_GALLERY_PICK) {      //dla dodawania zdjec
             ArrayList<Uri> uriList = new ArrayList<>();
             StringBuilder path_to_save = new StringBuilder();
             ClipData cd = data.getClipData();
@@ -232,25 +233,30 @@ public class NoteActivity extends AppCompatActivity{
                 }
             }
 
+            Note currentNote = SubjectActivity.getCurrentNote();
+            String path = currentNote.getFilePath();
             for (int i = 0; i < uriList.size(); i++) {
-                try {
-                    if (!path_to_save.toString().equals("")) {
-                        path_to_save.append("\n");
+                try
+                {
+                    String currentPhotoPath = getRealPathFromURI(NoteActivity.this, uriList.get(i));
+                    if(!path.contains(currentPhotoPath))
+                    {
+                        if (!path_to_save.toString().equals("")) {
+                            path_to_save.append("\n");
+                        }
+                        path_to_save.append(getRealPathFromURI(NoteActivity.this, uriList.get(i)));
                     }
-                    path_to_save.append(getRealPathFromURI(NoteActivity.this, uriList.get(i)));
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            Note currentNote = SubjectActivity.getCurrentNote();
-            String path = currentNote.getFilePath();
             if(path.equals("")) path = path_to_save.toString();
             else path += "\n" + path_to_save.toString();
             currentNote.setFilePath(path);
             dataBaseHelper.updateNotePhotosByID(currentNote.getID(), currentNote.getFilePath());
             SubjectActivity.setCurrentNote(currentNote);
-        }       //dla dodawania zdjec
+        }
     }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {
