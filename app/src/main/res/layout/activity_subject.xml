@@ -22,7 +22,8 @@
             app:menu="@menu/nav_manu_subject"
             app:itemBackground="@color/colorPrimary"
             app:itemIconTint="@android:color/white"
-            app:itemTextColor="@android:color/white">
+            app:itemTextColor="@android:color/white"
+            app:labelVisibilityMode="labeled">
         </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     </RelativeLayout>

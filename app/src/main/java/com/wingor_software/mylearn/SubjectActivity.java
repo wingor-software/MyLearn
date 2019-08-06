@@ -18,10 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -439,7 +441,7 @@ public class SubjectActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 currentQuiz = quiz;
-                Toast.makeText(SubjectActivity.this, "Wyswietlanie quizu", Toast.LENGTH_LONG).show();
+                showOpenQuizPopup();
             }
         });
 
@@ -926,13 +928,15 @@ public class SubjectActivity extends AppCompatActivity
                     Log.d("test",t.getId()+"");
                     if(t.getTag().equals("good answer"))
                     {
+                        if(!good_answers_strings.toString().equals(""))
+                            good_answers_strings.append("\n");
                         good_answers_strings.append(t.getText());
-                        good_answers_strings.append("\n");
                     }
                     else if(t.getTag().equals("bad answer"))
                     {
+                        if(!bad_answers_strings.toString().equals(""))
+                            bad_answers_strings.append("\n");
                         bad_answers_strings.append(t.getText());
-                        bad_answers_strings.append("\n");
                     }
                 }
 
@@ -969,6 +973,55 @@ public class SubjectActivity extends AppCompatActivity
                     showResultCardPopup(false);
             }
         });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    private void showOpenQuizPopup()
+    {
+        myDialog.setContentView(R.layout.popup_open_quiz);
+        Button check = myDialog.findViewById(R.id.checkQuizButton);
+        final TextView question = myDialog.findViewById(R.id.quizQuiestion);
+        question.setText(currentQuiz.getQuestion());
+        final LinearLayout checkBoxLayout = myDialog.findViewById(R.id.checkbox_quiz_layout);
+
+        HashSet<Answer> answersSet = new HashSet<>();
+        for (int i = 0; i < currentQuiz.getGoodAnswers().size(); i++) {
+            answersSet.add(new Answer(currentQuiz.getGoodAnswers().get(i), true));
+        }
+        for (int i = 0; i < currentQuiz.getBadAnswers().size(); i++) {
+            answersSet.add(new Answer(currentQuiz.getBadAnswers().get(i), false));
+        }
+
+        for(Answer answer : answersSet)
+        {
+            CheckBox checkBox = new CheckBox(SubjectActivity.this);
+            checkBox.setText(answer.getAnswer());
+            if(answer.isCorrect()) checkBox.setTag("correct");
+            else checkBox.setTag("incorrect");
+            checkBoxLayout.addView(checkBox);
+        }
+
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean wasWrong = false;
+                for (int i = 0; i < checkBoxLayout.getChildCount(); i++) {
+                    CheckBox box = (CheckBox) checkBoxLayout.getChildAt(i);
+                    if(!((box.isChecked() && box.getTag().toString().equals("correct")) || (!box.isChecked() && box.getTag().toString().equals("incorrect"))))
+                    {
+                        question.setText("Wrong");
+                        if(box.getTag().toString().equals("correct")) box.setTextColor(Color.GREEN);
+                        else box.setTextColor(Color.RED);
+                        wasWrong = true;
+                    }
+                }
+                if(!wasWrong)
+                    question.setText("Correct");
+//                myDialog.dismiss();
+            }
+        });
+
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
     }

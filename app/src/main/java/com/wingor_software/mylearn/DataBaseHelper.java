@@ -537,6 +537,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         String query = "UPDATE " + NOTE_TABLE_NAME + " SET " + NOTE_COL6 + " = '" + photosPaths + "' WHERE " + NOTE_COL1 + " = " + noteID + ";";
         db.execSQL(query);
     }
+
     //-------------------------------------------------------
     //QUIZ METHODS ------------------------------------------
 
@@ -600,8 +601,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
             String[] x = text.split("\n");
             for (int i = 0; i < x.length; i++) {
                 list.add(x[i]);
-                return list;
             }
+            return list;
         }
         return null;
     }
