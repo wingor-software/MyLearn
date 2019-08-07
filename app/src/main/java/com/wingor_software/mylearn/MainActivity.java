@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity
 
     public void addData(String newEntry, int color)
     {
-        boolean insertData = dataBaseHelper.addSubjectData(newEntry, color);
+        boolean insertData = dataBaseHelper.addSubjectData(newEntry, color, 0, 0);
 
         if(insertData)
            toastMessage("Dodano poprawnie - " + newEntry);

@@ -19,13 +19,15 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "MyLearn_DB";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     //PRZEDMIOTY---------------------------------------------------
     private static final String SUBJECT_TABLE_NAME = "subjects";
     private static final String SUBJECT_COL1 = "ID";
     private static final String SUBJECT_COL2 = "Subject";
     private static final String SUBJECT_COL3 = "Color";
+    private static final String SUBJECT_COL4 = "ExamsTaken";
+    private static final String SUBJECT_COL5 = "ExamsPassed";
 
     //FISZKI----------------------------------------------------------
     private static final String CARD_TABLE_NAME = "cards";
@@ -66,7 +68,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER);";
+        String createTableSubject = "CREATE TABLE " + SUBJECT_TABLE_NAME + " ( " + SUBJECT_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SUBJECT_COL2 + " TEXT, " + SUBJECT_COL3 + " INTEGER, " +
+                SUBJECT_COL4 + " INTEGER, " + SUBJECT_COL5 + " INTEGER);";
 
         String createTableCard = "CREATE TABLE " + CARD_TABLE_NAME + " ( " + CARD_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER, " + CARD_COL5 + " TEXT, " + CARD_COL6 + " INTEGER);";
@@ -107,12 +110,14 @@ public class DataBaseHelper extends SQLiteOpenHelper
      * @param color informuje o kolorze przedmiotu
      * @return zwraca true jeżeli operacja sie powiodłą
      */
-    public boolean addSubjectData(String item, int color)
+    public boolean addSubjectData(String item, int color, int examsTaken, int examsPassed)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(SUBJECT_COL2, item);
         contentValues.put(SUBJECT_COL3, color);
+        contentValues.put(SUBJECT_COL4, examsTaken);
+        contentValues.put(SUBJECT_COL5, examsPassed);
         Log.d("DataBase", "addData : Adding " + item + " to " + SUBJECT_TABLE_NAME);
         long result = db.insert(SUBJECT_TABLE_NAME, null, contentValues);
         return (result != -1);
@@ -143,7 +148,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         List<Subject> subjects = new ArrayList<>();
         while(data.moveToNext())
         {
-            subjects.add(new Subject(data.getInt(0), data.getString(1), data.getInt(2)));
+            subjects.add(new Subject(data.getInt(0), data.getString(1), data.getInt(2), data.getInt(3), data.getInt(4)));
         }
         if (subjects.size() == 0) throw new EmptyDataBaseException();
         return subjects;
@@ -174,7 +179,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor cursor = db.rawQuery(query, null);
         if (cursor == null) throw new EmptyDataBaseException();
         cursor.moveToNext();
-        Subject subject = new Subject(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
+        Subject subject = new Subject(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4));
         cursor.close();
         return subject;
     }
@@ -188,6 +193,13 @@ public class DataBaseHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + SUBJECT_TABLE_NAME+ " WHERE 1=1";
 
+        db.execSQL(query);
+    }
+
+    public void updateExamsCount(int subjectID, int examsTaken, int examsPassed)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + SUBJECT_TABLE_NAME + " SET " + SUBJECT_COL4 + " = '" + examsTaken + "' , " + SUBJECT_COL5 + " = '" + examsPassed + "' " + " WHERE " + SUBJECT_COL1 + " = " + subjectID + ";";
         db.execSQL(query);
     }
 

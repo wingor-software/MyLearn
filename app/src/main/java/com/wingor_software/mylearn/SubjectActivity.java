@@ -23,7 +23,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -99,7 +100,10 @@ public class SubjectActivity extends AppCompatActivity
             return false;
         }
     };
+
     StringBuilder path_to_save = new StringBuilder();
+
+    private ConstraintLayout scoreLayout;
 
     private void actionCards(SharedPreferences.Editor editor)
     {
@@ -134,6 +138,23 @@ public class SubjectActivity extends AppCompatActivity
         editor.putInt(getString(R.string.preference), 4);
         editor.apply();
         clearContent();
+        scoreLayout.setVisibility(View.VISIBLE);
+        ProgressBar progressBar = scoreLayout.findViewById(R.id.scoreBar);
+        TextView scoreText = scoreLayout.findViewById(R.id.scoreText);
+        int examsTaken = 0;
+        int examsPassed = 0;
+        try
+        {
+            examsTaken = MainActivity.getCurrentSubject().getExamsTaken();
+            examsPassed = MainActivity.getCurrentSubject().getExamsPassed();
+            progressBar.setMax(examsTaken);
+            progressBar.setProgress(examsPassed);
+            scoreText.setText(new String(examsPassed + "/" + examsTaken));
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -161,6 +182,8 @@ public class SubjectActivity extends AppCompatActivity
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         uriList = new ArrayList<>();
+
+        scoreLayout = findViewById(R.id.scoreLayout);
     }
 
     @Override
@@ -292,9 +315,11 @@ public class SubjectActivity extends AppCompatActivity
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
-
+            //tutaj dodajemy jeden zaliczone exam
+            addPassedExam();
         } else if (id == R.id.nav_send) {
-
+            //dodaje jeden nie zaliczony exam
+            addNotPassedExam();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -302,8 +327,40 @@ public class SubjectActivity extends AppCompatActivity
         return true;
     }
 
+    private void addPassedExam()
+    {
+        try
+        {
+            Subject currentSubject = MainActivity.getCurrentSubject();
+            currentSubject.setExamsTaken(currentSubject.getExamsTaken() + 1);
+            currentSubject.setExamsPassed(currentSubject.getExamsPassed() + 1);
+            dataBaseHelper.updateExamsCount(currentSubject.getSubjectID(), currentSubject.getExamsTaken(), currentSubject.getExamsPassed());
+            Toast.makeText(SubjectActivity.this, "Dodano zaliczony egzamin", Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void addNotPassedExam()
+    {
+        try
+        {
+            Subject currentSubject = MainActivity.getCurrentSubject();
+            currentSubject.setExamsTaken(currentSubject.getExamsTaken() + 1);
+            dataBaseHelper.updateExamsCount(currentSubject.getSubjectID(), currentSubject.getExamsTaken(), currentSubject.getExamsPassed());
+            Toast.makeText(SubjectActivity.this, "Dodano nie zaliczony egzamin", Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void clearContent() {
         subjectLayout.removeAllViewsInLayout();
+        scoreLayout.setVisibility(View.GONE);
     }
 
     private void drawNoteButton(final Note note) {
