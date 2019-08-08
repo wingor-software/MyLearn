@@ -1,8 +1,9 @@
 package com.wingor_software.mylearn;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Quiz
+public class Quiz implements Serializable
 {
     private int ID;
     private String question;

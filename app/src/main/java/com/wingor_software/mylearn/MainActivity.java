@@ -78,6 +78,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         dataBaseHelper = new DataBaseHelper(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        subjectsLayout.removeAllViewsInLayout();
         drawAllSubjectButtons();
     }
 

@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -42,6 +44,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -74,6 +88,8 @@ public class SubjectActivity extends AppCompatActivity
     private Uri imageUri;
     private ArrayList<Uri> uriList;
     private Intent gallery;
+
+    private final static int REQUEST_IMPORT_SUBJECT = 200;
 
     private BottomNavigationView navView;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -253,11 +269,39 @@ public class SubjectActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_subject_search) {
-            showPopupSearch();
-            return true;
+        switch(id)
+        {
+            case R.id.action_subject_search:
+            {
+                showPopupSearch();
+                return true;
+            }
+            case R.id.action_export_subject:
+            {
+                FileImportExport.exportSubject(this, dataBaseHelper);
+                return true;
+            }
+            case R.id.action_import_subject:
+            {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/*");
+                startActivityForResult(intent, REQUEST_IMPORT_SUBJECT);
+                return true;
+            }
+            case R.id.action_share_subject:
+            {
+                File file = FileImportExport.exportAndShareSubject(this, dataBaseHelper);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.toString()));
+                Log.d("uri", "file//" + file.getPath());
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                startActivity(Intent.createChooser(intent, "Share using"));
+                return true;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -1304,7 +1348,26 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 fotosLayout.addView(imageView);
             }
-
+        }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_IMPORT_SUBJECT)
+        {
+            if(data != null)
+            {
+                try
+                {
+                    InputStream is = getContentResolver().openInputStream(data.getData());
+                    ObjectInputStream ois = new ObjectInputStream(is);
+                    OutputSubject outputSubject = (OutputSubject) ois.readObject();
+                    ois.close();
+                    is.close();
+                    FileImportExport.addImportedSubject(outputSubject, dataBaseHelper);
+                    Toast.makeText(this, "Subject imported correctly: " + outputSubject.getSubjectName(), Toast.LENGTH_LONG).show();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

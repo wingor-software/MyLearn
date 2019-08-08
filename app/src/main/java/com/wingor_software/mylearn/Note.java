@@ -2,11 +2,12 @@ package com.wingor_software.mylearn;
 
 import android.net.Uri;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * Klasa odpowiadająca za informacje o notatce
  */
-public class Note
+public class Note implements Serializable
 {
     private int ID;
     private String title;

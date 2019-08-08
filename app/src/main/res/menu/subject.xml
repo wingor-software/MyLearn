@@ -3,7 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_subject_search"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         android:title="Search"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_export_subject"
+        android:orderInCategory="2"
+        android:title="Export subject"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_import_subject"
+        android:orderInCategory="3"
+        android:title="Import subject"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_share_subject"
+        android:orderInCategory="4"
+        android:title="Share subject"
+        app:showAsAction="never"/>
 </menu>

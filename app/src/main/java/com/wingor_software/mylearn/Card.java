@@ -1,5 +1,6 @@
 package com.wingor_software.mylearn;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,7 +8,7 @@ import java.util.Arrays;
  * Klasa odpowiadająca za informacje o fiszce
  */
 
-public class Card
+public class Card implements Serializable
 {
     private int ID;
     private String word;
