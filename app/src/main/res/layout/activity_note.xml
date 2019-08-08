@@ -78,7 +78,19 @@
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
             app:fab_size="mini"
-            app:fab_title="Add note from file"
+            app:fab_title="Add note from .txt file"
+            app:maxImageSize="24dp" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_reference_to_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            app:fab_icon="@drawable/baseline_file_copy_white_18"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_size="mini"
+            app:fab_title="Add reference to .pdf or .doc file"
             app:maxImageSize="24dp" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton

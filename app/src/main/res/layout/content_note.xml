@@ -24,6 +24,17 @@
                 android:orientation="horizontal"></LinearLayout>
         </HorizontalScrollView>
 
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/note_files_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"/>
+        </HorizontalScrollView>
+
         <ViewSwitcher
             android:id="@+id/noteViewSwitcher"
             android:layout_width="wrap_content"
@@ -44,7 +55,8 @@
                 android:layout_margin="@dimen/text_margin"
                 android:autoLink="web"
                 android:inputType="textAutoCorrect|textMultiLine|text"
-                android:singleLine="false" />
+                android:singleLine="false"
+                android:autofillHints="You can now edit note..."/>
 
         </ViewSwitcher>
 

@@ -11,8 +11,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +30,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -45,6 +48,7 @@ public class NoteActivity extends AppCompatActivity{
     private static String currentPath;
     private static final int REQUEST_CODE_READING_FILE = 50;
     private static final int REQUEST_CODE_GALLERY_PICK = 100;
+    private static final int REQUEST_CODE_REFFERENCE_TO_FILE = 150;
 
     private SharedPreferences sharedPref;
 
@@ -257,6 +261,40 @@ public class NoteActivity extends AppCompatActivity{
             dataBaseHelper.updateNotePhotosByID(currentNote.getID(), currentNote.getFilePath());
             SubjectActivity.setCurrentNote(currentNote);
         }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_REFFERENCE_TO_FILE) // dodawanie odnoscnikow to pliku
+        {
+
+            LinearLayout files_layout = findViewById(R.id.note_files_layout);
+            ClipData cd = data.getClipData();
+            if(cd == null) {
+                Uri uri = data.getData();
+
+                final Button b = new Button(NoteActivity.this);
+                b.setText(getFileName(uri));
+                b.setTag(uri);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Uri uri_from_button = (Uri) b.getTag();
+                        Intent intent = new Intent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        String type = "application/pdf";
+                        intent.setDataAndType(uri_from_button, type);
+                        startActivity(intent);
+                    }
+                });
+
+                files_layout.addView(b);
+            }
+            else{
+                for (int i = 0; i < cd.getItemCount(); i++) {
+                    ClipData.Item item = cd.getItemAt(i);
+                    Uri uri = item.getUri();
+                }
+            }
+
+        }
     }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {
@@ -365,6 +403,32 @@ public class NoteActivity extends AppCompatActivity{
             }
         });
 
+        com.getbase.floatingactionbutton.FloatingActionButton fabAddReferenceToFile = findViewById(R.id.fab_add_reference_to_file);
+        fabAddReferenceToFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String[] extraMimeTypes =
+                        {"application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                                "application/vnd.ms-powerpoint","application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
+                                "application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
+                                "text/plain",
+                                "application/pdf",
+                                "application/zip"};
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimeTypes);
+
+                startActivityForResult(intent,REQUEST_CODE_REFFERENCE_TO_FILE);
+
+
+
+            }
+        });
+
         com.getbase.floatingactionbutton.FloatingActionButton fabAddFromFile = findViewById(R.id.fab_add_from_file);
         fabAddFromFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -412,4 +476,30 @@ public class NoteActivity extends AppCompatActivity{
             }
         });
     }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+
+
+
 }
