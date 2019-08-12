@@ -94,6 +94,7 @@ public class Quiz implements Serializable
     public String goodAnwersToString()
     {
         StringBuilder stringBuilder = new StringBuilder();
+        if(goodAnswers == null) return "";
         for (String answer: goodAnswers)
         {
             if(stringBuilder.length() != 0)
@@ -106,6 +107,7 @@ public class Quiz implements Serializable
     public String badAnwersToString()
     {
         StringBuilder stringBuilder = new StringBuilder();
+        if(badAnswers == null) return "";
         for (String answer: badAnswers)
         {
             if(stringBuilder.length() != 0)
