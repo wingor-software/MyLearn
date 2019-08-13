@@ -46,7 +46,7 @@ public class FileImportExport
             }
             OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), cards, quizzes, notes, getPhotosFromNote(subjectID, dataBaseHelper));
             String fileName = subject.getSubjectName() + ".txt";
-            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File file = new File(dir, fileName);
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream out = new ObjectOutputStream(fos);
@@ -92,7 +92,7 @@ public class FileImportExport
             }
             OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), cards, quizzes, notes, getPhotosFromNote(subjectID, dataBaseHelper));
             String fileName = subject.getSubjectName() + ".txt";
-            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File file = new File(dir, fileName);
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream out = new ObjectOutputStream(fos);
