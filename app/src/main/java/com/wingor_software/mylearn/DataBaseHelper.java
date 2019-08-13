@@ -19,7 +19,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "MyLearn_DB";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     //PRZEDMIOTY---------------------------------------------------
     private static final String SUBJECT_TABLE_NAME = "subjects";
@@ -46,6 +46,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String NOTE_COL4 = "SubjectID";
     private static final String NOTE_COL5 = "Color";
     private static final String NOTE_COL6 = "PhotoPath";
+    private static final String NOTE_COL7 = "FilePath";
 
     //QUIZ----------------------------------------------------------
     private static final String QUIZ_TABLE_NAME = "quiz";
@@ -75,7 +76,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
                 + CARD_COL2 + " TEXT, " + CARD_COL3 + " TEXT, " + CARD_COL4 + " INTEGER, " + CARD_COL5 + " TEXT, " + CARD_COL6 + " INTEGER);";
 
         String createTableNote = "CREATE TABLE " + NOTE_TABLE_NAME + " ( " + NOTE_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + NOTE_COL2 + " TEXT, "
-                + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT);";
+                + NOTE_COL3 + " TEXT, " + NOTE_COL4 + " INTEGER, " + NOTE_COL5 + " INTEGER, " + NOTE_COL6 + " TEXT, " + NOTE_COL7 + " TEXT);";
 
         String createTableQuiz = "CREATE TABLE " + QUIZ_TABLE_NAME + " ( " + QUIZ_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QUIZ_COL2 + " TEXT, " + QUIZ_COL3 + " TEXT, "
                 + QUIZ_COL4 + " TEXT, " + QUIZ_COL5 + " INTEGER, " + QUIZ_COL6 + " TEXT, " + QUIZ_COL7 + " INTEGER);";
@@ -386,11 +387,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
      * @return true jesli poprawnie dodano
      */
 
-    public boolean addNoteData(String title, String content, int subjectID, int color, String filePath)
+    public boolean addNoteData(String title, String content, int subjectID, int color, String photoPath, String filePath)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NOTE_COL6, filePath);
+        contentValues.put(NOTE_COL7, filePath);
+        contentValues.put(NOTE_COL6, photoPath);
         contentValues.put(NOTE_COL5, color);
         contentValues.put(NOTE_COL4, subjectID);
         contentValues.put(NOTE_COL3, content);
@@ -425,7 +427,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         List<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5)));
+            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5),data.getString(6)));
         }
         if (notes.size() == 0) throw new EmptyDataBaseException();
         return notes;
@@ -446,7 +448,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         ArrayList<Note> notes = new ArrayList<>();
         while(data.moveToNext())
         {
-            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5)));
+            notes.add(new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5),data.getString(6)));
         }
         if(notes.size() == 0) throw new EmptyDataBaseException();
         data.close();
@@ -501,7 +503,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         if (data == null) throw new EmptyDataBaseException();
         data.moveToNext();
-        Note note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5));
+        Note note = new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5),data.getString(6));
         data.close();
         return note;
     }
@@ -531,7 +533,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         {
             if(data.getInt(0) == noteID)
             {
-                return new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5));
+                return new Note(data.getInt(0), data.getString(1), data.getString(2), data.getInt(3), data.getInt(4), data.getString(5),data.getString(6));
             }
         }
         return null;
@@ -549,6 +551,20 @@ public class DataBaseHelper extends SQLiteOpenHelper
         String query = "UPDATE " + NOTE_TABLE_NAME + " SET " + NOTE_COL6 + " = '" + photosPaths + "' WHERE " + NOTE_COL1 + " = " + noteID + ";";
         db.execSQL(query);
     }
+
+    public void updateNoteFilesByID(int noteID, String filesPaths)
+    {
+        Note note = getNoteByID(noteID);
+        if(note == null)
+        {
+            Log.d("NoteUpdate", "Blad przy aktualizowaniu contentu notatki");
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + NOTE_TABLE_NAME + " SET " + NOTE_COL7 + " = '" + filesPaths + "' WHERE " + NOTE_COL1 + " = " + noteID + ";";
+        db.execSQL(query);
+    }
+
 
     //-------------------------------------------------------
     //QUIZ METHODS ------------------------------------------

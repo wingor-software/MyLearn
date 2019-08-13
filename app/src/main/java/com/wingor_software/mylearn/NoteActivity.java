@@ -1,5 +1,6 @@
 package com.wingor_software.mylearn;
 
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +27,7 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.PathUtils;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -51,6 +54,7 @@ public class NoteActivity extends AppCompatActivity{
     private static final int REQUEST_CODE_REFFERENCE_TO_FILE = 150;
 
     private SharedPreferences sharedPref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +112,8 @@ public class NoteActivity extends AppCompatActivity{
 
         Log.d("test","MOZLIWE POZWOLENIA CO JE MOZNA ZABRAC" + resolver.getPersistedUriPermissions().toString());
 
-        for (String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
+        //dodawanie zdjec po wznowieniu apki
+        for (String s : SubjectActivity.getCurrentNote().getPhotoPath().split("\n"))
         {
             final String finals = s;
             ImageView imageView = new ImageView(this);
@@ -130,17 +135,110 @@ public class NoteActivity extends AppCompatActivity{
                 public boolean onLongClick(View view) {
                     fotosLayout.removeView(view);
                     Note currentNote = SubjectActivity.getCurrentNote();
-                    String path = currentNote.getFilePath();
+                    String path = currentNote.getPhotoPath();
                     path = path.replace("\n" + view.getTag().toString(), "");
                     path = path.replace(view.getTag().toString() + "\n", "");
                     path = path.replace(view.getTag().toString(), "");
                     dataBaseHelper.updateNotePhotosByID(currentNote.getID(), path);
-                    currentNote.setFilePath(path);
+                    currentNote.setPhotoPath(path);
                     SubjectActivity.setCurrentNote(currentNote);
                     return true;
                 }
             });
             fotosLayout.addView(imageView);
+        }
+
+        //dodawanie plikow po wznowieniu
+        for(final String s : SubjectActivity.getCurrentNote().getFilePath().split("\n"))
+        {
+            if(!s.equals(""))
+            {
+                LinearLayout filesLaout = findViewById(R.id.note_files_layout);
+
+                final Button b = new Button(NoteActivity.this);
+
+                Log.d("test","napis to: " + s);
+                b.setText(s);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        //Uri uri_from_button = (Uri) b.getTag();
+                        Uri uri_from_button = Uri.parse(s);
+
+                        Log.d("test",uri_from_button.toString());
+
+                        Log.d("test",getMimeType(NoteActivity.this,uri_from_button));
+
+                        Intent intent = new Intent();
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setAction(Intent.ACTION_VIEW);
+
+                        String type = "application/pdf";
+
+                        switch (getMimeType(NoteActivity.this,uri_from_button))
+                        {
+                            case "pdf":
+                            {
+                                type = "application/pdf";
+                                break;
+                            }
+                            case "doc":
+                            {
+                                type = "application/msword";
+                                break;
+                            }
+                            case "docx":
+                            {
+                                type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                                break;
+                            }
+                            case "xls":
+                            {
+                                type = "application/vnd.ms-excel";
+                                break;
+                            }
+                            case "xlsx":
+                            {
+                                type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                                break;
+                            }
+                            case "ppt":
+                            {
+                                type = "application/vnd.ms-powerpoint";
+                                break;
+                            }
+                            case "pptx":
+                            {
+                                type = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                                break;
+                            }
+                            case "txt":
+                            {
+                                type = "text/plain";
+                                break;
+                            }
+                        }
+
+                        intent.setDataAndType(uri_from_button, type);
+                        try
+                        {
+                            startActivity(intent);
+                        }
+                        catch (ActivityNotFoundException e)
+                        {
+                            toastMessage("Looks like you don't have the right application to open this file");
+                        }
+
+                    }
+                });
+                filesLaout.addView(b);
+            }
+
         }
 
         //tresc notatki
@@ -190,6 +288,8 @@ public class NoteActivity extends AppCompatActivity{
         super.onStop();
         LinearLayout fotosLayout = findViewById(R.id.note_fotos_layout);
         fotosLayout.removeAllViewsInLayout();
+        LinearLayout filesLayout = findViewById(R.id.note_files_layout);
+        filesLayout.removeAllViewsInLayout();
     }
 
     @Override
@@ -238,7 +338,7 @@ public class NoteActivity extends AppCompatActivity{
             }
 
             Note currentNote = SubjectActivity.getCurrentNote();
-            String path = currentNote.getFilePath();
+            String path = currentNote.getPhotoPath();
             for (int i = 0; i < uriList.size(); i++) {
                 try
                 {
@@ -257,43 +357,66 @@ public class NoteActivity extends AppCompatActivity{
             }
             if(path.equals("")) path = path_to_save.toString();
             else path += "\n" + path_to_save.toString();
-            currentNote.setFilePath(path);
-            dataBaseHelper.updateNotePhotosByID(currentNote.getID(), currentNote.getFilePath());
+            currentNote.setPhotoPath(path);
+            dataBaseHelper.updateNotePhotosByID(currentNote.getID(), currentNote.getPhotoPath());
             SubjectActivity.setCurrentNote(currentNote);
         }
         else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_REFFERENCE_TO_FILE) // dodawanie odnoscnikow to pliku
         {
-
-            LinearLayout files_layout = findViewById(R.id.note_files_layout);
+            ArrayList<Uri> uriList = new ArrayList<>();
+            StringBuilder path_to_save = new StringBuilder();
             ClipData cd = data.getClipData();
             if(cd == null) {
                 Uri uri = data.getData();
-
-                final Button b = new Button(NoteActivity.this);
-                b.setText(getFileName(uri));
-                b.setTag(uri);
-                b.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Uri uri_from_button = (Uri) b.getTag();
-                        Intent intent = new Intent();
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.setAction(Intent.ACTION_VIEW);
-                        String type = "application/pdf";
-                        intent.setDataAndType(uri_from_button, type);
-                        startActivity(intent);
-                    }
-                });
-
-                files_layout.addView(b);
+                uriList.add(uri);
             }
             else{
                 for (int i = 0; i < cd.getItemCount(); i++) {
                     ClipData.Item item = cd.getItemAt(i);
                     Uri uri = item.getUri();
+                    uriList.add(uri);
                 }
             }
+            Note currentNote = SubjectActivity.getCurrentNote();
+            String path = currentNote.getFilePath();
+            Log.d("test","aktualna sciezka plikow to:" + path);
+            for (int i = 0; i < uriList.size(); i++) {
+                try
+                {
+                    if (!path_to_save.toString().equals("")) {
+                        path_to_save.append("\n");
+                    }
 
+                    path_to_save.append(uriList.get(i).toString());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if(path.equals("")) path = path_to_save.toString();
+            else path += "\n" + path_to_save.toString();
+            currentNote.setFilePath(path);
+            dataBaseHelper.updateNoteFilesByID(currentNote.getID(), currentNote.getFilePath());
+            SubjectActivity.setCurrentNote(currentNote);
+            Log.d("test","po tym wszystkim sciezka do plikow to:" + currentNote.getFilePath() );
+        }
+    }
+
+    private String getRealPathFromURIfromFIleUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Files.FileColumns.DATA};
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            Log.e("test", "getRealPathFromURI Exception : " + e.toString());
+            return "";
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
@@ -417,8 +540,10 @@ public class NoteActivity extends AppCompatActivity{
                                 "application/zip"};
 
                 Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+                intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimeTypes);
 
@@ -499,7 +624,22 @@ public class NoteActivity extends AppCompatActivity{
         return result;
     }
 
+    public static String getMimeType(Context context, Uri uri) {
+        String extension;
 
+        //Check uri format to avoid null
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //If scheme is a content
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uri));
+        } else {
+            //If scheme is a File
+            //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
 
+        }
+
+        return extension;
+    }
 
 }

@@ -1354,7 +1354,7 @@ public class SubjectActivity extends AppCompatActivity
         String s;
         try {
             s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", path_to_save.toString());
+            addNoteData(s, "Empty note", path_to_save.toString(),"");
             Log.d("uritest", getStringFromUriList());
             note = dataBaseHelper.getLatelyAddedNote();
             Log.d("tesciki","dodano do bazy");
@@ -1406,11 +1406,11 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    public void addNoteData(String title, String content, String filePath)
+    public void addNoteData(String title, String content, String photoPath,String filePath)
     {
         try
         {
-            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), filePath);
+            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), photoPath, filePath);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
@@ -1431,6 +1431,10 @@ public class SubjectActivity extends AppCompatActivity
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
             else
                 toastMessage("Cos sie wysralo");
+
+
+
+
         }
         catch(Exception e)
         {

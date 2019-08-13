@@ -15,15 +15,17 @@ public class Note implements Serializable
     private int color;
 
     private String content;
+    private String photoPath;
     private String filePath;
 
-    public Note(int ID, String title, String content, int subjectID, int color, String filePath) {
+    public Note(int ID, String title, String content, int subjectID, int color, String photoPath, String filePath) {
         this.ID = ID;
         this.title = title;
         this.subjectID = subjectID;
         this.color = color;
 
         this.content = content;
+        this.photoPath = photoPath;
         this.filePath = filePath;
     }
 
@@ -52,13 +54,24 @@ public class Note implements Serializable
         this.content = content;
     }
 
-    public String getFilePath(){
-        return filePath;
+    public String getPhotoPath(){
+        return photoPath;
     }
 
-    public void setFilePath(String filePath) {
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    public String getFilePath()
+    {
+        return filePath;
+    }
+    public void setFilePath(String filePath)
+    {
         this.filePath = filePath;
     }
+
+
 
     public int getSubjectID() {
         return subjectID;
@@ -76,6 +89,11 @@ public class Note implements Serializable
         this.color = color;
     }
 
+    public String[] photosPathsToStringArray()
+    {
+        return photoPath.split("\n");
+    }
+
     public String[] filesPathsToStringArray()
     {
         return filePath.split("\n");
@@ -83,7 +101,7 @@ public class Note implements Serializable
 
     public ArrayList<Uri> getPhotoUris()
     {
-        String[] str = filesPathsToStringArray();
+        String[] str = photosPathsToStringArray();
         ArrayList<Uri> uriArrayList = new ArrayList<>();
         for (int i = 0; i < str.length; i++) {
             uriArrayList.add(Uri.parse(str[i]));
@@ -93,14 +111,37 @@ public class Note implements Serializable
 
     public void addPhoto(String newPhotoPath)
     {
-        filePath += ("\n" + newPhotoPath);
+        photoPath += ("\n" + newPhotoPath);
     }
 
     public void deletePhoto(String photoPath)
     {
-        if(filePath.contains(photoPath))
+        if(photoPath.contains(photoPath))
         {
-            filePath = filePath.replace(photoPath, "");
+            photoPath = photoPath.replace(photoPath, "");
+        }
+    }
+
+    public ArrayList<Uri> getFilesUris()
+    {
+        String[] str = filesPathsToStringArray();
+        ArrayList<Uri> uriArrayList = new ArrayList<>();
+        for (int i = 0; i < str.length; i++) {
+            uriArrayList.add(Uri.parse(str[i]));
+        }
+        return uriArrayList;
+    }
+
+    public void addFile(String newFilePath)
+    {
+        filePath += ("\n" + newFilePath);
+    }
+
+    public void deleteFile(String filePath)
+    {
+        if(filePath.contains(filePath))
+        {
+            filePath = filePath.replace(filePath, "");
         }
     }
 }
