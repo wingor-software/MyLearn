@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -28,6 +29,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity
 
     //aktualny przedmiot
     private static Subject currentSubject;
+
+    private final static int REQUEST_IMPORT_SUBJECT = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +117,48 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id)
+        {
+            case R.id.action_settings:
+            {
+                return true;
+            }
+            case R.id.action_import_subject:
+            {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/*");
+                startActivityForResult(intent, REQUEST_IMPORT_SUBJECT);
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == REQUEST_IMPORT_SUBJECT)
+        {
+            if(data != null)
+            {
+                try
+                {
+                    InputStream is = getContentResolver().openInputStream(data.getData());
+                    ObjectInputStream ois = new ObjectInputStream(is);
+                    OutputSubject outputSubject = (OutputSubject) ois.readObject();
+                    ois.close();
+                    is.close();
+                    FileImportExport.addImportedSubject(outputSubject, dataBaseHelper);
+                    Toast.makeText(this, "Subject imported correctly: " + outputSubject.getSubjectName(), Toast.LENGTH_LONG).show();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

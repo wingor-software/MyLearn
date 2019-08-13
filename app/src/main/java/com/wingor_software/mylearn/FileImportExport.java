@@ -21,7 +21,30 @@ public class FileImportExport
         {
             Subject subject = MainActivity.getCurrentSubject();
             int subjectID = subject.getSubjectID();
-            OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), dataBaseHelper.getCardList(subjectID), dataBaseHelper.getQuizList(subjectID), dataBaseHelper.getNoteList(subjectID), getPhotosFromNote(subjectID, dataBaseHelper));
+            List<Card> cards;
+            List<Quiz> quizzes;
+            List<Note> notes;
+            try {   //tu dla fiszek
+                cards = dataBaseHelper.getCardList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                cards = new ArrayList<>();
+            }
+
+            try {       //tu dla quizow
+                quizzes = dataBaseHelper.getQuizList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                quizzes = new ArrayList<>();
+            }
+
+            try {       //tu dla notatek
+                notes = dataBaseHelper.getNoteList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                notes = new ArrayList<>();
+            }
+            OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), cards, quizzes, notes, getPhotosFromNote(subjectID, dataBaseHelper));
             String fileName = subject.getSubjectName() + ".txt";
             File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
             File file = new File(dir, fileName);
@@ -30,7 +53,7 @@ public class FileImportExport
             out.writeObject(outputSubject);
             out.close();
             fos.close();
-            Toast.makeText(context ,"Subject exported correcly", Toast.LENGTH_LONG).show();
+//            Toast.makeText(context ,"Subject exported correcly", Toast.LENGTH_LONG).show();
         }
         catch(Exception e)
         {
@@ -44,7 +67,30 @@ public class FileImportExport
         {
             Subject subject = MainActivity.getCurrentSubject();
             int subjectID = subject.getSubjectID();
-            OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), dataBaseHelper.getCardList(subjectID), dataBaseHelper.getQuizList(subjectID), dataBaseHelper.getNoteList(subjectID), getPhotosFromNote(subjectID, dataBaseHelper));
+            List<Card> cards;
+            List<Quiz> quizzes;
+            List<Note> notes;
+            try {   //tu dla fiszek
+                cards = dataBaseHelper.getCardList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                cards = new ArrayList<>();
+            }
+
+            try {       //tu dla quizow
+                quizzes = dataBaseHelper.getQuizList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                quizzes = new ArrayList<>();
+            }
+
+            try {       //tu dla notatek
+                notes = dataBaseHelper.getNoteList(subjectID);
+            }
+            catch(EmptyDataBaseException e) {
+                notes = new ArrayList<>();
+            }
+            OutputSubject outputSubject = new OutputSubject(subject.getSubjectName(), subject.getColor(), cards, quizzes, notes, getPhotosFromNote(subjectID, dataBaseHelper));
             String fileName = subject.getSubjectName() + ".txt";
             File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
             File file = new File(dir, fileName);
@@ -53,7 +99,7 @@ public class FileImportExport
             out.writeObject(outputSubject);
             out.close();
             fos.close();
-            Toast.makeText(context ,"Subject exported correcly", Toast.LENGTH_LONG).show();
+//            Toast.makeText(context ,"Subject exported correcly", Toast.LENGTH_LONG).show();
             return file;
         }
         catch(Exception e)
@@ -105,9 +151,14 @@ public class FileImportExport
 
             for (int i = 0; i < notes.size(); i++) {
                 ArrayList<byte[]> currentNotePhotos = new ArrayList<>();
-
+                
                 for (String s : notes.get(i).getFilePath().split("\n"))
                 {
+                    if(notes.get(i).getFilePath().equals(""))
+                    {
+                        currentNotePhotos.add(new byte[0]);
+                        break;
+                    }
                     Bitmap bitmap = BitmapFactory.decodeFile(s);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90 , baos);

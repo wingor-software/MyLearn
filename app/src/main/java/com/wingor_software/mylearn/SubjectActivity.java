@@ -36,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -88,8 +89,6 @@ public class SubjectActivity extends AppCompatActivity
     private Uri imageUri;
     private ArrayList<Uri> uriList;
     private Intent gallery;
-
-    private final static int REQUEST_IMPORT_SUBJECT = 200;
 
     private BottomNavigationView navView;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -278,27 +277,12 @@ public class SubjectActivity extends AppCompatActivity
             }
             case R.id.action_export_subject:
             {
-                FileImportExport.exportSubject(this, dataBaseHelper);
-                return true;
-            }
-            case R.id.action_import_subject:
-            {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/*");
-                startActivityForResult(intent, REQUEST_IMPORT_SUBJECT);
+                new BackgroudExport(SubjectActivity.this, dataBaseHelper).execute();
                 return true;
             }
             case R.id.action_share_subject:
             {
-                File file = FileImportExport.exportAndShareSubject(this, dataBaseHelper);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.toString()));
-                Log.d("uri", "file//" + file.getPath());
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                startActivity(Intent.createChooser(intent, "Share using"));
+                new BackgroudShare(SubjectActivity.this, dataBaseHelper).execute();
                 return true;
             }
         }
@@ -1347,26 +1331,6 @@ public class SubjectActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 fotosLayout.addView(imageView);
-            }
-        }
-        else if(resultCode == RESULT_OK && requestCode == REQUEST_IMPORT_SUBJECT)
-        {
-            if(data != null)
-            {
-                try
-                {
-                    InputStream is = getContentResolver().openInputStream(data.getData());
-                    ObjectInputStream ois = new ObjectInputStream(is);
-                    OutputSubject outputSubject = (OutputSubject) ois.readObject();
-                    ois.close();
-                    is.close();
-                    FileImportExport.addImportedSubject(outputSubject, dataBaseHelper);
-                    Toast.makeText(this, "Subject imported correctly: " + outputSubject.getSubjectName(), Toast.LENGTH_LONG).show();
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
             }
         }
     }
