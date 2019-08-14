@@ -184,6 +184,8 @@ public class NoteActivity extends AppCompatActivity{
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.setAction(Intent.ACTION_VIEW);
 
+                        getContentResolver().getPersistedUriPermissions();
+
                         String type = "application/pdf";
 
                         switch (getMimeType(NoteActivity.this,uri_from_button))
@@ -371,15 +373,21 @@ public class NoteActivity extends AppCompatActivity{
         {
             ArrayList<Uri> uriList = new ArrayList<>();
             StringBuilder path_to_save = new StringBuilder();
+            getContentResolver().getPersistedUriPermissions();
             ClipData cd = data.getClipData();
             if(cd == null) {
                 Uri uri = data.getData();
+                getContentResolver().getPersistedUriPermissions();
+
+                getContentResolver().getPersistedUriPermissions();
                 uriList.add(uri);
             }
             else{
                 for (int i = 0; i < cd.getItemCount(); i++) {
                     ClipData.Item item = cd.getItemAt(i);
                     Uri uri = item.getUri();
+                    getContentResolver().getPersistedUriPermissions();
+
                     uriList.add(uri);
                 }
             }
