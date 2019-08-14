@@ -152,9 +152,9 @@ public class FileImportExport
             for (int i = 0; i < notes.size(); i++) {
                 ArrayList<byte[]> currentNotePhotos = new ArrayList<>();
                 
-                for (String s : notes.get(i).getFilePath().split("\n"))
+                for (String s : notes.get(i).getPhotoPath().split("\n"))
                 {
-                    if(notes.get(i).getFilePath().equals(""))
+                    if(notes.get(i).getPhotoPath().equals(""))
                     {
                         currentNotePhotos.add(new byte[0]);
                         break;
