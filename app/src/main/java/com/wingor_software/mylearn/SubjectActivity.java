@@ -340,22 +340,22 @@ public class SubjectActivity extends AppCompatActivity
         {
             examType = ExamType.ALL;
             Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
         }
         else if(cards.isChecked())
         {
             examType = ExamType.CARDS;
             Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
         }
         else if(questions.isChecked())
         {
             examType = ExamType.QUESTIONS;
             Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
         }
         else
         {

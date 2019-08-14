@@ -22,11 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".ExamActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_exam"
-            android:theme="@style/FullscreenTheme"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
