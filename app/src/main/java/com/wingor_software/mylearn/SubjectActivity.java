@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -119,6 +120,8 @@ public class SubjectActivity extends AppCompatActivity
     StringBuilder path_to_save = new StringBuilder();
 
     private ConstraintLayout scoreLayout;
+
+    private static ExamType examType;
 
     private void actionCards(SharedPreferences.Editor editor)
     {
@@ -326,6 +329,43 @@ public class SubjectActivity extends AppCompatActivity
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
+    }
+
+    public void startExam(View view) {
+        CheckBox cards = findViewById(R.id.checkBoxCards);
+        CheckBox questions = findViewById(R.id.checkBoxQuestions);
+        Intent intent;
+
+        if(cards.isChecked() && questions.isChecked())
+        {
+            examType = ExamType.ALL;
+            Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
+        }
+        else if(cards.isChecked())
+        {
+            examType = ExamType.CARDS;
+            Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
+        }
+        else if(questions.isChecked())
+        {
+            examType = ExamType.QUESTIONS;
+            Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
+//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+//            startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(SubjectActivity.this, "Please select exam type", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static ExamType getExamType()
+    {
+        return examType;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

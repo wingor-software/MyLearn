@@ -156,7 +156,7 @@ public class NoteActivity extends AppCompatActivity{
         {
             if(!s.equals(""))
             {
-                LinearLayout filesLaout = findViewById(R.id.note_files_layout);
+                final LinearLayout filesLaout = findViewById(R.id.note_files_layout);
 
                 final Button b = new Button(NoteActivity.this);
 
@@ -166,6 +166,7 @@ public class NoteActivity extends AppCompatActivity{
 
                 File file = new File(uri_from_button.getPath());
                 b.setText(file.getName());
+                b.setTag(s);
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -244,6 +245,22 @@ public class NoteActivity extends AppCompatActivity{
 
                     }
                 });
+                b.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        filesLaout.removeView(view);
+                        Note currentNote = SubjectActivity.getCurrentNote();
+                        String path = currentNote.getFilePath();
+                        path = path.replace("\n" + view.getTag().toString(), "");
+                        path = path.replace(view.getTag().toString() + "\n", "");
+                        path = path.replace(view.getTag().toString(), "");
+                        dataBaseHelper.updateNoteFilesByID(currentNote.getID(), path);
+                        currentNote.setFilePath(path);
+                        SubjectActivity.setCurrentNote(currentNote);
+                        return true;
+                    }
+                });
+
                 filesLaout.addView(b);
             }
 
@@ -252,7 +269,6 @@ public class NoteActivity extends AppCompatActivity{
         //tresc notatki
         noteContent.setText(SubjectActivity.getCurrentNote().getContent());
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
         int defaultValue = 18;
         int textSize = sharedPref.getInt(getString(R.string.preference_text_size), defaultValue);
         noteContent.setTextSize(textSize);
@@ -388,6 +404,7 @@ public class NoteActivity extends AppCompatActivity{
                     Uri uri = item.getUri();
                     getContentResolver().getPersistedUriPermissions();
 
+                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION & Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     uriList.add(uri);
                 }
             }
@@ -540,8 +557,7 @@ public class NoteActivity extends AppCompatActivity{
                 Intent intent = new Intent();
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                 intent.setType("*/*");
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimeTypes);
 
