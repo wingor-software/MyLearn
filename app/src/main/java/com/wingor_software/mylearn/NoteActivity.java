@@ -55,11 +55,15 @@ public class NoteActivity extends AppCompatActivity{
 
     private SharedPreferences sharedPref;
 
+    Intent actual_intent ;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        actual_intent = getIntent();
 
         dataBaseHelper = new DataBaseHelper(this);
 
@@ -103,7 +107,6 @@ public class NoteActivity extends AppCompatActivity{
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        //intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
 
         final int takeFlags = getIntent().getFlags();
 
@@ -158,14 +161,17 @@ public class NoteActivity extends AppCompatActivity{
                 final Button b = new Button(NoteActivity.this);
 
                 Log.d("test","napis to: " + s);
-                b.setText(s);
+
+                final Uri uri_from_button = Uri.parse(s);
+
+                File file = new File(uri_from_button.getPath());
+                b.setText(file.getName());
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
 
                         //Uri uri_from_button = (Uri) b.getTag();
-                        Uri uri_from_button = Uri.parse(s);
 
                         Log.d("test",uri_from_button.toString());
 
@@ -402,23 +408,6 @@ public class NoteActivity extends AppCompatActivity{
         }
     }
 
-    private String getRealPathFromURIfromFIleUri(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Files.FileColumns.DATA};
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } catch (Exception e) {
-            Log.e("test", "getRealPathFromURI Exception : " + e.toString());
-            return "";
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 
     private String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
@@ -437,6 +426,7 @@ public class NoteActivity extends AppCompatActivity{
             }
         }
     }
+
     private void toastMessage(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -603,8 +593,12 @@ public class NoteActivity extends AppCompatActivity{
     }
 
     public String getFileName(Uri uri) {
+
+
         String result = null;
+
         if (uri.getScheme().equals("content")) {
+
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
