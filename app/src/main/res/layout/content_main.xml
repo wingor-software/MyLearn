@@ -12,10 +12,12 @@
     <LinearLayout
         android:id="@+id/subjectsLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
-
-        ></LinearLayout>
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:showDividers="middle"
+        android:divider="@drawable/button_divider"
+        android:orientation="vertical"></LinearLayout>
 
 </ScrollView>
