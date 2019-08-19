@@ -109,6 +109,7 @@ public class Card implements Serializable, Examable
     public LinearLayout getLayoutToDisplay(Context context) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setTag("card");
 
         TextView word = new TextView(context);
         word.setText(this.word);
@@ -118,6 +119,7 @@ public class Card implements Serializable, Examable
 
         EditText editText = new EditText(context);
         editText.setHint("Answer");
+        editText.setTag(answer);
         linearLayout.addView(editText);
 
         return linearLayout;

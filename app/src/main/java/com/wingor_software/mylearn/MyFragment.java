@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 public class MyFragment extends Fragment
 {
     private static final String ARG_PAGE = "arg_page";
+    private LinearLayout examableLayout;
 
     public MyFragment()
     {
@@ -39,7 +40,7 @@ public class MyFragment extends Fragment
         {
             LinearLayout linearLayout = examables[pageNumber].getLayoutToDisplay(getActivity());
             linearLayout.setGravity(Gravity.CENTER);
-
+            examableLayout = linearLayout;
             return linearLayout;
         }
         catch(Exception e)
@@ -47,7 +48,13 @@ public class MyFragment extends Fragment
             TextView myText = new TextView(getActivity());
             myText.setText("Example Text " + pageNumber);
             myText.setGravity(Gravity.CENTER);
+            examableLayout = null;
             return myText;
         }
+    }
+
+    public LinearLayout getExamableLayout()
+    {
+        return examableLayout;
     }
 }

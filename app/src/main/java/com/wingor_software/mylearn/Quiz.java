@@ -135,6 +135,7 @@ public class Quiz implements Serializable, Examable
     public LinearLayout getLayoutToDisplay(Context context) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setTag("quiz");
 
         TextView question = new TextView(context);
         question.setText(this.question);

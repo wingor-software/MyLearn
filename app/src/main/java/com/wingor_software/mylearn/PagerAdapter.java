@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class PagerAdapter extends FragmentStatePagerAdapter
 {
+    private MyFragment[] fragments = new MyFragment[10];
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
@@ -21,11 +22,17 @@ public class PagerAdapter extends FragmentStatePagerAdapter
     @Override
     public Fragment getItem(int position) {
         MyFragment myFragment = MyFragment.newInstance(position);
+        fragments[position] = myFragment;
         return myFragment;
     }
 
     @Override
     public int getCount() {
         return 10;
+    }
+
+    public MyFragment[] getFragments()
+    {
+        return fragments;
     }
 }
