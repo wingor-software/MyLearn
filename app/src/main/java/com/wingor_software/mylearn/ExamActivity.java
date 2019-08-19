@@ -40,6 +40,7 @@ public class ExamActivity extends AppCompatActivity {
 //        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPageAdapter);
+        mViewPager.setOffscreenPageLimit(10);
         pageCount = (TextView) findViewById(R.id.page_count);
         dataBaseHelper = new DataBaseHelper(this);
         examables = getExamableList(10);
