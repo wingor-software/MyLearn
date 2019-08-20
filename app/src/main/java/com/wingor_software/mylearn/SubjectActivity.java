@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -122,6 +123,9 @@ public class SubjectActivity extends AppCompatActivity
     private ConstraintLayout scoreLayout;
 
     private static ExamType examType;
+
+    private static final int REQUEST_CODE_READING_FILE_CARDS = 300;
+    private static final int REQUEST_CODE_READING_FILE_QUIZ = 400;
 
     private void actionCards(SharedPreferences.Editor editor)
     {
@@ -288,8 +292,38 @@ public class SubjectActivity extends AppCompatActivity
                 new BackgroudShare(SubjectActivity.this, dataBaseHelper).execute();
                 return true;
             }
+            case R.id.action_import_cards_from_file:
+            {
+                showSeparatorPopup(REQUEST_CODE_READING_FILE_CARDS);
+                return true;
+            }
+            case R.id.action_import_quiz_from_file:
+            {
+               showSeparatorPopup(REQUEST_CODE_READING_FILE_QUIZ);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSeparatorPopup(final int requestCode)
+    {
+        myDialog.setContentView(R.layout.popup_import_card_from_file);
+        final EditText editText = (EditText) myDialog.findViewById(R.id.editTextCardSeparator);
+        Button button = (Button) myDialog.findViewById(R.id.okButtonImportCard);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FromFileImporter.setSeparator(editText.getText().charAt(0));
+                myDialog.dismiss();
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/*");
+                startActivityForResult(intent, requestCode);
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
     private void showPopupSearch()
@@ -964,8 +998,11 @@ public class SubjectActivity extends AppCompatActivity
                 {
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
-                noteAddingOnClick(nameGetter);
-                myDialog.dismiss();
+                if(!nameGetter.getText().toString().equals(""))
+                {
+                    noteAddingOnClick(nameGetter);
+                    myDialog.dismiss();
+                }
             }
         });
 
@@ -982,8 +1019,13 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
                 TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
                 TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
-                cardAddingOnClick(wordGetter, answerGetter);
-                myDialog.dismiss();
+                String word = wordGetter.getText().toString();
+                String answer = answerGetter.getText().toString();
+                if(!(word.equals("") || answer.equals("")))
+                {
+                    cardAddingOnClick(wordGetter, answerGetter);
+                    myDialog.dismiss();
+                }
             }
         });
 
@@ -1008,7 +1050,7 @@ public class SubjectActivity extends AppCompatActivity
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupQuizAdding_2(view1,Integer.parseInt(spinner1.getSelectedItem().toString()),Integer.parseInt(spinner2.getSelectedItem().toString()),question.getText().toString());
+                if(!question.getText().toString().equals("")) showPopupQuizAdding_2(view1,Integer.parseInt(spinner1.getSelectedItem().toString()),Integer.parseInt(spinner2.getSelectedItem().toString()),question.getText().toString());
             }
         });
 
@@ -1047,11 +1089,16 @@ public class SubjectActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                boolean emptySomewhere = false;
                 for (int i=1;i<good_answers+bad_answers+1;i++)
                 {
                     TextInputEditText t = myDialog.findViewById(i);
                     Log.d("test",t.getId()+"");
+                    if(t.getText().toString().equals(""))
+                    {
+                        emptySomewhere = true;
+                        break;
+                    }
                     if(t.getTag().equals("good answer"))
                     {
                         if(!good_answers_strings.toString().equals(""))
@@ -1070,10 +1117,11 @@ public class SubjectActivity extends AppCompatActivity
                 Log.d("test",good_answers_strings.toString());
                 Log.d("test",bad_answers_strings.toString());
 
-
-
-                quizAddingOnClick(name_of_quiz, good_answers_strings.toString(),bad_answers_strings.toString());
-                myDialog.dismiss();
+                if(!emptySomewhere)
+                {
+                    quizAddingOnClick(name_of_quiz, good_answers_strings.toString(),bad_answers_strings.toString());
+                    myDialog.dismiss();
+                }
             }
         });
 
@@ -1373,6 +1421,28 @@ public class SubjectActivity extends AppCompatActivity
                 fotosLayout.addView(imageView);
             }
         }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE_CARDS)
+        {
+            try
+            {
+                FromFileImporter.importCardsFromFile(MainActivity.getCurrentSubject().getSubjectID(), dataBaseHelper, this, data);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE_QUIZ)
+        {
+            try
+            {
+                FromFileImporter.importQuizzesFromFile(MainActivity.getCurrentSubject().getSubjectID(), dataBaseHelper, this, data);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -1392,18 +1462,21 @@ public class SubjectActivity extends AppCompatActivity
         //tooooo zienic zeby dzialalo ze zdjeciami, uri do zdjecia jest globalnie
         Note note;
         String s;
-        try {
-            s=nameGetter.getText().toString();
-            addNoteData(s, "Empty note", path_to_save.toString(),"");
-            Log.d("uritest", getStringFromUriList());
-            note = dataBaseHelper.getLatelyAddedNote();
-            Log.d("tesciki","dodano do bazy");
-            drawNoteButton(note);
-            Log.d("tesciki","powinno tutaj dodac przycisk");
-        }
-        catch (Exception e)
+        s=nameGetter.getText().toString();
+        if(!s.equals(""))
         {
-            e.printStackTrace();
+            try {
+                addNoteData(s, "Empty note", path_to_save.toString(),"");
+                Log.d("uritest", getStringFromUriList());
+                note = dataBaseHelper.getLatelyAddedNote();
+                Log.d("tesciki","dodano do bazy");
+                drawNoteButton(note);
+                Log.d("tesciki","powinno tutaj dodac przycisk");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 

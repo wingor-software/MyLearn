@@ -221,24 +221,26 @@ public class MainActivity extends AppCompatActivity
                     Log.d("tesciki","subjectslayout jest nullem");
                 }
                 Subject subject;
-                try {
-                    //pobiera wpisana nazwe przedmiotu z pola tekstowego
-                    s=nameGetter.getText().toString();
-
-                    //dodaje wpis do tabeli
-                    addData(s, chosen_color.getValue());
-
-                    //pobiera ostatnio dodany i go rysuje
-                    subject = dataBaseHelper.getLatelyAddedSubject();
-                    Log.d("tesciki","dodano do bazy");
-                    drawSubjectButton(subject);
-                    Log.d("tesciki","powinno tutaj dodac przycisk");
-                }
-                catch (Exception e)
+                s=nameGetter.getText().toString();
+                if(!s.equals(""))
                 {
-                    e.printStackTrace();
+                    try {
+                        //pobiera wpisana nazwe przedmiotu z pola tekstowego
+                        //dodaje wpis do tabeli
+                        addData(s, chosen_color.getValue());
+
+                        //pobiera ostatnio dodany i go rysuje
+                        subject = dataBaseHelper.getLatelyAddedSubject();
+                        Log.d("tesciki","dodano do bazy");
+                        drawSubjectButton(subject);
+                        Log.d("tesciki","powinno tutaj dodac przycisk");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                    myDialog.dismiss();
                 }
-                myDialog.dismiss();
             }
         });
 

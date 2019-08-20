@@ -16,4 +16,14 @@
         android:orderInCategory="3"
         android:title="Share subject"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_import_cards_from_file"
+        android:orderInCategory="4"
+        android:title="Import cards from file"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_import_quiz_from_file"
+        android:orderInCategory="5"
+        android:title="Import questions from file"
+        app:showAsAction="never"/>
 </menu>
