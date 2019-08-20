@@ -75,7 +75,8 @@
             android:onClick="choseColor"
             android:shadowColor="#00000000"
             android:shadowDy="1"
-            android:shadowRadius="1" />
+            android:shadowRadius="1"
+            />
 
         <Button
             android:id="@+id/button_green"

@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -34,8 +35,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
@@ -162,10 +165,15 @@ public class NoteActivity extends AppCompatActivity{
 
                 Log.d("test","napis to: " + s);
 
+
                 final Uri uri_from_button = Uri.parse(s);
 
-                File file = new File(uri_from_button.getPath());
-                b.setText(file.getName());
+
+                Cursor cursor = getContentResolver().query(uri_from_button,null,null,null,null);
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                cursor.moveToFirst();
+
+                b.setText(cursor.getString(nameIndex));
                 b.setTag(s);
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -408,6 +416,7 @@ public class NoteActivity extends AppCompatActivity{
                     uriList.add(uri);
                 }
             }
+
             Note currentNote = SubjectActivity.getCurrentNote();
             String path = currentNote.getFilePath();
             Log.d("test","aktualna sciezka plikow to:" + path);
