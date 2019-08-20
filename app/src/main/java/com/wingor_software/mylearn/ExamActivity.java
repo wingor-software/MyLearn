@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -164,21 +165,49 @@ public class ExamActivity extends AppCompatActivity {
         showExamResultPopup(correct, all);
     }
 
+    private void showCorrectAnswers()
+    {
+        LinearLayout[] examableLayouts = getExamableLayouts();
+        for (int i = 0; i < examableLayouts.length; i++) {
+            if(examableLayouts[i] == null)
+                break;
+            switch(examableLayouts[i].getTag().toString())
+            {
+                case "card":
+                {
+                    if(!isCorrectCardAnswer(examableLayouts[i])) showIncorrectCardAnswer(examableLayouts[i]);
+                    break;
+                }
+                case "quiz":
+                {
+                    showIncorrectQuizAnswer(examableLayouts[i]);
+                    break;
+                }
+            }
+        }
+    }
+
     private void showExamResultPopup(int correct, int all)
     {
         final Dialog myDialog = new Dialog(ExamActivity.this);
-        myDialog.setContentView(R.layout.popup_result_card);
-        Button okButton = myDialog.findViewById(R.id.okCardButton);
-        TextView result = myDialog.findViewById(R.id.resultText);
-        TextView correctAnswer = myDialog.findViewById(R.id.correctAnswer);
+        myDialog.setContentView(R.layout.popup_result_exam);
+        Button okButton = myDialog.findViewById(R.id.okExamResultButton);
+        TextView result = myDialog.findViewById(R.id.resultExamText);
         result.setText(correct + "/" + all);
-        result.setTextColor(Color.GREEN);
-        correctAnswer.setVisibility(View.INVISIBLE);
+        result.setTextColor(getResources().getColor(R.color.colorPrimary));
+        Button showAnswersButton = myDialog.findViewById(R.id.showAnswersExam);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 myDialog.dismiss();
                 finish();
+            }
+        });
+        showAnswersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showCorrectAnswers();
+                myDialog.dismiss();
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -191,6 +220,19 @@ public class ExamActivity extends AppCompatActivity {
         return (editText.getText().toString().equals(editText.getTag().toString()));
     }
 
+    private void showIncorrectCardAnswer(LinearLayout layout)
+    {
+        EditText editText = (EditText) layout.getChildAt(1);
+        editText.setTextColor(Color.RED);
+        editText.setFreezesText(true);
+
+        TextView correctAnswer = new TextView(layout.getContext());
+        correctAnswer.setGravity(Gravity.CENTER);
+        String str = "Correct answer is: " + editText.getTag().toString();
+        correctAnswer.setText(str);
+        layout.addView(correctAnswer);
+    }
+
     public boolean isCorrectQuizAnswer(LinearLayout layout)
     {
         for (int i = 1; i < layout.getChildCount(); i++) {
@@ -201,5 +243,17 @@ public class ExamActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    private void showIncorrectQuizAnswer(LinearLayout layout)
+    {
+        for (int i = 1; i < layout.getChildCount(); i++) {
+            CheckBox box = (CheckBox) layout.getChildAt(i);
+            if(!((box.isChecked() && box.getTag().toString().equals("correct")) || (!box.isChecked() && box.getTag().toString().equals("incorrect"))))
+            {
+                if(box.getTag().toString().equals("correct"))   box.setTextColor(Color.GREEN);
+                else if (box.getTag().toString().equals("incorrect"))   box.setTextColor(Color.RED);
+            }
+        }
     }
 }
