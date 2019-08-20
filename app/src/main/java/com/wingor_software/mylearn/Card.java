@@ -1,5 +1,12 @@
 package com.wingor_software.mylearn;
 
+import android.content.Context;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +15,7 @@ import java.util.Arrays;
  * Klasa odpowiadająca za informacje o fiszce
  */
 
-public class Card implements Serializable
+public class Card implements Serializable, Examable
 {
     private int ID;
     private String word;
@@ -96,5 +103,25 @@ public class Card implements Serializable
             stringBuilder.append(noteID);
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public LinearLayout getLayoutToDisplay(Context context) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setTag("card");
+
+        TextView word = new TextView(context);
+        word.setText(this.word);
+        word.setGravity(Gravity.CENTER);
+        linearLayout.addView(word);
+
+
+        EditText editText = new EditText(context);
+        editText.setHint("Answer");
+        editText.setTag(answer);
+        linearLayout.addView(editText);
+
+        return linearLayout;
     }
 }

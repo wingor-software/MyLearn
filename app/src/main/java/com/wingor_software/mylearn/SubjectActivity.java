@@ -340,22 +340,22 @@ public class SubjectActivity extends AppCompatActivity
         {
             examType = ExamType.ALL;
             Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
-//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-//            startActivity(intent);
+            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+            startActivity(intent);
         }
         else if(cards.isChecked())
         {
             examType = ExamType.CARDS;
             Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
-//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-//            startActivity(intent);
+            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+            startActivity(intent);
         }
         else if(questions.isChecked())
         {
             examType = ExamType.QUESTIONS;
             Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
-//            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-//            startActivity(intent);
+            intent = new Intent(SubjectActivity.this, ExamActivity.class);
+            startActivity(intent);
         }
         else
         {
@@ -395,7 +395,7 @@ public class SubjectActivity extends AppCompatActivity
         return true;
     }
 
-    private void addPassedExam()
+    public static void addPassedExam()
     {
         try
         {
@@ -403,7 +403,7 @@ public class SubjectActivity extends AppCompatActivity
             currentSubject.setExamsTaken(currentSubject.getExamsTaken() + 1);
             currentSubject.setExamsPassed(currentSubject.getExamsPassed() + 1);
             dataBaseHelper.updateExamsCount(currentSubject.getSubjectID(), currentSubject.getExamsTaken(), currentSubject.getExamsPassed());
-            Toast.makeText(SubjectActivity.this, "Dodano zaliczony egzamin", Toast.LENGTH_LONG).show();
+//            Toast.makeText(SubjectActivity.this, "Dodano zaliczony egzamin", Toast.LENGTH_LONG).show();
         }
         catch(Exception e)
         {
@@ -411,14 +411,14 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    private void addNotPassedExam()
+    public static void addNotPassedExam()
     {
         try
         {
             Subject currentSubject = MainActivity.getCurrentSubject();
             currentSubject.setExamsTaken(currentSubject.getExamsTaken() + 1);
             dataBaseHelper.updateExamsCount(currentSubject.getSubjectID(), currentSubject.getExamsTaken(), currentSubject.getExamsPassed());
-            Toast.makeText(SubjectActivity.this, "Dodano nie zaliczony egzamin", Toast.LENGTH_LONG).show();
+//            Toast.makeText(SubjectActivity.this, "Dodano nie zaliczony egzamin", Toast.LENGTH_LONG).show();
         }
         catch(Exception e)
         {

@@ -1,9 +1,18 @@
 package com.wingor_software.mylearn;
 
+import android.content.Context;
+import android.view.Gravity;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 
-public class Quiz implements Serializable
+public class Quiz implements Serializable, Examable
 {
     private int ID;
     private String question;
@@ -120,5 +129,37 @@ public class Quiz implements Serializable
     public void deleteNoteAttachment(int noteID)
     {
         attachedNotes.remove(noteID);
+    }
+
+    @Override
+    public LinearLayout getLayoutToDisplay(Context context) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setTag("quiz");
+
+        TextView question = new TextView(context);
+        question.setText(this.question);
+        question.setGravity(Gravity.CENTER);
+        linearLayout.addView(question);
+
+        HashSet<Answer> answersSet = new HashSet<>();
+        for (int i = 0; i < getGoodAnswers().size(); i++) {
+            answersSet.add(new Answer(getGoodAnswers().get(i), true));
+        }
+        for (int i = 0; i < getBadAnswers().size(); i++) {
+            answersSet.add(new Answer(getBadAnswers().get(i), false));
+        }
+
+        for(Answer answer : answersSet)
+        {
+            CheckBox checkBox = new CheckBox(context);
+            checkBox.setText(answer.getAnswer());
+            checkBox.setGravity(Gravity.CENTER);
+            if(answer.isCorrect()) checkBox.setTag("correct");
+            else checkBox.setTag("incorrect");
+            linearLayout.addView(checkBox);
+        }
+
+        return linearLayout;
     }
 }
