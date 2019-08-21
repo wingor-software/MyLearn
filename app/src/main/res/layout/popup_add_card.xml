@@ -3,20 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="300dp"
-    android:layout_height="350dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/popup_window_drawable"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+
+        android:text="Please enter your phrase and answer"
+        android:textAlignment="center"
+        android:textColor="@color/colorDarkPurple"
+        android:textSize="18sp"
+        android:textStyle="bold|italic
+" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/wordGetter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/wordGetter"
-            android:hint="Word or a phrase"/>
+            android:fontFamily="casual"
+            android:hint="Word or a phrase" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -28,16 +43,22 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
             android:layout_gravity="center"
-            android:text="Choose color..."
-            android:layout_marginTop="@dimen/fab_margin"/>
+            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_weight="1"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:textColor="@color/colorDarkPurple"
+            android:textStyle="bold|italic"
+            android:textSize="18sp"
+
+            android:text="Choose color..." />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/answerGetter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:hint="Answer" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -75,8 +96,7 @@
             android:onClick="choseColor"
             android:shadowColor="#00000000"
             android:shadowDy="1"
-            android:shadowRadius="1"
-            />
+            android:shadowRadius="1" />
 
         <Button
             android:id="@+id/button_green"
@@ -128,10 +148,16 @@
         android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:background="@drawable/button_drawable"
-        android:gravity="center"
-        android:padding="10dp"
 
-        android:text="add" />
+        android:fontFamily="casual"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:typeface="normal"
+
+        android:text="Add"
+        />
 
 
 </LinearLayout>

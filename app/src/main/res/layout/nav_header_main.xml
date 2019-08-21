@@ -48,16 +48,10 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <CalendarView
+        android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <CalendarView
-            android:id="@+id/calendarView5"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
 </LinearLayout>

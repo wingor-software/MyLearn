@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,10 +64,17 @@ public class MainActivity extends AppCompatActivity
 
     private final static int REQUEST_IMPORT_SUBJECT = 200;
 
+    //kalendarz
+    CalendarView calendarView;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         checkPermission();
 
         myDialog = new Dialog(this);
@@ -83,6 +91,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         dataBaseHelper = new DataBaseHelper(this);
+
+
     }
 
     @Override
@@ -495,5 +505,8 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 100);
         }
     }
+
+
+
 }
 

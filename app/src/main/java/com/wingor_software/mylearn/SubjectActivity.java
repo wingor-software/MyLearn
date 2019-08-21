@@ -314,12 +314,20 @@ public class SubjectActivity extends AppCompatActivity
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FromFileImporter.setSeparator(editText.getText().charAt(0));
-                myDialog.dismiss();
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/*");
-                startActivityForResult(intent, requestCode);
+                if(!editText.getText().toString().equals(""))
+                {
+                    FromFileImporter.setSeparator(editText.getText().charAt(0));
+                    myDialog.dismiss();
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("text/*");
+                    startActivityForResult(intent, requestCode);
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
+
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -342,23 +350,32 @@ public class SubjectActivity extends AppCompatActivity
                         {
                             clearContent();
                             drawAllCardButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                         case QUIZ:
                         {
                             clearContent();
                             drawAllQuizButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                         case NOTES:
                         {
                             clearContent();
                             drawAllNoteButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                     }
                 }
-                myDialog.dismiss();
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -1003,6 +1020,10 @@ public class SubjectActivity extends AppCompatActivity
                     noteAddingOnClick(nameGetter);
                     myDialog.dismiss();
                 }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1014,17 +1035,24 @@ public class SubjectActivity extends AppCompatActivity
     {
         myDialog.setContentView(R.layout.popup_add_card);
         Button addButton = myDialog.findViewById(R.id.addCardButton);
+
+        final TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
+        final TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
+        final String word = wordGetter.getText().toString();
+        final String answer = answerGetter.getText().toString();
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
-                TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
-                String word = wordGetter.getText().toString();
-                String answer = answerGetter.getText().toString();
-                if(!(word.equals("") || answer.equals("")))
+
+                if(!(word.equals("") && !answer.equals("")))
                 {
                     cardAddingOnClick(wordGetter, answerGetter);
                     myDialog.dismiss();
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
                 }
             }
         });
@@ -1050,7 +1078,14 @@ public class SubjectActivity extends AppCompatActivity
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!question.getText().toString().equals("")) showPopupQuizAdding_2(view1,Integer.parseInt(spinner1.getSelectedItem().toString()),Integer.parseInt(spinner2.getSelectedItem().toString()),question.getText().toString());
+                if(!question.getText().toString().equals(""))
+                {
+                    showPopupQuizAdding_2(view1, Integer.parseInt(spinner1.getSelectedItem().toString()), Integer.parseInt(spinner2.getSelectedItem().toString()), question.getText().toString());
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1122,6 +1157,10 @@ public class SubjectActivity extends AppCompatActivity
                     quizAddingOnClick(name_of_quiz, good_answers_strings.toString(),bad_answers_strings.toString());
                     myDialog.dismiss();
                 }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1179,7 +1218,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         }
 
 
@@ -1239,7 +1278,7 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
 
             }
@@ -1288,7 +1327,7 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
 
             }
