@@ -92,8 +92,10 @@
 
             <Button
                 android:id="@+id/addCalendarEventButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/button_drawable"
+                android:layout_gravity="center"
                 android:text="Add new Event" />
         </LinearLayout>
     </LinearLayout>

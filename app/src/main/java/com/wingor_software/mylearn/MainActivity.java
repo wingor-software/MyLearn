@@ -95,8 +95,6 @@ public class MainActivity extends AppCompatActivity
         final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
 
-        toastMessage(calendarView.getDate()+"");
-
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -105,6 +103,7 @@ public class MainActivity extends AppCompatActivity
                 titleOfDay.setText("To do on : " + i + "/" +i1 + "/" +i2);
 
                 try {
+                    contentOfDay.setText("Nothing to do :)");
                     for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
                         if(c.getDate().equals(i+"-"+i1+"-"+i2))
                         {
@@ -119,14 +118,35 @@ public class MainActivity extends AppCompatActivity
 
                 }
 
-            }
-        });
-        addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog.setContentView(R.layout.popup_add_calendarevent);
+                        final TextInputEditText wordgetter = myDialog.findViewById(R.id.wordGetterpopupcalendar);
+                        Button addCalendarEventButtonpopup = myDialog.findViewById(R.id.addCalendarEventButtonpopup);
+                        addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(!wordgetter.getText().toString().equals(""))
+                                {
+                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                    myDialog.dismiss();
+                                }
+                                else
+                                {
+                                    toastMessage("Please enter a non-empty value!");
+                                }
+
+                            }
+                        });
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+                    }
+                });
 
             }
         });
+
 
 
 
