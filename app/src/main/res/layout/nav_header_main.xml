@@ -84,11 +84,17 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="casual"
 
-                android:text="DATE"
+                android:text="CONTENT OF DAY"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold|italic" />
+
+            <Button
+                android:id="@+id/addCalendarEventButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add new Event" />
         </LinearLayout>
     </LinearLayout>
 

@@ -87,25 +87,49 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        dataBaseHelper = new DataBaseHelper(this);
 
         final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
         final LinearLayout todoLayout = navigationView.getHeaderView(0).findViewById(R.id.todoLayout);
         final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
         final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+        toastMessage(calendarView.getDate()+"");
 
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
-            public void onSelectedDayChange(CalendarView calendarView, int i, int i1, int i2) {
-                titleOfDay.setText("To do on : " + i2 + "/" +i1 + "/" +i);
-                contentOfDay.setText("Nothing to do :)");
+            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+
+                titleOfDay.setText("To do on : " + i + "/" +i1 + "/" +i2);
+
+                try {
+                    for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                        if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                        {
+                            contentOfDay.setText(c.getContent());
+                            break;
+                        }
+
+                    }
+                }
+                catch (EmptyDataBaseException e)
+                {
+
+                }
+
+            }
+        });
+        addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
             }
         });
 
 
 
-        dataBaseHelper = new DataBaseHelper(this);
 
 
 
