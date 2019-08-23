@@ -13,7 +13,7 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
+        android:fontFamily="casual"
 
         android:text="Please enter your phrase and answer"
         android:textAlignment="center"

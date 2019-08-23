@@ -64,9 +64,6 @@ public class MainActivity extends AppCompatActivity
 
     private final static int REQUEST_IMPORT_SUBJECT = 200;
 
-    //kalendarz
-    CalendarView calendarView;
-
 
 
     @Override
@@ -90,7 +87,27 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
+        final LinearLayout todoLayout = navigationView.getHeaderView(0).findViewById(R.id.todoLayout);
+        final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
+        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView calendarView, int i, int i1, int i2) {
+                titleOfDay.setText("To do on : " + i2 + "/" +i1 + "/" +i);
+                contentOfDay.setText("Nothing to do :)");
+
+            }
+        });
+
+
+
         dataBaseHelper = new DataBaseHelper(this);
+
+
 
 
     }
