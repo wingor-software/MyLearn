@@ -4,6 +4,7 @@
     <color name="colorLightPrimary">#8A43BD</color>
     <color name="colorPrimary">#62148C</color>
     <color name="colorPrimaryDark">#42005E</color>
+    <color name="colorDarkModeBackground">#2D2236</color>
 
     <!--kolory dodatkowe-->
     <color name="colorLightAccent">#4F03DD</color>
@@ -52,6 +53,9 @@
     <color name="colorPurple">#aa00ff</color>
     <color name="colorDarkPurple">#7200ca</color>
 
+    <color name="colorLightGrey">#aaaaaa</color>
+    <color name="colorGrey">#808080</color>
+
     <color name="black_overlay">#66000000</color>
 
 
@@ -60,6 +64,7 @@
     <color name="half_black">#808080</color>
     <color name="white_pressed">#F1F1F1</color>
     <color name="white">#FAFAFA</color>
+    <color name="black">#000000</color>
 
 
 </resources>

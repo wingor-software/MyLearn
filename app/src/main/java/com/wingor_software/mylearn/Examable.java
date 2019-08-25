@@ -5,5 +5,5 @@ import android.widget.LinearLayout;
 
 public interface Examable
 {
-    LinearLayout getLayoutToDisplay(Context context);
+    LinearLayout getLayoutToDisplay(Context context, DataBaseHelper dataBaseHelper);
 }

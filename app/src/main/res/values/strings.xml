@@ -19,6 +19,7 @@
     <string name="notes">Notes</string>
     <string name="preference">3</string>
     <string name="preference_text_size">18</string>
+    <string name="preference_display_mode">0</string>
 
     <string name="subject_warning">Looks like you don\'t have any subjects</string>
     <string name="note_warning">Looks like you don\'t have any notes</string>

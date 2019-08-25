@@ -1,16 +1,19 @@
 package com.wingor_software.mylearn;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -27,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +39,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.CompoundButtonCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -121,6 +127,7 @@ public class SubjectActivity extends AppCompatActivity
     StringBuilder path_to_save = new StringBuilder();
 
     private ConstraintLayout scoreLayout;
+    private ScrollView subjectScrollView;
 
     private static ExamType examType;
 
@@ -162,7 +169,31 @@ public class SubjectActivity extends AppCompatActivity
         clearContent();
         scoreLayout.setVisibility(View.VISIBLE);
         ProgressBar progressBar = scoreLayout.findViewById(R.id.scoreBar);
+
         TextView scoreText = scoreLayout.findViewById(R.id.scoreText);
+        int light = getResources().getColor(R.color.colorPrimary);
+        int dark = getResources().getColor(R.color.white);
+        scoreText.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
+        Button examStartButton = (Button) findViewById(R.id.examStartButton);
+        examStartButton.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkBoxCards);
+        checkBox.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
+        checkBox = (CheckBox) findViewById(R.id.checkBoxQuestions);
+        checkBox.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
+        dark = getResources().getColor(R.color.colorLightPrimary);
+        for (int i = 0; i < 2; i++) {
+            if (Build.VERSION.SDK_INT < 21) {
+                CompoundButtonCompat.setButtonTintList(checkBox, ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//Use android.support.v4.widget.CompoundButtonCompat when necessary else
+            } else {
+                checkBox.setButtonTintList(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//setButtonTintList is accessible directly on API>19
+            }
+            checkBox = (CheckBox) findViewById(R.id.checkBoxCards);
+        }
+
         int examsTaken = 0;
         int examsPassed = 0;
         try
@@ -187,6 +218,12 @@ public class SubjectActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab_subject);
 
+        dataBaseHelper = new DataBaseHelper(this);
+        subjectScrollView = findViewById(R.id.scrollView2);
+        int light = getResources().getColor(R.color.white);
+        int dark = getResources().getColor(R.color.colorDarkModeBackground);
+        subjectScrollView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -194,11 +231,13 @@ public class SubjectActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        light = getResources().getColor(R.color.black);
+        dark = getResources().getColor(R.color.white);
+        navigationView.setItemTextColor(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));
 
         subjectLayout = findViewById(R.id.subjectActivityLayout);
         myDialog = new Dialog(this);
-
-        dataBaseHelper = new DataBaseHelper(this);
 
         navView = findViewById(R.id.nav_bottom_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -211,6 +250,7 @@ public class SubjectActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
         try {
             this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
         } catch (Exception e) {
@@ -417,16 +457,21 @@ public class SubjectActivity extends AppCompatActivity
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
-            //tutaj dodajemy jeden zaliczone exam
-            addPassedExam();
+
         } else if (id == R.id.nav_send) {
-            //dodaje jeden nie zaliczony exam
-            addNotPassedExam();
+
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void restartApp()
+    {
+        Intent i = new Intent(getApplicationContext(), SubjectActivity.class);
+        startActivity(i);
+        finish();
     }
 
     public static void addPassedExam()
@@ -469,6 +514,9 @@ public class SubjectActivity extends AppCompatActivity
         final Button b = new Button(SubjectActivity.this);
 
         b.setText(note.getTitle());
+        int light = getResources().getColor(R.color.black);
+        int dark = getResources().getColor(R.color.white);
+        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         b.setTag("note_" + note.getID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
@@ -526,6 +574,9 @@ public class SubjectActivity extends AppCompatActivity
         final Button b = new Button(SubjectActivity.this);
 
         b.setText(card.getWord());
+        int light = getResources().getColor(R.color.black);
+        int dark = getResources().getColor(R.color.white);
+        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         b.setTag("card_" + card.getID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);
@@ -584,6 +635,9 @@ public class SubjectActivity extends AppCompatActivity
         final Button b = new Button(SubjectActivity.this);
 
         b.setText(quiz.getQuestion());
+        int light = getResources().getColor(R.color.black);
+        int dark = getResources().getColor(R.color.white);
+        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         b.setTag("quiz_" + quiz.getID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);

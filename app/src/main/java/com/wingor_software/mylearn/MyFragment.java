@@ -16,14 +16,16 @@ public class MyFragment extends Fragment
 {
     private static final String ARG_PAGE = "arg_page";
     private LinearLayout examableLayout;
+    private static DataBaseHelper dataBaseHelper;
 
     public MyFragment()
     {
 
     }
 
-    public static MyFragment newInstance(int pageNumber)
+    public static MyFragment newInstance(int pageNumber, DataBaseHelper dataBase)
     {
+        dataBaseHelper = dataBase;
         MyFragment myFragment = new MyFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(ARG_PAGE, pageNumber);
@@ -38,7 +40,7 @@ public class MyFragment extends Fragment
         Examable[] examables = ExamActivity.getExamables();
         try
         {
-            LinearLayout linearLayout = examables[pageNumber].getLayoutToDisplay(getActivity());
+            LinearLayout linearLayout = examables[pageNumber].getLayoutToDisplay(getActivity(), dataBaseHelper);
             linearLayout.setGravity(Gravity.CENTER);
             examableLayout = linearLayout;
             return linearLayout;

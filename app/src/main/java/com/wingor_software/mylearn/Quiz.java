@@ -1,10 +1,14 @@
 package com.wingor_software.mylearn;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.os.Build;
 import android.view.Gravity;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.widget.CompoundButtonCompat;
 
 import org.w3c.dom.Text;
 
@@ -132,7 +136,10 @@ public class Quiz implements Serializable, Examable
     }
 
     @Override
-    public LinearLayout getLayoutToDisplay(Context context) {
+    public LinearLayout getLayoutToDisplay(Context context, DataBaseHelper dataBaseHelper) {
+        int light = context.getResources().getColor(R.color.black);
+        int dark = context.getResources().getColor(R.color.white);
+
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setTag("quiz");
@@ -140,6 +147,7 @@ public class Quiz implements Serializable, Examable
         TextView question = new TextView(context);
         question.setText(this.question);
         question.setGravity(Gravity.CENTER);
+        question.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         linearLayout.addView(question);
 
         HashSet<Answer> answersSet = new HashSet<>();
@@ -150,11 +158,20 @@ public class Quiz implements Serializable, Examable
             answersSet.add(new Answer(getBadAnswers().get(i), false));
         }
 
+        light = context.getResources().getColor(R.color.colorPrimary);
+        int lightText = context.getResources().getColor(R.color.black);
+        dark = context.getResources().getColor(R.color.white);
         for(Answer answer : answersSet)
         {
             CheckBox checkBox = new CheckBox(context);
             checkBox.setText(answer.getAnswer());
             checkBox.setGravity(Gravity.CENTER);
+            checkBox.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? lightText : dark);
+            if (Build.VERSION.SDK_INT < 21) {
+                CompoundButtonCompat.setButtonTintList(checkBox, ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//Use android.support.v4.widget.CompoundButtonCompat when necessary else
+            } else {
+                checkBox.setButtonTintList(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//setButtonTintList is accessible directly on API>19
+            }
             if(answer.isCorrect()) checkBox.setTag("correct");
             else checkBox.setTag("incorrect");
             linearLayout.addView(checkBox);

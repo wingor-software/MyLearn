@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.FileUtils;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -28,7 +30,9 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.graphics.PathUtils;
+import androidx.core.widget.NestedScrollView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -74,9 +78,19 @@ public class NoteActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+//        int light = getResources().getColor(R.color.white);
+//        int dark = getResources().getColor(R.color.colorDarkModeBackground);
+        coordinatorLayout.setBackground((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getDrawable(R.color.white) : getResources().getDrawable(R.color.colorDarkModeBackground));
+
         viewSwitcher = (ViewSwitcher) findViewById(R.id.noteViewSwitcher);
+
+        int light = getResources().getColor(R.color.black);
+        int dark = getResources().getColor(R.color.white);
         noteContent = (TextView) findViewById(R.id.noteContent);
         editNote = (EditText) findViewById(R.id.editNote);
+        noteContent.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        editNote.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
 
         initFabButtons();
 

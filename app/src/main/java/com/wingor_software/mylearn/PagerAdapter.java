@@ -8,9 +8,11 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 public class PagerAdapter extends FragmentStatePagerAdapter
 {
     private MyFragment[] fragments = new MyFragment[10];
+    private DataBaseHelper dataBaseHelper;
 
-    public PagerAdapter(FragmentManager fm) {
+    public PagerAdapter(FragmentManager fm, DataBaseHelper dataBaseHelper) {
         super(fm);
+        this.dataBaseHelper = dataBaseHelper;
     }
 
     @Nullable
@@ -21,7 +23,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter
 
     @Override
     public Fragment getItem(int position) {
-        MyFragment myFragment = MyFragment.newInstance(position);
+        MyFragment myFragment = MyFragment.newInstance(position, dataBaseHelper);
         fragments[position] = myFragment;
         return myFragment;
     }

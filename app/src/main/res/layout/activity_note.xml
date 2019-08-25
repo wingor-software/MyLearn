@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -49,12 +50,12 @@
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:layout_marginTop="@dimen/app_bar_height"
         app:fab_addButtonColorNormal="@color/colorPrimary"
         app:fab_addButtonColorPressed="@color/colorPrimaryDark"
         app:fab_addButtonPlusIconColor="@color/white"
         app:fab_expandDirection="up"
-        android:layout_gravity="end|bottom"
         app:fab_labelStyle="@style/customFab">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -62,21 +63,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            app:fab_icon="@drawable/baseline_add_photo_alternate_white_18"
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_add_photo_alternate_white_18"
             app:fab_size="mini"
-            app:fab_title="Add photos"
-            />
+            app:fab_title="Add photos" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_from_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            app:fab_icon="@drawable/baseline_note_add_white_48dp"
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_note_add_white_48dp"
             app:fab_size="mini"
             app:fab_title="Add note from .txt file"
             app:maxImageSize="24dp" />
@@ -86,9 +86,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            app:fab_icon="@drawable/baseline_file_copy_white_18"
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_file_copy_white_18"
             app:fab_size="mini"
             app:fab_title="Add reference to .pdf or .doc file"
             app:maxImageSize="24dp" />
@@ -98,9 +98,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            app:fab_icon="@drawable/baseline_add_white_48dp"
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_add_white_48dp"
             app:fab_size="mini"
             app:fab_title="Zoom in"
             app:maxImageSize="24dp" />
@@ -110,9 +110,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            app:fab_icon="@drawable/baseline_remove_white_48dp"
             app:fab_colorNormal="@color/colorPrimary"
             app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_remove_white_48dp"
             app:fab_size="mini"
             app:fab_title="Zoom out"
             app:maxImageSize="18dp" />

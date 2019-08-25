@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -45,7 +46,7 @@ public class ExamActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         setSupportActionBar(toolbar);
-        mPageAdapter = new PagerAdapter(getSupportFragmentManager());
+        mPageAdapter = new PagerAdapter(getSupportFragmentManager(), dataBaseHelper);
 //        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPageAdapter);
@@ -53,6 +54,12 @@ public class ExamActivity extends AppCompatActivity {
         pageCount = (TextView) findViewById(R.id.page_count);
         dataBaseHelper = new DataBaseHelper(this);
         examables = getExamableList(10);
+
+        int light = getResources().getColor(R.color.white);
+        int dark = getResources().getColor(R.color.colorDarkModeBackground);
+        ConstraintLayout constraintLayoutExam = (ConstraintLayout) findViewById(R.id.constraintLayoutExam);
+        constraintLayoutExam.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

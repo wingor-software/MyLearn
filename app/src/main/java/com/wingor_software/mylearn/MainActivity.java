@@ -2,8 +2,11 @@ package com.wingor_software.mylearn;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity
 
     //odnosnik do layoutu przechowujacego przedmioty
     LinearLayout subjectsLayout;
+    ScrollView mainScrollView;
 
     //odnoscnik do pola tekstowego ostrzezenia
     TextView warning;
@@ -69,9 +74,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         checkPermission();
 
+        dataBaseHelper = new DataBaseHelper(this);
         myDialog = new Dialog(this);
         subjectsLayout = findViewById(R.id.subjectsLayout);
-
+        mainScrollView = findViewById(R.id.mainScrollView);
+        int light = getResources().getColor(R.color.white);
+        int dark = getResources().getColor(R.color.colorDarkModeBackground);
+        mainScrollView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -81,8 +90,10 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-
-        dataBaseHelper = new DataBaseHelper(this);
+        navigationView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        light = getResources().getColor(R.color.black);
+        dark = getResources().getColor(R.color.white);
+        navigationView.setItemTextColor(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));
     }
 
     @Override
@@ -179,14 +190,23 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
-
+            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
+            restartApp();
         } else if (id == R.id.nav_send) {
-
+            dataBaseHelper.setDisplayMode(DisplayMode.DARK);
+            restartApp();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void restartApp()
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -272,6 +292,9 @@ public class MainActivity extends AppCompatActivity
         final Button b =  new Button(MainActivity.this);
 
         b.setText(subject.getSubjectName());
+        int light = getResources().getColor(R.color.black);
+        int dark = getResources().getColor(R.color.white);
+        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         b.setTag("subject_" + subject.getSubjectID());
         b.setMinimumWidth(200);
         b.setMinimumHeight(200);

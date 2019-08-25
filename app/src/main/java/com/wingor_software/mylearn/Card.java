@@ -1,6 +1,8 @@
 package com.wingor_software.mylearn;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.Gravity;
 import android.widget.Button;
 import android.widget.EditText;
@@ -106,7 +108,10 @@ public class Card implements Serializable, Examable
     }
 
     @Override
-    public LinearLayout getLayoutToDisplay(Context context) {
+    public LinearLayout getLayoutToDisplay(Context context, DataBaseHelper dataBaseHelper) {
+        int light = context.getResources().getColor(R.color.black);
+        int dark = context.getResources().getColor(R.color.white);
+
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setTag("card");
@@ -114,12 +119,20 @@ public class Card implements Serializable, Examable
         TextView word = new TextView(context);
         word.setText(this.word);
         word.setGravity(Gravity.CENTER);
+        word.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         linearLayout.addView(word);
 
 
         EditText editText = new EditText(context);
         editText.setHint("Answer");
         editText.setTag(answer);
+        editText.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        light = context.getResources().getColor(R.color.colorGrey);
+        dark = context.getResources().getColor(R.color.colorLightGrey);
+        editText.setHintTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        light = context.getResources().getColor(R.color.colorPrimaryDark);
+        dark = context.getResources().getColor(R.color.colorLightPrimary);
+        editText.getBackground().setColorFilter( (dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT ? light : dark), PorterDuff.Mode.SRC_IN);
         linearLayout.addView(editText);
 
         return linearLayout;

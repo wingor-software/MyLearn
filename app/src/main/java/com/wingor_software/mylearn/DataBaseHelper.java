@@ -19,7 +19,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "MyLearn_DB";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 7;
 
     //PRZEDMIOTY---------------------------------------------------
     private static final String SUBJECT_TABLE_NAME = "subjects";
@@ -58,6 +58,9 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String QUIZ_COL6 = "AttachedNoteIDs";
     private static final String QUIZ_COL7 = "Color";
 
+    private static final String DISPLAY_MODE_TABLE_NAME = "display_mode";
+    private static final String DISPLAY_MODE_COL1 = "mode";
+
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -81,10 +84,17 @@ public class DataBaseHelper extends SQLiteOpenHelper
         String createTableQuiz = "CREATE TABLE " + QUIZ_TABLE_NAME + " ( " + QUIZ_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QUIZ_COL2 + " TEXT, " + QUIZ_COL3 + " TEXT, "
                 + QUIZ_COL4 + " TEXT, " + QUIZ_COL5 + " INTEGER, " + QUIZ_COL6 + " TEXT, " + QUIZ_COL7 + " INTEGER);";
 
+        String createTableDisplayMode = "CREATE TABLE " + DISPLAY_MODE_TABLE_NAME + " ( " + DISPLAY_MODE_COL1 + " INTEGER);";
+
         sqLiteDatabase.execSQL(createTableSubject);
         sqLiteDatabase.execSQL(createTableCard);
         sqLiteDatabase.execSQL(createTableNote);
         sqLiteDatabase.execSQL(createTableQuiz);
+        sqLiteDatabase.execSQL(createTableDisplayMode);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DISPLAY_MODE_COL1, 0);
+        sqLiteDatabase.insert(DISPLAY_MODE_TABLE_NAME, null, contentValues);
     }
 
     /**
@@ -99,6 +109,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CARD_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QUIZ_TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DISPLAY_MODE_TABLE_NAME);
 
         onCreate(sqLiteDatabase);
     }
@@ -659,5 +670,26 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Quiz quiz = new Quiz(data.getInt(0), data.getString(1), fromStringToStringArrayList(data.getString(2)), fromStringToStringArrayList(data.getString(3)), data.getInt(4), noteIDsToArrayList(data.getString(5)), data.getInt(6));
         data.close();
         return quiz;
+    }
+
+    //--------------------------------------------------------
+    //DISPLAY MODE METHODS ------------------------------------
+
+    public DisplayMode getDisplayMode()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + DISPLAY_MODE_TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        data.moveToNext();
+        DisplayMode mode = DisplayMode.valueOf(data.getInt(0));
+        data.close();
+        return mode;
+    }
+
+    public void setDisplayMode(DisplayMode displayMode)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + DISPLAY_MODE_TABLE_NAME + " SET " + DISPLAY_MODE_COL1 + " = " + displayMode.getValue() + ";";
+        db.execSQL(query);
     }
 }
