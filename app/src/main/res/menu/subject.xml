@@ -26,4 +26,9 @@
         android:orderInCategory="5"
         android:title="Import questions from file"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zip_file_export"
+        android:orderInCategory="6"
+        android:title="Export zip file"
+        app:showAsAction="never"/>
 </menu>

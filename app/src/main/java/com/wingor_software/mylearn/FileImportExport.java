@@ -3,15 +3,23 @@ package com.wingor_software.mylearn;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class FileImportExport
 {
@@ -203,5 +211,76 @@ public class FileImportExport
     private static Bitmap decodeBitmap(byte[] bytes)
     {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static void exportZipSubject(Context context, DataBaseHelper dataBaseHelper)
+    {
+        File serialized = exportAndShareSubject(context, dataBaseHelper);
+        int BUFFER = 6 * 1024;
+        try
+        {
+            BufferedInputStream origin;
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            String name = serialized.getName().substring(0, serialized.getName().length() - 4);
+            File file = new File(dir, name + ".zip");
+            FileOutputStream fout = new FileOutputStream(file.getPath());
+            ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout));
+            byte[] data = new byte[BUFFER];
+
+            FileInputStream fi = new FileInputStream(serialized.getPath());
+            origin = new BufferedInputStream(fi, BUFFER);
+            ZipEntry entry = new ZipEntry(serialized.getName());
+            zout.putNextEntry(entry);
+            int count;
+            while((count = origin.read(data, 0, BUFFER)) != -1)
+            {
+                zout.write(data, 0, count);
+            }
+
+            ArrayList<ArrayList<String>> uriPaths = getFilePaths(dataBaseHelper);
+            for (int i = 0; i < uriPaths.size(); i++) {
+                for (int j = 0; j < uriPaths.get(i).size(); j++) {
+                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("%2F") + 3));
+                    zout.putNextEntry(entry);
+                    InputStream is = context.getContentResolver().openInputStream(Uri.parse(uriPaths.get(i).get(j)));
+                    origin = new BufferedInputStream(is, BUFFER);
+                    while((count = origin.read(data, 0, BUFFER)) != -1)
+                        zout.write(data, 0 , count);
+                }
+            }
+
+            origin.close();
+            zout.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static ArrayList<ArrayList<String>> getFilePaths(DataBaseHelper dataBaseHelper)
+    {
+        ArrayList<ArrayList<String>> paths = new ArrayList<>();
+        try
+        {
+            int subjectID = MainActivity.getCurrentSubject().getSubjectID();
+            List<Note> noteList = dataBaseHelper.getNoteList(subjectID);
+            for (Note note : noteList)
+            {
+                String[] notePaths = note.getFilePath().split("\n");
+                ArrayList<String> notePathsList = new ArrayList<>();
+                for (String notePath : notePaths)
+                {
+                    Log.d("path", notePath);
+                    notePathsList.add(notePath);
+                }
+                paths.add(notePathsList);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return paths;
     }
 }

@@ -342,6 +342,11 @@ public class SubjectActivity extends AppCompatActivity
                showSeparatorPopup(REQUEST_CODE_READING_FILE_QUIZ);
                 return true;
             }
+            case R.id.action_zip_file_export:
+            {
+                new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
