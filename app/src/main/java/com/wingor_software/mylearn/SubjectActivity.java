@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -59,10 +60,13 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -206,6 +210,76 @@ public class SubjectActivity extends AppCompatActivity
         uriList = new ArrayList<>();
 
         scoreLayout = findViewById(R.id.scoreLayout);
+
+
+
+        //kalendarz
+
+        final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
+        final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
+        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+        titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+
+                titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
+
+                try {
+                    contentOfDay.setText("Nothing to do :)");
+                    for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                        if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                        {
+                            contentOfDay.setText(c.getContent());
+                            break;
+                        }
+
+                    }
+                }
+                catch (EmptyDataBaseException e)
+                {
+
+                }
+
+                addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog.setContentView(R.layout.popup_add_calendarevent);
+                        final TextInputEditText wordgetter = myDialog.findViewById(R.id.wordGetterpopupcalendar);
+                        Button addCalendarEventButtonpopup = myDialog.findViewById(R.id.addCalendarEventButtonpopup);
+                        addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(!wordgetter.getText().toString().equals(""))
+                                {
+                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                    myDialog.dismiss();
+                                }
+                                else
+                                {
+                                    toastMessage("Please enter a non-empty value!");
+                                }
+
+                            }
+                        });
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+
+
     }
 
     @Override

@@ -14,6 +14,11 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
+
+    <!-->tutaj wlasne rzeczy do side menu<!-->
+    <string name="menu_info">Info</string>
+    <string name="menu_contact">Contact</string>
+
     <string name="cards">Cards</string>
     <string name="quiz">Quiz</string>
     <string name="notes">Notes</string>
@@ -138,5 +143,12 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+
+    <string name="License">
+        Copyright © 2019 MyLearn \n
+        All Rights Reserved \n\n
+        This product is protected by copyright and distributed under
+        licenses restricting copying, distribution and decompilation.
+    </string>
 
 </resources>

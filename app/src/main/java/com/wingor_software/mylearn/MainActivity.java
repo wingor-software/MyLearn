@@ -32,8 +32,11 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -90,17 +93,20 @@ public class MainActivity extends AppCompatActivity
         dataBaseHelper = new DataBaseHelper(this);
 
         final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
-        final LinearLayout todoLayout = navigationView.getHeaderView(0).findViewById(R.id.todoLayout);
         final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
         final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+
+
+        titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
 
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
 
-                titleOfDay.setText("To do on : " + i + "/" +i1 + "/" +i2);
+                titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
 
                 try {
                     contentOfDay.setText("Nothing to do :)");
@@ -146,13 +152,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-
-
-
-
-
-
 
     }
 
@@ -252,6 +251,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
+
+        }
+
+        else if (id == R.id.nav_info)
+        {
+            Intent intent = new Intent(MainActivity.this,Info.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.nav_contact)
+        {
 
         }
 
