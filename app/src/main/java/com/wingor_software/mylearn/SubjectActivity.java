@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,10 +66,13 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -245,6 +249,76 @@ public class SubjectActivity extends AppCompatActivity
         uriList = new ArrayList<>();
 
         scoreLayout = findViewById(R.id.scoreLayout);
+
+
+
+        //kalendarz
+
+        final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
+        final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
+        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+        titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+
+                titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
+
+                try {
+                    contentOfDay.setText("Nothing to do :)");
+                    for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                        if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                        {
+                            contentOfDay.setText(c.getContent());
+                            break;
+                        }
+
+                    }
+                }
+                catch (EmptyDataBaseException e)
+                {
+
+                }
+
+                addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog.setContentView(R.layout.popup_add_calendarevent);
+                        final TextInputEditText wordgetter = myDialog.findViewById(R.id.wordGetterpopupcalendar);
+                        Button addCalendarEventButtonpopup = myDialog.findViewById(R.id.addCalendarEventButtonpopup);
+                        addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(!wordgetter.getText().toString().equals(""))
+                                {
+                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                    myDialog.dismiss();
+                                }
+                                else
+                                {
+                                    toastMessage("Please enter a non-empty value!");
+                                }
+
+                            }
+                        });
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -359,12 +433,20 @@ public class SubjectActivity extends AppCompatActivity
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FromFileImporter.setSeparator(editText.getText().charAt(0));
-                myDialog.dismiss();
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/*");
-                startActivityForResult(intent, requestCode);
+                if(!editText.getText().toString().equals(""))
+                {
+                    FromFileImporter.setSeparator(editText.getText().charAt(0));
+                    myDialog.dismiss();
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("text/*");
+                    startActivityForResult(intent, requestCode);
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
+
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -387,23 +469,32 @@ public class SubjectActivity extends AppCompatActivity
                         {
                             clearContent();
                             drawAllCardButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                         case QUIZ:
                         {
                             clearContent();
                             drawAllQuizButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                         case NOTES:
                         {
                             clearContent();
                             drawAllNoteButtonsContaining(textInputEditText.getText().toString());
+                            myDialog.dismiss();
+
                             break;
                         }
                     }
                 }
-                myDialog.dismiss();
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -1062,6 +1153,10 @@ public class SubjectActivity extends AppCompatActivity
                     noteAddingOnClick(nameGetter);
                     myDialog.dismiss();
                 }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1073,17 +1168,24 @@ public class SubjectActivity extends AppCompatActivity
     {
         myDialog.setContentView(R.layout.popup_add_card);
         Button addButton = myDialog.findViewById(R.id.addCardButton);
+
+        final TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
+        final TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
+        final String word = wordGetter.getText().toString();
+        final String answer = answerGetter.getText().toString();
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextInputEditText wordGetter = myDialog.findViewById(R.id.wordGetter);
-                TextInputEditText answerGetter = myDialog.findViewById(R.id.answerGetter);
-                String word = wordGetter.getText().toString();
-                String answer = answerGetter.getText().toString();
-                if(!(word.equals("") || answer.equals("")))
+
+                if(!(word.equals("") && !answer.equals("")))
                 {
                     cardAddingOnClick(wordGetter, answerGetter);
                     myDialog.dismiss();
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
                 }
             }
         });
@@ -1109,7 +1211,14 @@ public class SubjectActivity extends AppCompatActivity
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!question.getText().toString().equals("")) showPopupQuizAdding_2(view1,Integer.parseInt(spinner1.getSelectedItem().toString()),Integer.parseInt(spinner2.getSelectedItem().toString()),question.getText().toString());
+                if(!question.getText().toString().equals(""))
+                {
+                    showPopupQuizAdding_2(view1, Integer.parseInt(spinner1.getSelectedItem().toString()), Integer.parseInt(spinner2.getSelectedItem().toString()), question.getText().toString());
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1181,6 +1290,10 @@ public class SubjectActivity extends AppCompatActivity
                     quizAddingOnClick(name_of_quiz, good_answers_strings.toString(),bad_answers_strings.toString());
                     myDialog.dismiss();
                 }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
+                }
             }
         });
 
@@ -1238,7 +1351,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         }
 
 
@@ -1298,7 +1411,7 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
 
             }
@@ -1347,7 +1460,7 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
 
             }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="300dp"
-    android:layout_height="450dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/popup_window_drawable"
     android:orientation="vertical">
@@ -18,9 +18,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="Przykładowy tekst"
+
+            android:fontFamily="casual"
+            android:textAlignment="center"
+            android:textColor="@color/colorDarkPurple"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold|italic"
+
+            android:text="Przykładowy tekst"
+ />
 
         <LinearLayout
             android:id="@+id/checkbox_quiz_layout"
@@ -35,8 +41,13 @@
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
             android:background="@drawable/button_drawable"
+
+            android:fontFamily="casual"
             android:gravity="center"
             android:padding="10dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+
             android:text="Check" />
 
     </LinearLayout>

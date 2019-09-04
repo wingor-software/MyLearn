@@ -6,60 +6,52 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/popup_window_drawable"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/resultExamText"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_marginBottom="@dimen/fab_margin"
-
         android:fontFamily="casual"
+
+        android:text="Enter event name"
         android:textAlignment="center"
         android:textColor="@color/colorDarkPurple"
         android:textSize="18sp"
-        android:textStyle="bold|italic"
+        android:textStyle="bold|italic
+" />
 
-        android:text="Przykładowy tekst"
-        />
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/showAnswersExam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_drawable"
-        android:layout_gravity="center"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/wordGetterpopupcalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:hint="Event name..." />
 
-        android:layout_margin="10dp"
-
-
-        android:fontFamily="casual"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:textSize="18sp"
-        android:typeface="normal"
-
-        android:text="Show answers"
-        />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/okExamResultButton"
+        android:id="@+id/addCalendarEventButtonpopup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="15dp"
         android:background="@drawable/button_drawable"
-        android:gravity="center"
-
 
         android:fontFamily="casual"
+        android:gravity="center"
         android:textStyle="bold"
         android:padding="10dp"
         android:textSize="18sp"
         android:typeface="normal"
 
-        android:text="OK" />
+        android:text="Add"
+        />
 
 
 </LinearLayout>

@@ -14,7 +14,7 @@
         android:bottom="30dp"
         />
     <stroke
-        android:width="3dp"
+        android:width="5dp"
         android:color="@color/colorPopupBorder"
         />
 

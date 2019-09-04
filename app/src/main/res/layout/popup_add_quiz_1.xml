@@ -2,9 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="300dp"
-    android:layout_height="300dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/popup_window_drawable">
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="casual"
+        android:textAlignment="center"
+        android:textColor="@color/colorDarkPurple"
+        android:textSize="18sp"
+        android:textStyle="bold|italic"
+        android:text="Enter the question and the number of good and bad answers"
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -15,6 +27,7 @@
             android:id="@+id/questionGetter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:hint="Question name..." />
 
         <TextView
@@ -22,7 +35,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Select number answers..." />
+            android:fontFamily="casual"
+            android:textColor="@color/colorDarkPurple"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"
+            android:text="Select number of answers" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,6 +51,7 @@
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="casual"
                 android:text="Correct answers" />
 
             <Spinner
@@ -48,6 +66,7 @@
                 android:id="@+id/textView7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:fontFamily="casual"
                 android:text="Incorerect answers" />
 
             <Spinner
@@ -69,7 +88,10 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/button_drawable"
         android:gravity="center"
+        android:fontFamily="casual"
         android:padding="10dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
 
         android:text="next" />
 

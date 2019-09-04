@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,8 +39,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -74,10 +78,14 @@ public class MainActivity extends AppCompatActivity
     private final static int REQUEST_IMPORT_SUBJECT = 200;
     private static final int REQUEST_IMPORT_ZIP_SUBJECT = 300;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         checkPermission();
 
         dataBaseHelper = new DataBaseHelper(this);
@@ -96,10 +104,74 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+		
         navigationView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         light = getResources().getColor(R.color.black);
         dark = getResources().getColor(R.color.white);
         navigationView.setItemTextColor(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));
+
+        dataBaseHelper = new DataBaseHelper(this);
+
+        final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
+        final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
+        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+
+
+        titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
+
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+
+                titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
+
+                try {
+                    contentOfDay.setText("Nothing to do :)");
+                    for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                        if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                        {
+                            contentOfDay.setText(c.getContent());
+                            break;
+                        }
+
+                    }
+                }
+                catch (EmptyDataBaseException e)
+                {
+
+                }
+
+                addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog.setContentView(R.layout.popup_add_calendarevent);
+                        final TextInputEditText wordgetter = myDialog.findViewById(R.id.wordGetterpopupcalendar);
+                        Button addCalendarEventButtonpopup = myDialog.findViewById(R.id.addCalendarEventButtonpopup);
+                        addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(!wordgetter.getText().toString().equals(""))
+                                {
+                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                    myDialog.dismiss();
+                                }
+                                else
+                                {
+                                    toastMessage("Please enter a non-empty value!");
+                                }
+
+                            }
+                        });
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+                    }
+                });
+
+            }
+        });
     }
 
     @Override
@@ -235,6 +307,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
             dataBaseHelper.setDisplayMode(DisplayMode.DARK);
             restartApp();
+        }
+
+        else if (id == R.id.nav_info)
+        {
+            Intent intent = new Intent(MainActivity.this,Info.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.nav_contact)
+        {
+
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -558,5 +640,8 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 100);
         }
     }
+
+
+
 }
 

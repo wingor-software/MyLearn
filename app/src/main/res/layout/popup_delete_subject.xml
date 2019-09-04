@@ -18,7 +18,13 @@
         android:gravity="center"
         android:inputType="textPersonName"
         android:text="Do you want to remove subject?"
-        android:textSize="18sp" />
+
+        android:fontFamily="casual"
+        android:textAlignment="center"
+        android:textColor="@color/colorDarkPurple"
+        android:textSize="18sp"
+        android:textStyle="bold|italic"
+     />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,26 +35,35 @@
             android:id="@+id/yes_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="YES"
-            android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:layout_weight="1"
             android:background="@drawable/button_drawable"
-             />
+            android:text="YES"
+
+            android:gravity="center"
+            android:padding="10dp"
+            android:fontFamily="casual"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
 
         <Button
             android:id="@+id/no_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="NO"
             android:layout_gravity="center"
-            android:gravity="center"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:background="@drawable/button_drawable"/>
+            android:layout_weight="1"
+            android:background="@drawable/button_drawable"
+
+            android:gravity="center"
+            android:padding="10dp"
+            android:fontFamily="casual"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="NO" />
     </LinearLayout>
 
 

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,8 +60,16 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String QUIZ_COL6 = "AttachedNoteIDs";
     private static final String QUIZ_COL7 = "Color";
 
+
     private static final String DISPLAY_MODE_TABLE_NAME = "display_mode";
     private static final String DISPLAY_MODE_COL1 = "mode";
+
+    //Wydarzenie z kalendarza----------------------------------------------------------
+    private static final String CALENDAR_EVENT_TABLE_NAME = "calendarEvents";
+    private static final String CALENDAR_EVENT_COL_1 = "ID";
+    private static final String CALENDAR_EVENT_COL_2 = "Date";
+    private static final String CALENDAR_EVENT_COL_3 = "Content";
+
 
 
     public DataBaseHelper(Context context) {
@@ -84,7 +94,11 @@ public class DataBaseHelper extends SQLiteOpenHelper
         String createTableQuiz = "CREATE TABLE " + QUIZ_TABLE_NAME + " ( " + QUIZ_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QUIZ_COL2 + " TEXT, " + QUIZ_COL3 + " TEXT, "
                 + QUIZ_COL4 + " TEXT, " + QUIZ_COL5 + " INTEGER, " + QUIZ_COL6 + " TEXT, " + QUIZ_COL7 + " INTEGER);";
 
+
         String createTableDisplayMode = "CREATE TABLE " + DISPLAY_MODE_TABLE_NAME + " ( " + DISPLAY_MODE_COL1 + " INTEGER);";
+
+        String createTableCalenderEvents = "CREATE TABLE " + CALENDAR_EVENT_TABLE_NAME + " ( " + CALENDAR_EVENT_COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT," + CALENDAR_EVENT_COL_2 + " TEXT," + CALENDAR_EVENT_COL_3 + " TEXT);";
+
 
         sqLiteDatabase.execSQL(createTableSubject);
         sqLiteDatabase.execSQL(createTableCard);
@@ -95,6 +109,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
         ContentValues contentValues = new ContentValues();
         contentValues.put(DISPLAY_MODE_COL1, 0);
         sqLiteDatabase.insert(DISPLAY_MODE_TABLE_NAME, null, contentValues);
+
+        sqLiteDatabase.execSQL(createTableCalenderEvents);
     }
 
     /**
@@ -110,6 +126,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + QUIZ_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DISPLAY_MODE_TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CALENDAR_EVENT_TABLE_NAME);
 
         onCreate(sqLiteDatabase);
     }
@@ -672,6 +689,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         return quiz;
     }
 
+
     //--------------------------------------------------------
     //DISPLAY MODE METHODS ------------------------------------
 
@@ -691,5 +709,44 @@ public class DataBaseHelper extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         String query = "UPDATE " + DISPLAY_MODE_TABLE_NAME + " SET " + DISPLAY_MODE_COL1 + " = " + displayMode.getValue() + ";";
         db.execSQL(query);
+    }
+
+    //-------------------------------------------------------
+    //DATES METHODS ------------------------------------------
+
+    public boolean addCalendarEventData(String date,String content)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CALENDAR_EVENT_COL_2,date);
+        contentValues.put(CALENDAR_EVENT_COL_3,content);
+
+        Log.d("DataBase", "addDate : Adding " + date + ", " + content + ", " + " to " + CALENDAR_EVENT_TABLE_NAME);
+        long result = db.insert(CALENDAR_EVENT_TABLE_NAME, null, contentValues);
+        return (result != -1);
+    }
+    public Cursor getCalendarEventsData()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + CALENDAR_EVENT_TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+    public void dropCalendarEventbyDate(String date)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + CALENDAR_EVENT_TABLE_NAME+ " WHERE " + CALENDAR_EVENT_COL_2 + " = " + date;
+        db.execSQL(query);
+    }
+    public List<CalendarEvent> getCalendarEventList() throws EmptyDataBaseException
+    {
+        Cursor data = this.getCalendarEventsData();
+        List<CalendarEvent> calendarEvents = new ArrayList<>();
+        while(data.moveToNext())
+        {
+            calendarEvents.add(new CalendarEvent(data.getInt(0), data.getString(1), data.getString(2)));
+        }
+        if (calendarEvents.size() == 0) throw new EmptyDataBaseException();
+        return calendarEvents;
     }
 }
