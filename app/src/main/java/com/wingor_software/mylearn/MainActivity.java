@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,11 +34,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Główna klasa aplikacji
@@ -67,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private static Subject currentSubject;
 
     private final static int REQUEST_IMPORT_SUBJECT = 200;
+    private static final int REQUEST_IMPORT_ZIP_SUBJECT = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +148,13 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, REQUEST_IMPORT_SUBJECT);
                 return true;
             }
+            case R.id.action_import_zip_subject:
+            {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("application/zip");
+                startActivityForResult(intent, REQUEST_IMPORT_ZIP_SUBJECT);
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -163,6 +176,33 @@ public class MainActivity extends AppCompatActivity
                     is.close();
                     FileImportExport.addImportedSubject(outputSubject, dataBaseHelper);
                     Toast.makeText(this, "Subject imported correctly: " + outputSubject.getSubjectName(), Toast.LENGTH_LONG).show();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else if(resultCode == RESULT_OK && requestCode == REQUEST_IMPORT_ZIP_SUBJECT)
+        {
+            if(data != null)
+            {
+                try
+                {
+                    InputStream is = getContentResolver().openInputStream(data.getData());
+                    ZipInputStream zin = new ZipInputStream(is);
+                    ZipEntry entry;
+                    while((entry = zin.getNextEntry()) != null)
+                    {
+                        FileOutputStream fout = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + entry.getName());
+                        for (int i = zin.read(); i != -1; i = zin.read()) {
+                            fout.write(i);
+                        }
+                        zin.closeEntry();
+                        fout.close();
+                    }
+                    zin.close();
+                    is.close();
                 }
                 catch(Exception e)
                 {

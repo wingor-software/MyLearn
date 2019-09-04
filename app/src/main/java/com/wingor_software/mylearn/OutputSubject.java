@@ -1,7 +1,10 @@
 package com.wingor_software.mylearn;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class OutputSubject implements Serializable
@@ -17,6 +20,8 @@ public class OutputSubject implements Serializable
 
     private ArrayList<ArrayList<byte[]>> photos;
 
+    private HashMap<String, String> pathMap;
+
     public OutputSubject(String subjectName, int subjectColor, List<Card> cards, List<Quiz> quizzes, List<Note> notes, ArrayList<ArrayList<byte[]>> photos)
     {
         this.subjectName = subjectName;
@@ -25,6 +30,15 @@ public class OutputSubject implements Serializable
         this.quizzes = new ArrayList<>(quizzes);
         this.notes = new ArrayList<>(notes);
         this.photos = photos;
+
+        pathMap = new HashMap<>();
+        for (Note note : notes) {
+            String[] uris = note.getFilePath().split("\n");
+            for (int i = 0; i < uris.length; i++) {
+                pathMap.put(uris[i], uris[i].substring(uris[i].lastIndexOf("%2F") + 3));
+                Log.d("path", uris[i] +  " " + uris[i].substring(uris[i].lastIndexOf("%2F") + 3));
+            }
+        }
     }
 
     public String getSubjectName() {

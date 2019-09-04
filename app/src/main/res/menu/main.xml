@@ -11,4 +11,9 @@
         android:orderInCategory="2"
         android:title="Import subject"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_import_zip_subject"
+        android:orderInCategory="3"
+        android:title="Import zip subject"
+        app:showAsAction="never" />
 </menu>
