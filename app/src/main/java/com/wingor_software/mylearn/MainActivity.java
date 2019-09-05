@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
         final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
-        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final LinearLayout contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
 
 
@@ -127,16 +128,18 @@ public class MainActivity extends AppCompatActivity
             public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
 
                 titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
+                contentOfDay.removeAllViews();
 
                 try {
-                    contentOfDay.setText("Nothing to do :)");
                     for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
                         if(c.getDate().equals(i+"-"+i1+"-"+i2))
                         {
-                            contentOfDay.setText(c.getContent());
-                            break;
+                            TextView textView = new TextView(MainActivity.this);
+                            textView.setGravity(Gravity.CENTER);
+                            textView.setTextColor(getResources().getColor(R.color.white));
+                            textView.setText(c.getContent());
+                            contentOfDay.addView(textView);
                         }
-
                     }
                 }
                 catch (EmptyDataBaseException e)
@@ -156,42 +159,44 @@ public class MainActivity extends AppCompatActivity
                                 boolean find = false;
                                 if(!wordgetter.getText().toString().equals(""))
                                 {
-                                    try {
-                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList())
-                                        {
-                                            //jesli istnieje wpis z taka data
-                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
-                                            {
-                                                dataBaseHelper.setCalendarEventContentBasedOnDate(c.getDate(),c.getContent()+"\n"+wordgetter.getText().toString());
-                                                find = true;
-                                                myDialog.dismiss();
-                                                contentOfDay.setText(c.getContent());
-                                                break;
-                                            }
-                                        }
-                                        //jesli nie ma takiego wpisu to stworz nowy
-                                        if(!find)
-                                        {
-                                            dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-                                            myDialog.dismiss();
-                                        }
-                                    }
-                                    //jesli baza pusta to tez stworz nowy
-                                    catch (EmptyDataBaseException e)
-                                    {
-                                        dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-                                        myDialog.dismiss();
-                                        e.printStackTrace();
-                                    }
-                                    finally {
-                                        find=false;
-                                    }
+//                                    try {
+//                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList())
+//                                        {
+//                                            //jesli istnieje wpis z taka data
+//                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
+//                                            {
+//                                                dataBaseHelper.updateCalendarEventContentBasedOnID(c.getID(),c.getContent(),wordgetter.getText().toString());
+//                                                find = true;
+//                                                myDialog.dismiss();
+//                                                break;
+//                                            }
+//                                        }
+//                                        //jesli nie ma takiego wpisu to stworz nowy
+//                                        if(!find)
+//                                        {
+//                                            dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+//                                            myDialog.dismiss();
+//                                        }
+//                                    }
+//                                    //jesli baza pusta to tez stworz nowy
+//                                    catch (EmptyDataBaseException e)
+//                                    {
+//                                        dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+//                                        myDialog.dismiss();
+//                                        e.printStackTrace();
+//                                    }
+//                                    finally {
+//                                        find=false;
+//
+//                                    }
 
 
                                     //jesli dodaje pierwsze wydarzenie do dnia w kalendarzu
 
 //                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
 //                                    myDialog.dismiss();
+                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                    myDialog.dismiss();
                                 }
                                 else
                                 {

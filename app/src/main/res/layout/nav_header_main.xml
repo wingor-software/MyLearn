@@ -79,17 +79,16 @@
                 android:textSize="18sp"
                 android:textStyle="bold|italic" />
 
-            <TextView
-                android:id="@+id/contentOfDay"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="casual"
+                android:layout_height="wrap_content">
 
-                android:text="CONTENT OF DAY"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold|italic" />
+                <LinearLayout
+                    android:id="@+id/contentOfDay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
 
             <Button
                 android:id="@+id/addCalendarEventButton"

@@ -745,11 +745,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         return data;
     }
-    public void setCalendarEventContentBasedOnDate(String date,String content)
+    public void updateCalendarEventContentBasedOnID(int id,String oldContent,String newContent)
     {
+        String content = oldContent + "\n" + newContent;
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String query = " UPDATE " + CALENDAR_EVENT_TABLE_NAME + " SET " + CALENDAR_EVENT_COL_3 + " = ' " + content + "' WHERE " + CALENDAR_EVENT_COL_2 + " = " + date + ";";
+        String query = "UPDATE " + CALENDAR_EVENT_TABLE_NAME + " SET " + CALENDAR_EVENT_COL_3 + " = '" + content + "' WHERE " + CALENDAR_EVENT_COL_1 + " = " + id + ";";
         db.execSQL(query);
     }
 
