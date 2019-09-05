@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 catch (EmptyDataBaseException e)
                 {
-
+                    e.printStackTrace();
                 }
 
                 addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
@@ -153,10 +153,45 @@ public class MainActivity extends AppCompatActivity
                         addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                boolean find = false;
                                 if(!wordgetter.getText().toString().equals(""))
                                 {
-                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-                                    myDialog.dismiss();
+                                    try {
+                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList())
+                                        {
+                                            //jesli istnieje wpis z taka data
+                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                                            {
+                                                dataBaseHelper.setCalendarEventContentBasedOnDate(c.getDate(),c.getContent()+"\n"+wordgetter.getText().toString());
+                                                find = true;
+                                                myDialog.dismiss();
+                                                contentOfDay.setText(c.getContent());
+                                                break;
+                                            }
+                                        }
+                                        //jesli nie ma takiego wpisu to stworz nowy
+                                        if(!find)
+                                        {
+                                            dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                            myDialog.dismiss();
+                                        }
+                                    }
+                                    //jesli baza pusta to tez stworz nowy
+                                    catch (EmptyDataBaseException e)
+                                    {
+                                        dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+                                        myDialog.dismiss();
+                                        e.printStackTrace();
+                                    }
+                                    finally {
+                                        find=false;
+                                    }
+
+
+                                    //jesli dodaje pierwsze wydarzenie do dnia w kalendarzu
+
+//                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
+//                                    myDialog.dismiss();
                                 }
                                 else
                                 {

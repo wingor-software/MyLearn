@@ -732,12 +732,28 @@ public class DataBaseHelper extends SQLiteOpenHelper
         Cursor data = db.rawQuery(query, null);
         return data;
     }
-    public void dropCalendarEventbyDate(String date)
+    public void dropCalendarEventByDate(String date)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + CALENDAR_EVENT_TABLE_NAME+ " WHERE " + CALENDAR_EVENT_COL_2 + " = " + date;
+        String query = " DELETE FROM " + CALENDAR_EVENT_TABLE_NAME+ " WHERE " + CALENDAR_EVENT_COL_2 + " = " + date;
         db.execSQL(query);
     }
+    public Cursor getCalendarEventContentBasedOnDate(String date)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = " SELECT " + CALENDAR_EVENT_COL_3 + " FROM " + CALENDAR_EVENT_TABLE_NAME + " WHERE " + CALENDAR_EVENT_COL_2 + " = " + date;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+    public void setCalendarEventContentBasedOnDate(String date,String content)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String query = " UPDATE " + CALENDAR_EVENT_TABLE_NAME + " SET " + CALENDAR_EVENT_COL_3 + " = ' " + content + "' WHERE " + CALENDAR_EVENT_COL_2 + " = " + date + ";";
+        db.execSQL(query);
+    }
+
+
     public List<CalendarEvent> getCalendarEventList() throws EmptyDataBaseException
     {
         Cursor data = this.getCalendarEventsData();
