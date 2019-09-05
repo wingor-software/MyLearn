@@ -311,14 +311,6 @@ public class SubjectActivity extends AppCompatActivity
 
             }
         });
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -1313,9 +1305,6 @@ public class SubjectActivity extends AppCompatActivity
         final ImageButton leftArrow = myDialog.findViewById(R.id.leftArrow);
         final ImageButton rightArrow = myDialog.findViewById(R.id.rightArrow);
 
-
-
-
         try
         {
             int id_of_current_card=currentCard.getID();
@@ -1324,8 +1313,6 @@ public class SubjectActivity extends AppCompatActivity
             Log.d("test","ID kartki z bazy danych wynosi: " + id_of_current_card);
 
             List <Card> list = dataBaseHelper.getCardList(currentCard.getSubjectID());
-
-
 
             for(int i=0;i<list.size();i++)
             {
@@ -1354,23 +1341,27 @@ public class SubjectActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
-
-        word.setText(currentCard.getWord());
+         word.setText(currentCard.getWord());
 
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDialog.dismiss();
                 if(answer.getText().toString().equalsIgnoreCase(currentCard.getAnswer()))
-                    showResultCardPopup(true);
+                {
+                    //showResultCardPopup(true);
+                    word.setText("Correct");
+                }
                 else
-                    showResultCardPopup(false);
+                {
+                    //showResultCardPopup(false);
+                    word.setText("Incorrect");
+                }
             }
         });
         leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer.setText("");
                 Log.d("test","lewa strzalka");
                 rightArrow.setAlpha(1f);
                 rightArrow.setClickable(true);
@@ -1419,8 +1410,8 @@ public class SubjectActivity extends AppCompatActivity
         rightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer.setText("");
                 Log.d("test","prawa strzalka");
-
                 try
                 {
                     leftArrow.setAlpha(1f);

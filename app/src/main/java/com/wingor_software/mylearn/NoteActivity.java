@@ -183,11 +183,11 @@ public class NoteActivity extends AppCompatActivity{
                 final Uri uri_from_button = Uri.parse(s);
 
 
-                Cursor cursor = getContentResolver().query(uri_from_button,null,null,null,null);
-                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                cursor.moveToFirst();
-
-                b.setText(cursor.getString(nameIndex));
+//                Cursor cursor = getContentResolver().query(uri_from_button,null,null,null,null);
+//                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+//                cursor.moveToFirst();
+//
+//                b.setText(cursor.getString(nameIndex));
                 b.setTag(s);
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override

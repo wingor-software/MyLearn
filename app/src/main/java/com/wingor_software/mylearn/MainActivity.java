@@ -35,6 +35,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -259,27 +260,7 @@ public class MainActivity extends AppCompatActivity
         {
             if(data != null)
             {
-                try
-                {
-                    InputStream is = getContentResolver().openInputStream(data.getData());
-                    ZipInputStream zin = new ZipInputStream(is);
-                    ZipEntry entry;
-                    while((entry = zin.getNextEntry()) != null)
-                    {
-                        FileOutputStream fout = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + entry.getName());
-                        for (int i = zin.read(); i != -1; i = zin.read()) {
-                            fout.write(i);
-                        }
-                        zin.closeEntry();
-                        fout.close();
-                    }
-                    zin.close();
-                    is.close();
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
+                FileImportExport.importZipSubject(this, dataBaseHelper, data);
             }
         }
     }

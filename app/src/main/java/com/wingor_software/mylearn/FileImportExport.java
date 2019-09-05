@@ -1,12 +1,16 @@
 package com.wingor_software.mylearn;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,10 +19,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class FileImportExport
@@ -146,7 +152,7 @@ public class FileImportExport
     {
         for (int i = 0; i < outputSubject.getNotes().size(); i++) {
             Note note = outputSubject.getNotes().get(i);
-            dataBaseHelper.addNoteData(note.getTitle(), note.getContent(), importedSubjectID, note.getColor(), getFilePathToPhotos(outputSubject, i),"");
+            dataBaseHelper.addNoteData(note.getTitle(), note.getContent(), importedSubjectID, note.getColor(), getFilePathToPhotos(outputSubject, i),note.getFilePath());
         }
     }
 
@@ -284,8 +290,92 @@ public class FileImportExport
         return paths;
     }
 
-    public static void importZipSubject(Context context, DataBaseHelper dataBaseHelper)
+    public static void importZipSubject(final Context context, DataBaseHelper dataBaseHelper, Intent data)
     {
+        unzipImportedSubject(context, data);
+        String name = data.getDataString().substring(data.getDataString().lastIndexOf("%2F") + 3, data.getDataString().lastIndexOf('.')) + ".txt";
+        Log.d("zip", name);
+        try
+        {
+            FileInputStream fis = new FileInputStream(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name));
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            OutputSubject outputSubject = (OutputSubject) ois.readObject();
+            ois.close();
+            fis.close();
+            // TODO: 05.09.2019 Naprawic - dziala ale na emulatorze tylko :/ 
+            for (int i = 0; i < outputSubject.getNotes().size(); i++) {
+                String notePaths = outputSubject.getNotes().get(i).getFilePath();
+                final String[] pathArr = notePaths.split("\n");
+                StringBuilder newFilePath = new StringBuilder();
+                for (int j = 0; j < pathArr.length; j++) {
+                    String fileName = outputSubject.getPathMap().get(pathArr[i]);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+//                    Uri uri = Uri.fromFile(file);
+                    final int index = j;
+                    MediaScannerConnection.scanFile(context, new String[]{file.getAbsolutePath()}, null,
+                            new MediaScannerConnection.OnScanCompletedListener() {
+                                @Override
+                                public void onScanCompleted(String s, Uri uri) {
+                                    context.getContentResolver().getPersistedUriPermissions();
+                                    pathArr[index] = uri.toString();
+                                }
+                            });
+                    
+                    if(newFilePath.toString().equals(""))
+                       newFilePath.append(pathArr[j]);
+                    else
+                        newFilePath.append("\n" + pathArr[j]);
+                }
+                outputSubject.getNotes().get(i).setFilePath(newFilePath.toString());
+            }
+            FileImportExport.addImportedSubject(outputSubject, dataBaseHelper);
+            Toast.makeText(context, "Subject imported correctly: " + outputSubject.getSubjectName(), Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
+    private static void unzipImportedSubject(Context context, Intent data)
+    {
+        ZipInputStream zis = null;
+        try
+        {
+            zis = new ZipInputStream(context.getContentResolver().openInputStream(data.getData()));
+            ZipEntry ze;
+            int count;
+            int BUFFER = 6 * 1024;
+            byte[] buffer = new byte[BUFFER];
+            while((ze = zis.getNextEntry()) != null)
+            {
+                String fileName = ze.getName();
+                fileName = fileName.substring(fileName.indexOf("/") + 1);
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                FileOutputStream fout = new FileOutputStream(file);
+                try {
+                    while ((count = zis.read(buffer)) != -1)
+                        fout.write(buffer, 0, count);
+                } finally {
+                    fout.close();
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if (zis != null)
+                    zis.close();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }
