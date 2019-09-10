@@ -29,6 +29,11 @@
     <item
         android:id="@+id/action_zip_file_export"
         android:orderInCategory="6"
-        android:title="Export zip file"
+        android:title="Export zip subject"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zip_file_share"
+        android:orderInCategory="7"
+        android:title="Share zip subject"
         app:showAsAction="never"/>
 </menu>

@@ -357,6 +357,36 @@ public class SubjectActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.preference), actionToInt());
+    }
+
+    private int actionToInt()
+    {
+        switch(whichAction)
+        {
+            case CARDS:{
+                return 1;
+            }
+            case QUIZ:{
+                return 2;
+            }
+            case NOTES:{
+                return 3;
+            }
+            case EXAMS:{
+                return 4;
+            }
+            default:{
+                return 3;
+            }
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -411,6 +441,11 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.action_zip_file_export:
             {
                 new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
+                return true;
+            }
+            case R.id.action_zip_file_share:
+            {
+                new BackgroundZipShare(SubjectActivity.this, dataBaseHelper).execute();
                 return true;
             }
         }
@@ -498,30 +533,46 @@ public class SubjectActivity extends AppCompatActivity
         CheckBox questions = findViewById(R.id.checkBoxQuestions);
         Intent intent;
 
-        if(cards.isChecked() && questions.isChecked())
+        int cardsCount = 0;
+        int quizzesCount = 0;
+        try
+        {
+            cardsCount = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).size();
+            quizzesCount = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).size();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if(cards.isChecked() && questions.isChecked() && cardsCount + quizzesCount > 0)
         {
             examType = ExamType.ALL;
             Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else if(cards.isChecked())
+        else if(cards.isChecked() && cardsCount > 0)
         {
             examType = ExamType.CARDS;
             Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else if(questions.isChecked())
+        else if(questions.isChecked() && quizzesCount > 0)
         {
             examType = ExamType.QUESTIONS;
             Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else
+        else if(!cards.isChecked() && !questions.isChecked())
         {
             Toast.makeText(SubjectActivity.this, "Please select exam type", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(SubjectActivity.this, "Looks like you don't have any cards or questions", Toast.LENGTH_LONG).show();
         }
     }
 

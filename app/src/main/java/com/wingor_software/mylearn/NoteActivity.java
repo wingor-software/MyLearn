@@ -188,6 +188,8 @@ public class NoteActivity extends AppCompatActivity{
 //                cursor.moveToFirst();
 //
 //                b.setText(cursor.getString(nameIndex));
+                b.setText(s.substring(s.lastIndexOf("/") + 1));
+
                 b.setTag(s);
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override

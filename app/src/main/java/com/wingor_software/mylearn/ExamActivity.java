@@ -31,6 +31,8 @@ public class ExamActivity extends AppCompatActivity {
     private static TextView pageCount;
     private static DataBaseHelper dataBaseHelper;
     private static Examable[] examables;
+    private static int QUESTIONS_COUNT = 10;
+    private static final int DEF_QUESTIONS_COUNT = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +48,17 @@ public class ExamActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         setSupportActionBar(toolbar);
+        dataBaseHelper = new DataBaseHelper(this);
+        QUESTIONS_COUNT = DEF_QUESTIONS_COUNT;
+        examables = getExamableList(QUESTIONS_COUNT);
+        if(notNullExamables() !=  QUESTIONS_COUNT)
+            QUESTIONS_COUNT = notNullExamables();
         mPageAdapter = new PagerAdapter(getSupportFragmentManager(), dataBaseHelper);
 //        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPageAdapter);
-        mViewPager.setOffscreenPageLimit(10);
+        mViewPager.setOffscreenPageLimit(QUESTIONS_COUNT);
         pageCount = (TextView) findViewById(R.id.page_count);
-        dataBaseHelper = new DataBaseHelper(this);
-        examables = getExamableList(10);
 
         int light = getResources().getColor(R.color.white);
         int dark = getResources().getColor(R.color.colorDarkModeBackground);
@@ -63,7 +68,7 @@ public class ExamActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                String str = (position + 1) + "/10";
+                String str = (position + 1) + "/" + QUESTIONS_COUNT;
                 pageCount.setText(str);
             }
 
@@ -77,6 +82,17 @@ public class ExamActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private int notNullExamables()
+    {
+        int count = 0;
+        for (int i = 0; i < examables.length; i++) {
+            if(examables[i] == null)
+                break;
+            count++;
+        }
+        return count;
     }
 
     public static TextView getPageCount() {
@@ -130,7 +146,7 @@ public class ExamActivity extends AppCompatActivity {
     
     public LinearLayout[] getExamableLayouts()
     {
-        LinearLayout[] examableLayouts = new LinearLayout[10];
+        LinearLayout[] examableLayouts = new LinearLayout[QUESTIONS_COUNT];
         for (int i = 0; i < mPageAdapter.getFragments().length; i++) {
             examableLayouts[i] = mPageAdapter.getFragments()[i].getExamableLayout();
         }
@@ -140,7 +156,7 @@ public class ExamActivity extends AppCompatActivity {
     public void checkAnswers(View view)
     {
         LinearLayout[] examableLayouts = getExamableLayouts();
-        int all = 10;
+        int all = QUESTIONS_COUNT;
         int correct = 0;
         for (int i = 0; i < examableLayouts.length; i++) {
             if(examableLayouts[i] == null)
@@ -262,5 +278,9 @@ public class ExamActivity extends AppCompatActivity {
                 else if (box.getTag().toString().equals("incorrect"))   box.setTextColor(Color.RED);
             }
         }
+    }
+
+    public static int getQuestionsCount() {
+        return QUESTIONS_COUNT;
     }
 }

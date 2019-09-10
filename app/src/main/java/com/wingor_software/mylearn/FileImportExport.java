@@ -246,7 +246,8 @@ public class FileImportExport
             ArrayList<ArrayList<String>> uriPaths = getFilePaths(dataBaseHelper);
             for (int i = 0; i < uriPaths.size(); i++) {
                 for (int j = 0; j < uriPaths.get(i).size(); j++) {
-                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("%2F") + 3));
+//                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("%2F") + 3));
+                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("/") + 1));
                     zout.putNextEntry(entry);
                     InputStream is = context.getContentResolver().openInputStream(Uri.parse(uriPaths.get(i).get(j)));
                     origin = new BufferedInputStream(is, BUFFER);
@@ -262,6 +263,54 @@ public class FileImportExport
         {
             e.printStackTrace();
         }
+    }
+
+    public static File exportAndShareZipSubject(Context context, DataBaseHelper dataBaseHelper)
+    {
+        File serialized = exportAndShareSubject(context, dataBaseHelper);
+        int BUFFER = 6 * 1024;
+        try
+        {
+            BufferedInputStream origin;
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            String name = serialized.getName().substring(0, serialized.getName().length() - 4);
+            File file = new File(dir, name + ".zip");
+            FileOutputStream fout = new FileOutputStream(file.getPath());
+            ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout));
+            byte[] data = new byte[BUFFER];
+
+            FileInputStream fi = new FileInputStream(serialized.getPath());
+            origin = new BufferedInputStream(fi, BUFFER);
+            ZipEntry entry = new ZipEntry(serialized.getName());
+            zout.putNextEntry(entry);
+            int count;
+            while((count = origin.read(data, 0, BUFFER)) != -1)
+            {
+                zout.write(data, 0, count);
+            }
+
+            ArrayList<ArrayList<String>> uriPaths = getFilePaths(dataBaseHelper);
+            for (int i = 0; i < uriPaths.size(); i++) {
+                for (int j = 0; j < uriPaths.get(i).size(); j++) {
+//                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("%2F") + 3));
+                    entry = new ZipEntry(uriPaths.get(i).get(j).substring(uriPaths.get(i).get(j).lastIndexOf("/") + 1));
+                    zout.putNextEntry(entry);
+                    InputStream is = context.getContentResolver().openInputStream(Uri.parse(uriPaths.get(i).get(j)));
+                    origin = new BufferedInputStream(is, BUFFER);
+                    while((count = origin.read(data, 0, BUFFER)) != -1)
+                        zout.write(data, 0 , count);
+                }
+            }
+
+            origin.close();
+            zout.close();
+            return file;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static ArrayList<ArrayList<String>> getFilePaths(DataBaseHelper dataBaseHelper)
@@ -302,7 +351,6 @@ public class FileImportExport
             OutputSubject outputSubject = (OutputSubject) ois.readObject();
             ois.close();
             fis.close();
-            // TODO: 05.09.2019 Naprawic - dziala ale na emulatorze tylko :/ 
             for (int i = 0; i < outputSubject.getNotes().size(); i++) {
                 String notePaths = outputSubject.getNotes().get(i).getFilePath();
                 final String[] pathArr = notePaths.split("\n");
@@ -352,6 +400,7 @@ public class FileImportExport
                 String fileName = ze.getName();
                 fileName = fileName.substring(fileName.indexOf("/") + 1);
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                context.getContentResolver().getPersistedUriPermissions();
                 FileOutputStream fout = new FileOutputStream(file);
                 try {
                     while ((count = zis.read(buffer)) != -1)
