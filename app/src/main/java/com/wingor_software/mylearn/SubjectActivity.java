@@ -18,8 +18,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
@@ -252,35 +254,40 @@ public class SubjectActivity extends AppCompatActivity
 
 
 
-        //kalendarz
-
         final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
         final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
-        final TextView contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
+        final LinearLayout contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
+
+
 
         titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
 
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
-            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+            public void onSelectedDayChange(final CalendarView calendarView, final int i, final int i1, final int i2) {
 
                 titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
+                contentOfDay.removeAllViews();
 
                 try {
-                    contentOfDay.setText("Nothing to do :)");
                     for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
                         if(c.getDate().equals(i+"-"+i1+"-"+i2))
                         {
-                            contentOfDay.setText(c.getContent());
-                            break;
-                        }
+                            TextView textView = new TextView(SubjectActivity.this);
+                            textView.setGravity(Gravity.CENTER);
+                            textView.setTextColor(getResources().getColor(R.color.white));
+                            textView.setText(c.getContent());
+                            contentOfDay.addView(textView);
 
+
+                        }
                     }
                 }
                 catch (EmptyDataBaseException e)
                 {
-
+                    e.printStackTrace();
                 }
 
                 addnewCalendarEventButton.setOnClickListener(new View.OnClickListener() {
@@ -296,6 +303,29 @@ public class SubjectActivity extends AppCompatActivity
                                 {
                                     dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
                                     myDialog.dismiss();
+
+                                    contentOfDay.removeAllViews();
+
+                                    try {
+                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                                            {
+                                                TextView textView = new TextView(SubjectActivity.this);
+                                                textView.setGravity(Gravity.CENTER);
+                                                textView.setTextColor(getResources().getColor(R.color.white));
+                                                textView.setText(c.getContent());
+                                                contentOfDay.addView(textView);
+
+
+                                            }
+                                        }
+                                    }
+                                    catch (EmptyDataBaseException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+
+
                                 }
                                 else
                                 {
@@ -313,10 +343,31 @@ public class SubjectActivity extends AppCompatActivity
         });
 
 
+        //zmiany w scroll view
+        ScrollView dayScrollView = navigationView.getHeaderView(0).findViewById(R.id.dayScrollView);
 
 
+        dayScrollView.setOnTouchListener(new View.OnTouchListener() {
 
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
 
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                return false;
+            }
+        });
 
 
     }
@@ -326,7 +377,15 @@ public class SubjectActivity extends AppCompatActivity
         super.onResume();
 
         try {
-            this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
+            if(MainActivity.getCurrentSubject().getSubjectName().length()>18)
+            {
+                String newTitle = MainActivity.getCurrentSubject().getSubjectName().substring(0,17) + "...";
+                this.setTitle(newTitle);
+            }
+            else
+            {
+                this.setTitle(MainActivity.getCurrentSubject().getSubjectName());
+            }
         } catch (Exception e) {
             this.setTitle(R.string.title_activity_subject);
         }

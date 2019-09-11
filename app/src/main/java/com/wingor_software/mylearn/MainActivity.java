@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewManager;
 import android.widget.Button;
@@ -31,6 +33,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
-            public void onSelectedDayChange(CalendarView calendarView, final int i, final int i1, final int i2) {
+            public void onSelectedDayChange(final CalendarView calendarView, final int i, final int i1, final int i2) {
 
                 titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
                 contentOfDay.removeAllViews();
@@ -139,6 +142,8 @@ public class MainActivity extends AppCompatActivity
                             textView.setTextColor(getResources().getColor(R.color.white));
                             textView.setText(c.getContent());
                             contentOfDay.addView(textView);
+
+
                         }
                     }
                 }
@@ -156,47 +161,33 @@ public class MainActivity extends AppCompatActivity
                         addCalendarEventButtonpopup.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                boolean find = false;
                                 if(!wordgetter.getText().toString().equals(""))
                                 {
-//                                    try {
-//                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList())
-//                                        {
-//                                            //jesli istnieje wpis z taka data
-//                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
-//                                            {
-//                                                dataBaseHelper.updateCalendarEventContentBasedOnID(c.getID(),c.getContent(),wordgetter.getText().toString());
-//                                                find = true;
-//                                                myDialog.dismiss();
-//                                                break;
-//                                            }
-//                                        }
-//                                        //jesli nie ma takiego wpisu to stworz nowy
-//                                        if(!find)
-//                                        {
-//                                            dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-//                                            myDialog.dismiss();
-//                                        }
-//                                    }
-//                                    //jesli baza pusta to tez stworz nowy
-//                                    catch (EmptyDataBaseException e)
-//                                    {
-//                                        dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-//                                        myDialog.dismiss();
-//                                        e.printStackTrace();
-//                                    }
-//                                    finally {
-//                                        find=false;
-//
-//                                    }
-
-
-                                    //jesli dodaje pierwsze wydarzenie do dnia w kalendarzu
-
-//                                    dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
-//                                    myDialog.dismiss();
                                     dataBaseHelper.addCalendarEventData(i+"-"+i1+"-"+i2,wordgetter.getText().toString());
                                     myDialog.dismiss();
+
+                                    contentOfDay.removeAllViews();
+
+                                    try {
+                                        for (CalendarEvent c:dataBaseHelper.getCalendarEventList()) {
+                                            if(c.getDate().equals(i+"-"+i1+"-"+i2))
+                                            {
+                                                TextView textView = new TextView(MainActivity.this);
+                                                textView.setGravity(Gravity.CENTER);
+                                                textView.setTextColor(getResources().getColor(R.color.white));
+                                                textView.setText(c.getContent());
+                                                contentOfDay.addView(textView);
+
+
+                                            }
+                                        }
+                                    }
+                                    catch (EmptyDataBaseException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+
+
                                 }
                                 else
                                 {
@@ -212,6 +203,35 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
+        //zmiany w scroll view
+        ScrollView dayScrollView = navigationView.getHeaderView(0).findViewById(R.id.dayScrollView);
+
+
+        dayScrollView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                return false;
+            }
+        });
+
+
     }
 
     @Override
@@ -680,6 +700,8 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 100);
         }
     }
+
+
 
 
 
