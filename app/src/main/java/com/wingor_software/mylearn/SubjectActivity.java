@@ -75,6 +75,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -605,16 +606,32 @@ public class SubjectActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
+            //addData("Test" + new Random().nextInt(), 1);
         } else if (id == R.id.nav_gallery) {
-
+            //Intent intent = new Intent(SubjectActivity.this, ListDataActivity.class);
+            //startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-
+            //dataBaseHelper.dropSubjectTable();
+            //subjectsLayout.removeAllViews();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
-
+            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
+            restartApp();
         } else if (id == R.id.nav_send) {
+            dataBaseHelper.setDisplayMode(DisplayMode.DARK);
+            restartApp();
+        }
 
+        else if (id == R.id.nav_info)
+        {
+            Intent intent = new Intent(SubjectActivity.this,Info.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.nav_contact)
+        {
+            Intent intent = new Intent(SubjectActivity.this,Contact.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
