@@ -871,51 +871,51 @@ public class SubjectActivity extends AppCompatActivity
                 chosen_color=EnumColors.valueOf(1);
 
                 myDialog.findViewById(R.id.button_red).setAlpha(1f);
-                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.3f);
                 break;
             }
             case R.id.button_yellow:
             {
                 chosen_color=EnumColors.valueOf(2);
 
-                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
-                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.3f);
                 break;
             }
             case R.id.button_green:
             {
                 chosen_color=EnumColors.valueOf(3);
 
-                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_green).setAlpha(1f);
-                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.3f);
                 break;
             }
             case R.id.button_blue:
             {
                 chosen_color=EnumColors.valueOf(4);
 
-                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_blue).setAlpha(1f);
-                myDialog.findViewById(R.id.button_purple).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_purple).setAlpha(0.3f);
                 break;
             }
             case R.id.button_purple:
             {
-                myDialog.findViewById(R.id.button_red).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_yellow).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_green).setAlpha(0.5f);
-                myDialog.findViewById(R.id.button_blue).setAlpha(0.5f);
+                myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
+                myDialog.findViewById(R.id.button_blue).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_purple).setAlpha(1f);
 
                 chosen_color=EnumColors.valueOf(5);
@@ -1417,11 +1417,19 @@ public class SubjectActivity extends AppCompatActivity
             {
                 leftArrow.setAlpha(0.2f);
                 leftArrow.setClickable(false);
+                leftArrow.setEnabled(false);
+                if(index_in_array_of_current_card==(list.size()-1))
+                {
+                    rightArrow.setAlpha(0.2f);
+                    rightArrow.setClickable(false);
+                    rightArrow.setEnabled(false);
+                }
             }
             else if(index_in_array_of_current_card==list.size()-1)
             {
                 rightArrow.setAlpha(0.2f);
                 rightArrow.setClickable(false);
+                rightArrow.setEnabled(false);
             }
 
         }
@@ -1450,6 +1458,7 @@ public class SubjectActivity extends AppCompatActivity
                 Log.d("test","lewa strzalka");
                 rightArrow.setAlpha(1f);
                 rightArrow.setClickable(true);
+                rightArrow.setEnabled(true);
                 try
                 {
                     int id_of_current_card=currentCard.getID();
@@ -1479,6 +1488,7 @@ public class SubjectActivity extends AppCompatActivity
                         {
                             leftArrow.setAlpha(0.2f);
                             leftArrow.setClickable(false);
+                            leftArrow.setEnabled(false);
                         }
                         Log.d("test","id nowej kartki: " + currentCard.getID());
                         word.setText(currentCard.getWord());
@@ -1496,11 +1506,12 @@ public class SubjectActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Log.d("test","prawa strzalka");
-
+                leftArrow.setAlpha(1f);
+                leftArrow.setClickable(true);
+                leftArrow.setEnabled(true);
                 try
                 {
-                    leftArrow.setAlpha(1f);
-                    leftArrow.setClickable(true);
+
                     int id_of_current_card=currentCard.getID();
                     int index_in_array_of_current_card=0;
 
@@ -1527,6 +1538,7 @@ public class SubjectActivity extends AppCompatActivity
                         {
                             rightArrow.setAlpha(0.2f);
                             rightArrow.setClickable(false);
+                            rightArrow.setEnabled(false);
                         }
                         Log.d("test","id nowej kartki: " + currentCard.getID());
                         word.setText(currentCard.getWord());
