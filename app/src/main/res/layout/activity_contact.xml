@@ -25,7 +25,8 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:fontFamily="casual"
-            android:textSize="32sp"
+            android:textSize="22sp"
+            android:autoLink="all"
             android:text="@string/Contact" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

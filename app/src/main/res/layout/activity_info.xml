@@ -19,8 +19,14 @@
                 android:id="@+id/textView13"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_margin="10dp"
+                android:textStyle="italic"
+                android:autoLink="web"
                 android:text="@string/License"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
