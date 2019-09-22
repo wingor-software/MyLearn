@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
                         {
                             TextView textView = new TextView(MainActivity.this);
                             textView.setGravity(Gravity.CENTER);
-                            textView.setTextColor(getResources().getColor(R.color.white));
+                            textView.setTextColor(getResources().getColor(R.color.black));
                             textView.setText(c.getContent());
                             contentOfDay.addView(textView);
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity
                                             {
                                                 TextView textView = new TextView(MainActivity.this);
                                                 textView.setGravity(Gravity.CENTER);
-                                                textView.setTextColor(getResources().getColor(R.color.white));
+                                                textView.setTextColor(getResources().getColor(R.color.black));
                                                 textView.setText(c.getContent());
                                                 contentOfDay.addView(textView);
 

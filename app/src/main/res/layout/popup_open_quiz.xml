@@ -17,7 +17,7 @@
             android:id="@+id/quizQuiestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_margin="16dp"
 
             android:fontFamily="casual"
             android:textAlignment="center"

@@ -278,7 +278,7 @@ public class SubjectActivity extends AppCompatActivity
                         {
                             TextView textView = new TextView(SubjectActivity.this);
                             textView.setGravity(Gravity.CENTER);
-                            textView.setTextColor(getResources().getColor(R.color.white));
+                            textView.setTextColor(getResources().getColor(R.color.black));
                             textView.setText(c.getContent());
                             contentOfDay.addView(textView);
 
@@ -313,7 +313,7 @@ public class SubjectActivity extends AppCompatActivity
                                             {
                                                 TextView textView = new TextView(SubjectActivity.this);
                                                 textView.setGravity(Gravity.CENTER);
-                                                textView.setTextColor(getResources().getColor(R.color.white));
+                                                textView.setTextColor(getResources().getColor(R.color.black));
                                                 textView.setText(c.getContent());
                                                 contentOfDay.addView(textView);
 
@@ -1680,6 +1680,8 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 fotosLayout.addView(imageView);
             }
+            uriList.clear();
+
         }
         else if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_READING_FILE_CARDS)
         {

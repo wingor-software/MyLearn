@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     tools:context=".Contact">
 
     <LinearLayout
@@ -27,6 +28,7 @@
             android:fontFamily="casual"
             android:textSize="22sp"
             android:autoLink="all"
+            android:layout_margin="10dp"
             android:text="@string/Contact" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
