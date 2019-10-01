@@ -7,12 +7,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class PagerAdapter extends FragmentStatePagerAdapter
 {
-    private MyFragment[] fragments = new MyFragment[10];
+    private MyFragment[] fragments;
     private DataBaseHelper dataBaseHelper;
 
     public PagerAdapter(FragmentManager fm, DataBaseHelper dataBaseHelper) {
         super(fm);
         this.dataBaseHelper = dataBaseHelper;
+        fragments = new MyFragment[ExamActivity.getQuestionsCount()];
     }
 
     @Nullable
@@ -30,7 +31,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter
 
     @Override
     public int getCount() {
-        return 10;
+        return ExamActivity.getQuestionsCount();
     }
 
     public MyFragment[] getFragments()

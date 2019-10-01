@@ -21,7 +21,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "MyLearn_DB";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     //PRZEDMIOTY---------------------------------------------------
     private static final String SUBJECT_TABLE_NAME = "subjects";

@@ -64,4 +64,8 @@ public class OutputSubject implements Serializable
     public ArrayList<ArrayList<byte[]>> getPhotos() {
         return photos;
     }
+
+    public HashMap<String, String> getPathMap() {
+        return pathMap;
+    }
 }

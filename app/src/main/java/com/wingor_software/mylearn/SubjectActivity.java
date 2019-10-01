@@ -343,7 +343,6 @@ public class SubjectActivity extends AppCompatActivity
             }
         });
 
-
         //zmiany w scroll view
         ScrollView dayScrollView = navigationView.getHeaderView(0).findViewById(R.id.dayScrollView);
 
@@ -369,8 +368,6 @@ public class SubjectActivity extends AppCompatActivity
                 return false;
             }
         });
-
-
     }
 
     @Override
@@ -420,6 +417,36 @@ public class SubjectActivity extends AppCompatActivity
                 navView.setSelectedItemId(R.id.action_exams);
                 actionQuiz(editor);
                 break;
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.preference), actionToInt());
+    }
+
+    private int actionToInt()
+    {
+        switch(whichAction)
+        {
+            case CARDS:{
+                return 1;
+            }
+            case QUIZ:{
+                return 2;
+            }
+            case NOTES:{
+                return 3;
+            }
+            case EXAMS:{
+                return 4;
+            }
+            default:{
+                return 3;
             }
         }
     }
@@ -479,6 +506,11 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.action_zip_file_export:
             {
                 new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
+                return true;
+            }
+            case R.id.action_zip_file_share:
+            {
+                new BackgroundZipShare(SubjectActivity.this, dataBaseHelper).execute();
                 return true;
             }
         }
@@ -566,30 +598,46 @@ public class SubjectActivity extends AppCompatActivity
         CheckBox questions = findViewById(R.id.checkBoxQuestions);
         Intent intent;
 
-        if(cards.isChecked() && questions.isChecked())
+        int cardsCount = 0;
+        int quizzesCount = 0;
+        try
+        {
+            cardsCount = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).size();
+            quizzesCount = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).size();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if(cards.isChecked() && questions.isChecked() && cardsCount + quizzesCount > 0)
         {
             examType = ExamType.ALL;
             Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else if(cards.isChecked())
+        else if(cards.isChecked() && cardsCount > 0)
         {
             examType = ExamType.CARDS;
             Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else if(questions.isChecked())
+        else if(questions.isChecked() && quizzesCount > 0)
         {
             examType = ExamType.QUESTIONS;
             Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
             intent = new Intent(SubjectActivity.this, ExamActivity.class);
             startActivity(intent);
         }
-        else
+        else if(!cards.isChecked() && !questions.isChecked())
         {
             Toast.makeText(SubjectActivity.this, "Please select exam type", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(SubjectActivity.this, "Looks like you don't have any cards or questions", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1389,9 +1437,6 @@ public class SubjectActivity extends AppCompatActivity
         final ImageButton leftArrow = myDialog.findViewById(R.id.leftArrow);
         final ImageButton rightArrow = myDialog.findViewById(R.id.rightArrow);
 
-
-
-
         try
         {
             int id_of_current_card=currentCard.getID();
@@ -1400,8 +1445,6 @@ public class SubjectActivity extends AppCompatActivity
             Log.d("test","ID kartki z bazy danych wynosi: " + id_of_current_card);
 
             List <Card> list = dataBaseHelper.getCardList(currentCard.getSubjectID());
-
-
 
             for(int i=0;i<list.size();i++)
             {
@@ -1438,23 +1481,27 @@ public class SubjectActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
-
-        word.setText(currentCard.getWord());
+         word.setText(currentCard.getWord());
 
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDialog.dismiss();
                 if(answer.getText().toString().equalsIgnoreCase(currentCard.getAnswer()))
-                    showResultCardPopup(true);
+                {
+                    //showResultCardPopup(true);
+                    word.setText("Correct");
+                }
                 else
-                    showResultCardPopup(false);
+                {
+                    //showResultCardPopup(false);
+                    word.setText("Incorrect");
+                }
             }
         });
         leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer.setText("");
                 Log.d("test","lewa strzalka");
                 rightArrow.setAlpha(1f);
                 rightArrow.setClickable(true);
@@ -1505,6 +1552,7 @@ public class SubjectActivity extends AppCompatActivity
         rightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer.setText("");
                 Log.d("test","prawa strzalka");
                 leftArrow.setAlpha(1f);
                 leftArrow.setClickable(true);
