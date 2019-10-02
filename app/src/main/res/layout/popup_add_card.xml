@@ -133,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:layout_weight="1"
-            android:alpha="0.3"
+            android:alpha="1"
             android:background="@android:color/holo_purple"
             android:onClick="choseColor"
             android:shadowColor="#00000000"

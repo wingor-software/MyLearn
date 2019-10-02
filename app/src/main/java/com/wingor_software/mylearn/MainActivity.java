@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
 
     //wartosc wybranego koloru z popupu
     EnumColors chosen_color = EnumColors.valueOf(5);
+    boolean color_picked = false;
 
     //aktualny przedmiot
     private static Subject currentSubject;
@@ -381,19 +382,13 @@ public class MainActivity extends AppCompatActivity
     {
         Log.d("test", "jestem w funkcji showPopup");
         //przycisk add
-        Button addButton;
+        final Button addButton;
 
         //ustala focus na okienko pop up
         myDialog.setContentView(R.layout.popup_main);
 
         //wyszukuje powiązania
         addButton = myDialog.findViewById(R.id.addButton);
-
-        Button red_button = myDialog.findViewById(R.id.button_red);
-        Button yellow_button = myDialog.findViewById(R.id.button_yellow);
-        Button green_button = myDialog.findViewById(R.id.button_green);
-        Button blue_button = myDialog.findViewById(R.id.button_blue);
-        Button purple_button = myDialog.findViewById(R.id.button_purple);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -411,7 +406,17 @@ public class MainActivity extends AppCompatActivity
                     try {
                         //pobiera wpisana nazwe przedmiotu z pola tekstowego
                         //dodaje wpis do tabeli
-                        addData(s, chosen_color.getValue());
+                        if(color_picked)
+                        {
+                            addData(s, chosen_color.getValue());
+                        }
+                        else
+                        {
+                            addData(s,EnumColors.valueOf(5).getValue());
+                        }
+                        color_picked=false;
+                        chosen_color=EnumColors.valueOf(5);
+
 
                         //pobiera ostatnio dodany i go rysuje
                         subject = dataBaseHelper.getLatelyAddedSubject();
@@ -424,6 +429,10 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     myDialog.dismiss();
+                }
+                else
+                {
+                    toastMessage("Please enter a non-empty value!");
                 }
             }
         });
@@ -597,6 +606,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.button_red:
             {
                 chosen_color=EnumColors.valueOf(1);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(1f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -608,6 +618,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.button_yellow:
             {
                 chosen_color=EnumColors.valueOf(2);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
@@ -619,6 +630,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.button_green:
             {
                 chosen_color=EnumColors.valueOf(3);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -630,6 +642,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.button_blue:
             {
                 chosen_color=EnumColors.valueOf(4);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -640,13 +653,15 @@ public class MainActivity extends AppCompatActivity
             }
             case R.id.button_purple:
             {
+                chosen_color=EnumColors.valueOf(5);
+                color_picked=true;
+
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_blue).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_purple).setAlpha(1f);
 
-                chosen_color=EnumColors.valueOf(5);
                 break;
             }
         }
