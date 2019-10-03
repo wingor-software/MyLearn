@@ -90,7 +90,7 @@ public class SubjectActivity extends AppCompatActivity
 
     static DataBaseHelper dataBaseHelper;
 
-    private static EnumColors chosen_color = EnumColors.valueOf(5);
+    private static volatile EnumColors chosen_color = EnumColors.valueOf(5);
     private static boolean color_picked = false;
 
 
