@@ -425,7 +425,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
         contentValues.put(NOTE_COL4, subjectID);
         contentValues.put(NOTE_COL3, content);
         contentValues.put(NOTE_COL2, title);
-        Log.d("DataBase", "addData : Adding " + title + ", " + subjectID + ", " + " to " + NOTE_TABLE_NAME);
+        Log.d("DataBase", "addData : Adding " + title + ", " + subjectID + ", " + " to " + NOTE_TABLE_NAME + "COLOR: " + color);
         long result = db.insert(NOTE_TABLE_NAME, null, contentValues);
         return (result != -1);
     }

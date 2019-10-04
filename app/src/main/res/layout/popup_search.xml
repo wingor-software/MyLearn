@@ -43,7 +43,6 @@
         android:background="@drawable/button_drawable"
         android:gravity="center"
 
-
         android:fontFamily="casual"
         android:textStyle="bold"
         android:padding="10dp"

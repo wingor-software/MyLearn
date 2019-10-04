@@ -97,6 +97,11 @@ public class SubjectActivity extends AppCompatActivity
     EnumColors chosen_color = EnumColors.valueOf(5);
     EnumColors temp_note_add_color = EnumColors.valueOf(5);
 
+    private static volatile EnumColors chosen_color = EnumColors.valueOf(5);
+    private static boolean color_picked = false;
+
+>>>>>>> 228b1217eae17ffe0ca777f4369e6fd023c936c1
+
     private enum BarAction {CARDS, QUIZ, NOTES, EXAMS}
 
     private SharedPreferences sharedPref;
@@ -970,6 +975,7 @@ public class SubjectActivity extends AppCompatActivity
             {
                 chosen_color=EnumColors.valueOf(1);
                 temp_note_add_color = EnumColors.valueOf(1);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(1f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -982,6 +988,7 @@ public class SubjectActivity extends AppCompatActivity
             {
                 chosen_color=EnumColors.valueOf(2);
                 temp_note_add_color = EnumColors.valueOf(2);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
@@ -994,6 +1001,7 @@ public class SubjectActivity extends AppCompatActivity
             {
                 chosen_color=EnumColors.valueOf(3);
                 temp_note_add_color = EnumColors.valueOf(3);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -1006,6 +1014,7 @@ public class SubjectActivity extends AppCompatActivity
             {
                 chosen_color=EnumColors.valueOf(4);
                 temp_note_add_color = EnumColors.valueOf(4);
+                color_picked=true;
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -1016,6 +1025,9 @@ public class SubjectActivity extends AppCompatActivity
             }
             case R.id.button_purple:
             {
+                chosen_color=EnumColors.valueOf(5);
+                color_picked=true;
+
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_green).setAlpha(0.3f);
@@ -1024,7 +1036,6 @@ public class SubjectActivity extends AppCompatActivity
 
                 chosen_color=EnumColors.valueOf(5);
                 temp_note_add_color = EnumColors.valueOf(5);
-
                 break;
             }
         }
@@ -1317,8 +1328,7 @@ public class SubjectActivity extends AppCompatActivity
                 gallery.setAction(Intent.ACTION_PICK);
 // Always show the chooser (if there are multiple options available)
                 startActivityForResult(Intent.createChooser(gallery, "Select Picture"),100);
-
-
+                Log.d("test","Wybrany kolor przed wybraniem zdjec to" + chosen_color);
 
             }
         });
@@ -1332,8 +1342,12 @@ public class SubjectActivity extends AppCompatActivity
                 }
                 if(!nameGetter.getText().toString().equals(""))
                 {
+
                     noteAddingOnClick(nameGetter);
                     myDialog.dismiss();
+                    Log.d("test","KOLOR WYBRANY PO WYBRANIU ZDJEC TO " + chosen_color);
+
+
                 }
                 else
                 {
@@ -1834,6 +1848,7 @@ public class SubjectActivity extends AppCompatActivity
         if(!s.equals(""))
         {
             try {
+                Log.d("test","DO bazy poszedl kolor " + chosen_color);
                 addNoteData(s, "Empty note", path_to_save.toString(),"");
                 Log.d("uritest", getStringFromUriList());
                 note = dataBaseHelper.getLatelyAddedNote();
@@ -1892,6 +1907,18 @@ public class SubjectActivity extends AppCompatActivity
         try
         {
             boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), /*chosen_color.getValue()*/ temp_note_add_color.getValue(), photoPath, filePath);
+            boolean insertData;
+            if(color_picked)
+            {
+                insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), photoPath, filePath);
+            }
+            else
+            {
+                insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), EnumColors.valueOf(5).getValue(), photoPath, filePath);
+            }
+            color_picked=false;
+            chosen_color=EnumColors.valueOf(5);
+>>>>>>> 228b1217eae17ffe0ca777f4369e6fd023c936c1
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
@@ -1907,15 +1934,22 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
+            boolean insertData;
+            if(color_picked)
+            {
+                insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
+
+            }
+            else
+            {
+                insertData = dataBaseHelper.addCardData(word, answer, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, EnumColors.valueOf(5).getValue());
+            }
+            color_picked=false;
+            chosen_color=EnumColors.valueOf(5);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + word + ", " + answer);
             else
                 toastMessage("Cos sie wysralo");
-
-
-
-
         }
         catch(Exception e)
         {
@@ -1927,7 +1961,17 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = dataBaseHelper.addQuizData(question, goodAnswer, badAnswers, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
+            boolean insertData;
+            if(color_picked)
+            {
+                insertData = dataBaseHelper.addQuizData(question, goodAnswer, badAnswers, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, chosen_color.getValue());
+            }
+            else
+            {
+                insertData = dataBaseHelper.addQuizData(question, goodAnswer, badAnswers, MainActivity.getCurrentSubject().getSubjectID(), attachedNotes, EnumColors.valueOf(5).getValue());
+            }
+            color_picked=false;
+            chosen_color=EnumColors.valueOf(5);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + question);
             else
