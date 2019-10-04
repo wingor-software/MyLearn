@@ -860,8 +860,8 @@ public class SubjectActivity extends AppCompatActivity
 //                toastMessage(card.getWord() + " " + card.getAnswer());
                 currentCard = card;
                 // TODO: 04.10.2019 tutaj testowane jest inne wyswietlanie fiszek
-//                showOpenCardPopup();
-                showCardPopup();
+                showOpenCardPopup();
+//                showCardPopup();
             }
         });
 
@@ -898,6 +898,7 @@ public class SubjectActivity extends AppCompatActivity
 
     private void showCardPopup()
     {
+        myDialog.setContentView(R.layout.popup_scrolling_open_card);
 
     }
 
