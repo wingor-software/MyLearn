@@ -33,7 +33,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +57,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -91,6 +95,7 @@ public class SubjectActivity extends AppCompatActivity
     static DataBaseHelper dataBaseHelper;
 
     EnumColors chosen_color = EnumColors.valueOf(5);
+    EnumColors temp_note_add_color = EnumColors.valueOf(5);
 
     private enum BarAction {CARDS, QUIZ, NOTES, EXAMS}
 
@@ -137,6 +142,7 @@ public class SubjectActivity extends AppCompatActivity
     private ScrollView subjectScrollView;
 
     private static ExamType examType;
+    private static int questionsCountToExam = 0;
 
     private static final int REQUEST_CODE_READING_FILE_CARDS = 300;
     private static final int REQUEST_CODE_READING_FILE_QUIZ = 400;
@@ -185,13 +191,42 @@ public class SubjectActivity extends AppCompatActivity
         Button examStartButton = (Button) findViewById(R.id.examStartButton);
         examStartButton.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
 
-        CheckBox checkBox = (CheckBox) findViewById(R.id.checkBoxCards);
-        checkBox.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        CheckBox checkBoxCards = (CheckBox) findViewById(R.id.checkBoxCards);
+        checkBoxCards.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        checkBoxCards.setChecked(false);
 
-        checkBox = (CheckBox) findViewById(R.id.checkBoxQuestions);
-        checkBox.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        CheckBox checkBoxQuiz = (CheckBox) findViewById(R.id.checkBoxQuestions);
+        checkBoxQuiz.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        checkBoxQuiz.setChecked(false);
+
+        SeekBar seekBar = (SeekBar) findViewById(R.id.questionCountSeekBar);
+        seekBar.setMax(2);
+        seekBar.setEnabled(false);
+        seekBar.setProgress(1);
+
+        final TextView questionsCount = (TextView) findViewById(R.id.questionsCountText);
+        questionsCount.setText("Choose exam options");
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                questionsCount.setText("" + i);
+                questionsCountToExam = i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
+        checkBoxCards.setOnCheckedChangeListener(new CheckBoxStateListener(checkBoxCards, checkBoxQuiz, seekBar, questionsCount, dataBaseHelper));
+        checkBoxQuiz.setOnCheckedChangeListener(new CheckBoxStateListener(checkBoxCards, checkBoxQuiz, seekBar, questionsCount, dataBaseHelper));
 
         dark = getResources().getColor(R.color.colorLightPrimary);
+
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkBoxQuestions);
         for (int i = 0; i < 2; i++) {
             if (Build.VERSION.SDK_INT < 21) {
                 CompoundButtonCompat.setButtonTintList(checkBox, ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//Use android.support.v4.widget.CompoundButtonCompat when necessary else
@@ -610,7 +645,11 @@ public class SubjectActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        if(cards.isChecked() && questions.isChecked() && cardsCount + quizzesCount > 0)
+        if(questionsCountToExam == 0)
+        {
+            Toast.makeText(SubjectActivity.this, "Please, select exam size", Toast.LENGTH_LONG).show();
+        }
+        else if(cards.isChecked() && questions.isChecked() && cardsCount + quizzesCount > 0)
         {
             examType = ExamType.ALL;
             Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
@@ -633,12 +672,17 @@ public class SubjectActivity extends AppCompatActivity
         }
         else if(!cards.isChecked() && !questions.isChecked())
         {
-            Toast.makeText(SubjectActivity.this, "Please select exam type", Toast.LENGTH_LONG).show();
+            Toast.makeText(SubjectActivity.this, "Please, select exam type", Toast.LENGTH_LONG).show();
         }
         else
         {
             Toast.makeText(SubjectActivity.this, "Looks like you don't have any cards or questions", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static int getQuestionsCountToExam()
+    {
+        return questionsCountToExam;
     }
 
     public static ExamType getExamType()
@@ -815,7 +859,9 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
 //                toastMessage(card.getWord() + " " + card.getAnswer());
                 currentCard = card;
-                showOpenCardPopup();
+                // TODO: 04.10.2019 tutaj testowane jest inne wyswietlanie fiszek
+//                showOpenCardPopup();
+                showCardPopup();
             }
         });
 
@@ -848,6 +894,11 @@ public class SubjectActivity extends AppCompatActivity
             ((ViewManager) warning.getParent()).removeView(warning);
         }
         subjectLayout.addView(b);
+    }
+
+    private void showCardPopup()
+    {
+
     }
 
     private void drawQuizButton(final Quiz quiz)
@@ -917,6 +968,7 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.button_red:
             {
                 chosen_color=EnumColors.valueOf(1);
+                temp_note_add_color = EnumColors.valueOf(1);
 
                 myDialog.findViewById(R.id.button_red).setAlpha(1f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -928,6 +980,7 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.button_yellow:
             {
                 chosen_color=EnumColors.valueOf(2);
+                temp_note_add_color = EnumColors.valueOf(2);
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(1f);
@@ -939,6 +992,7 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.button_green:
             {
                 chosen_color=EnumColors.valueOf(3);
+                temp_note_add_color = EnumColors.valueOf(3);
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -950,6 +1004,7 @@ public class SubjectActivity extends AppCompatActivity
             case R.id.button_blue:
             {
                 chosen_color=EnumColors.valueOf(4);
+                temp_note_add_color = EnumColors.valueOf(4);
 
                 myDialog.findViewById(R.id.button_red).setAlpha(0.3f);
                 myDialog.findViewById(R.id.button_yellow).setAlpha(0.3f);
@@ -967,6 +1022,8 @@ public class SubjectActivity extends AppCompatActivity
                 myDialog.findViewById(R.id.button_purple).setAlpha(1f);
 
                 chosen_color=EnumColors.valueOf(5);
+                temp_note_add_color = EnumColors.valueOf(5);
+
                 break;
             }
         }
@@ -1833,7 +1890,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
-            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), photoPath, filePath);
+            boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), /*chosen_color.getValue()*/ temp_note_add_color.getValue(), photoPath, filePath);
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else

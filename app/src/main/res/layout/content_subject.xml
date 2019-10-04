@@ -137,6 +137,21 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/questionsCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/fab_margin"
+                android:text="xxx"
+                android:textColor="@color/colorPrimary"
+                android:layout_gravity="center"/>
+
+            <SeekBar
+                android:id="@+id/questionCountSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/fab_margin"/>
+
             <Button
                 android:id="@+id/examStartButton"
                 android:layout_width="match_parent"

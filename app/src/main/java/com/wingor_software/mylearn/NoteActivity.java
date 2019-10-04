@@ -75,10 +75,10 @@ public class NoteActivity extends AppCompatActivity{
         dataBaseHelper = new DataBaseHelper(this);
 
         setContentView(R.layout.activity_note);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_note);
         setSupportActionBar(toolbar);
 
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout_note);
 //        int light = getResources().getColor(R.color.white);
 //        int dark = getResources().getColor(R.color.colorDarkModeBackground);
         coordinatorLayout.setBackground((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getDrawable(R.color.white) : getResources().getDrawable(R.color.colorDarkModeBackground));
@@ -298,7 +298,7 @@ public class NoteActivity extends AppCompatActivity{
         noteContent.setTextSize(textSize);
         editNote.setTextSize(textSize);
 
-        CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout);
+        CollapsingToolbarLayout tolbar_layout = findViewById(R.id.toolbar_layout_note);
         int color_of_subject = SubjectActivity.getCurrentNote().getColor();
         switch (color_of_subject)
         {
@@ -684,5 +684,4 @@ public class NoteActivity extends AppCompatActivity{
 
         return extension;
     }
-
 }

@@ -49,7 +49,8 @@ public class ExamActivity extends AppCompatActivity {
         }
         setSupportActionBar(toolbar);
         dataBaseHelper = new DataBaseHelper(this);
-        QUESTIONS_COUNT = DEF_QUESTIONS_COUNT;
+//        QUESTIONS_COUNT = DEF_QUESTIONS_COUNT;
+        QUESTIONS_COUNT = SubjectActivity.getQuestionsCountToExam();
         examables = getExamableList(QUESTIONS_COUNT);
         if(notNullExamables() !=  QUESTIONS_COUNT)
             QUESTIONS_COUNT = notNullExamables();
