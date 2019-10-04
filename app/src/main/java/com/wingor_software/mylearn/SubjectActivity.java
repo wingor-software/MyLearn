@@ -97,10 +97,8 @@ public class SubjectActivity extends AppCompatActivity
     EnumColors chosen_color = EnumColors.valueOf(5);
     EnumColors temp_note_add_color = EnumColors.valueOf(5);
 
-    private static volatile EnumColors chosen_color = EnumColors.valueOf(5);
     private static boolean color_picked = false;
 
->>>>>>> 228b1217eae17ffe0ca777f4369e6fd023c936c1
 
     private enum BarAction {CARDS, QUIZ, NOTES, EXAMS}
 
@@ -1907,7 +1905,7 @@ public class SubjectActivity extends AppCompatActivity
         try
         {
             boolean insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), /*chosen_color.getValue()*/ temp_note_add_color.getValue(), photoPath, filePath);
-            boolean insertData;
+
             if(color_picked)
             {
                 insertData = dataBaseHelper.addNoteData(title, content, MainActivity.getCurrentSubject().getSubjectID(), chosen_color.getValue(), photoPath, filePath);
@@ -1918,7 +1916,7 @@ public class SubjectActivity extends AppCompatActivity
             }
             color_picked=false;
             chosen_color=EnumColors.valueOf(5);
->>>>>>> 228b1217eae17ffe0ca777f4369e6fd023c936c1
+
             if(insertData)
                 toastMessage("Dodano poprawnie - " + title);
             else
