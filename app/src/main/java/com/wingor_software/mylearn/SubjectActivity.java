@@ -939,7 +939,7 @@ public class SubjectActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 currentQuiz = quiz;
-                showOpenQuizPopup();
+                showOpenQuizPopup(subjectLayout.indexOfChild(view));
             }
         });
 
@@ -1684,50 +1684,64 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    private void showOpenQuizPopup()
+//    private void showOpenQuizPopup()
+//    {
+//        myDialog.setContentView(R.layout.popup_open_quiz);
+//        Button check = myDialog.findViewById(R.id.checkQuizButton);
+//        final TextView question = myDialog.findViewById(R.id.quizQuiestion);
+//        question.setText(currentQuiz.getQuestion());
+//        final LinearLayout checkBoxLayout = myDialog.findViewById(R.id.checkbox_quiz_layout);
+//
+//        HashSet<Answer> answersSet = new HashSet<>();
+//        for (int i = 0; i < currentQuiz.getGoodAnswers().size(); i++) {
+//            answersSet.add(new Answer(currentQuiz.getGoodAnswers().get(i), true));
+//        }
+//        for (int i = 0; i < currentQuiz.getBadAnswers().size(); i++) {
+//            answersSet.add(new Answer(currentQuiz.getBadAnswers().get(i), false));
+//        }
+//
+//        for(Answer answer : answersSet)
+//        {
+//            CheckBox checkBox = new CheckBox(SubjectActivity.this);
+//            checkBox.setText(answer.getAnswer());
+//            if(answer.isCorrect()) checkBox.setTag("correct");
+//            else checkBox.setTag("incorrect");
+//            checkBoxLayout.addView(checkBox);
+//        }
+//
+//        check.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                boolean wasWrong = false;
+//                for (int i = 0; i < checkBoxLayout.getChildCount(); i++) {
+//                    CheckBox box = (CheckBox) checkBoxLayout.getChildAt(i);
+//                    if(!((box.isChecked() && box.getTag().toString().equals("correct")) || (!box.isChecked() && box.getTag().toString().equals("incorrect"))))
+//                    {
+//                        question.setText("Wrong");
+//                        if(box.getTag().toString().equals("correct")) box.setTextColor(Color.GREEN);
+//                        else box.setTextColor(Color.RED);
+//                        wasWrong = true;
+//                    }
+//                }
+//                if(!wasWrong)
+//                    question.setText("Correct");
+////                myDialog.dismiss();
+//            }
+//        });
+//
+//        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        myDialog.show();
+//    }
+
+    private void showOpenQuizPopup(int currentPosition)
     {
-        myDialog.setContentView(R.layout.popup_open_quiz);
-        Button check = myDialog.findViewById(R.id.checkQuizButton);
-        final TextView question = myDialog.findViewById(R.id.quizQuiestion);
-        question.setText(currentQuiz.getQuestion());
-        final LinearLayout checkBoxLayout = myDialog.findViewById(R.id.checkbox_quiz_layout);
+        myDialog.setContentView(R.layout.popup_scrolling_open_card);
+        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
-        HashSet<Answer> answersSet = new HashSet<>();
-        for (int i = 0; i < currentQuiz.getGoodAnswers().size(); i++) {
-            answersSet.add(new Answer(currentQuiz.getGoodAnswers().get(i), true));
-        }
-        for (int i = 0; i < currentQuiz.getBadAnswers().size(); i++) {
-            answersSet.add(new Answer(currentQuiz.getBadAnswers().get(i), false));
-        }
-
-        for(Answer answer : answersSet)
-        {
-            CheckBox checkBox = new CheckBox(SubjectActivity.this);
-            checkBox.setText(answer.getAnswer());
-            if(answer.isCorrect()) checkBox.setTag("correct");
-            else checkBox.setTag("incorrect");
-            checkBoxLayout.addView(checkBox);
-        }
-
-        check.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean wasWrong = false;
-                for (int i = 0; i < checkBoxLayout.getChildCount(); i++) {
-                    CheckBox box = (CheckBox) checkBoxLayout.getChildAt(i);
-                    if(!((box.isChecked() && box.getTag().toString().equals("correct")) || (!box.isChecked() && box.getTag().toString().equals("incorrect"))))
-                    {
-                        question.setText("Wrong");
-                        if(box.getTag().toString().equals("correct")) box.setTextColor(Color.GREEN);
-                        else box.setTextColor(Color.RED);
-                        wasWrong = true;
-                    }
-                }
-                if(!wasWrong)
-                    question.setText("Correct");
-//                myDialog.dismiss();
-            }
-        });
+        QuizPagerAdapter quizPagerAdapter = new QuizPagerAdapter(dataBaseHelper, this, myDialog);
+        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
+        mViewPager.setAdapter(quizPagerAdapter);
+        mViewPager.setCurrentItem(currentPosition);
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();

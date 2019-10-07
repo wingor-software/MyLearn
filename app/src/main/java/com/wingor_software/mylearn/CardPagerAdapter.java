@@ -16,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import org.w3c.dom.Text;
-
 public class CardPagerAdapter extends PagerAdapter
 {
     private Context context;
@@ -32,7 +30,7 @@ public class CardPagerAdapter extends PagerAdapter
 
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull View collection, int position) {
+    public Object instantiateItem(@NonNull ViewGroup collection, int position) {
         try
         {
             TextView word = new TextView(context);
@@ -82,7 +80,7 @@ public class CardPagerAdapter extends PagerAdapter
     }
 
     @Override
-    public void destroyItem(View collection, int position, Object view) {
+    public void destroyItem(ViewGroup collection, int position, Object view) {
         ((ViewPager) collection).removeView((View) view);
     }
 
