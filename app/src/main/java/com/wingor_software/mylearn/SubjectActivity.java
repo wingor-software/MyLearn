@@ -52,6 +52,8 @@ import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -862,9 +864,8 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
 //                toastMessage(card.getWord() + " " + card.getAnswer());
                 currentCard = card;
-                // TODO: 04.10.2019 tutaj testowane jest inne wyswietlanie fiszek
-                showOpenCardPopup();
-//                showCardPopup();
+//                showOpenCardPopup();
+                showCardPopup(subjectLayout.indexOfChild(view));
             }
         });
 
@@ -899,10 +900,18 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout.addView(b);
     }
 
-    private void showCardPopup()
+    private void showCardPopup(int currentPosition)
     {
         myDialog.setContentView(R.layout.popup_scrolling_open_card);
+        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
+        CardPagerAdapter mCardPageAdapter = new CardPagerAdapter(dataBaseHelper, this, myDialog);
+        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
+        mViewPager.setAdapter(mCardPageAdapter);
+        mViewPager.setCurrentItem(currentPosition);
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
     private void drawQuizButton(final Quiz quiz)
