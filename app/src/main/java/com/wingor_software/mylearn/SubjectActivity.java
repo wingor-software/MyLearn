@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -91,6 +92,7 @@ public class SubjectActivity extends AppCompatActivity
 
     //private ConstraintLayout subjectLayout;
     private LinearLayout subjectLayout;
+    private ListView listView;
     Dialog myDialog;
     private TextView warning;
 
@@ -158,7 +160,8 @@ public class SubjectActivity extends AppCompatActivity
         editor.putInt(getString(R.string.preference), 1);
         editor.apply();     //albo commit ale to moze zawiesic UI
         clearContent();
-        drawAllCardButtons();
+//        drawAllCardButtons();
+        fulfillCardListView();
     }
 
     private void actionQuiz(SharedPreferences.Editor editor)
@@ -900,6 +903,26 @@ public class SubjectActivity extends AppCompatActivity
         subjectLayout.addView(b);
     }
 
+    private void addToListView(final Card card)
+    {
+        LinearLayout cardLayout = new LinearLayout(this);
+        cardLayout.setOrientation(LinearLayout.VERTICAL);
+
+        TextView word = new TextView(this);
+        word.setText(card.getWord());
+        word.setTextSize(30);
+        word.setBackgroundColor(card.getColor());
+
+        TextView answer = new TextView(this);
+        answer.setText(card.getAnswer());
+        answer.setTextSize(20);
+
+        cardLayout.addView(word);
+        cardLayout.addView(answer);
+
+        listView.addHeaderView(cardLayout);
+    }
+
     private void showCardPopup(int currentPosition)
     {
         myDialog.setContentView(R.layout.popup_scrolling_open_card);
@@ -1230,6 +1253,7 @@ public class SubjectActivity extends AppCompatActivity
     {
         try
         {
+            subjectLayout.addView(listView);
             List<Card> cards = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
             Iterator it = cards.iterator();
             while(it.hasNext())
@@ -1248,6 +1272,13 @@ public class SubjectActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+    }
+
+    private void fulfillCardListView()
+    {
+        listView = new ListView(this);
+        subjectLayout.addView(listView);
+        listView.setAdapter(new CardListViewAdapter(this, dataBaseHelper));
     }
 
     private void drawAllCardButtonsContaining(String phrase)
