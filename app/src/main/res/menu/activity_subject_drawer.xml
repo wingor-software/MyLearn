@@ -5,44 +5,53 @@
     tools:showIn="navigation_view">
 
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="TEST-dodaj wpis" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="TEST-pokaz wpisy" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="TEST-usun baze" />
-        <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
-    </group>
+    <!--    -->
+    <!--    tools-->
+    <!--        ->darkmode x2-->
+    <!--        ->statistics-->
+    <!--        ->guide-->
+    <!---       ->destroy database-->
+    <!--    communicate-->
+    <!--        ->about us-->
+    <!--        ->law info-->
+
+    <item android:title="Tools">
+        <menu>
+            <item
+                android:id="@+id/nav_darkMode_ON"
+                android:icon="@drawable/baseline_nights_stay_black_24"
+                android:title="DarkModeON" />
+            <item
+                android:id="@+id/nav_darkMode_OFF"
+                android:icon="@drawable/baseline_wb_sunny_black_24"
+                android:title="DarkModeOFF" />
+            <item
+                android:id="@+id/nav_statistics"
+                android:icon="@drawable/baseline_format_list_numbered_black_24"
+                android:title="Statistics" />
+            <item
+                android:id="@+id/nav_tutorial"
+                android:icon="@drawable/baseline_help_black_24"
+                android:title="Tutorial" />
+            <item
+                android:id="@+id/nav_destroy_database"
+                android:icon="@drawable/baseline_restore_from_trash_black_24"
+                android:title="DESTROY DATABASE!!!"
+                />
+        </menu>
+    </item>
 
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="TEST-LIGHTMODE" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="TEST-DARKMODE" />
-            <item
-                android:id="@+id/nav_info"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_info"
+                android:id="@+id/nav_license"
+                android:icon="@drawable/baseline_info_black_24"
+                android:title="License"
                 />
             <item
-                android:id="@+id/nav_contact"
+                android:id="@+id/nav_about_us"
                 android:icon="@drawable/ic_menu_share"
-                android:title="@string/menu_contact"
+                android:title="About us"
                 />
         </menu>
     </item>

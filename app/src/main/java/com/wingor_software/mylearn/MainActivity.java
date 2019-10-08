@@ -332,31 +332,29 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            // Handle the camera action
-            addData("Test" + new Random().nextInt(), 1);
-        } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(MainActivity.this, ListDataActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
-            dataBaseHelper.dropSubjectTable();
-            subjectsLayout.removeAllViews();
-        } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
-            restartApp();
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_darkMode_ON) {
             dataBaseHelper.setDisplayMode(DisplayMode.DARK);
             restartApp();
-        }
+        } else if (id == R.id.nav_darkMode_OFF) {
+            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
+            restartApp();
+        } else if (id == R.id.nav_statistics) {
+            toastMessage("TU DODAC STATYSTYKI");
 
-        else if (id == R.id.nav_info)
+        } else if (id == R.id.nav_tutorial) {
+            toastMessage("TU DODAC TUTORIAL");
+
+        } else if (id == R.id.nav_destroy_database) {
+            dataBaseHelper.dropSubjectTable();
+            subjectsLayout.removeAllViews();
+            toastMessage("DATABASE DESTROYED!");
+        }
+        else if (id == R.id.nav_license)
         {
             Intent intent = new Intent(MainActivity.this,Info.class);
             startActivity(intent);
         }
-        else if(id == R.id.nav_contact)
+        else if(id == R.id.nav_about_us)
         {
             Intent intent = new Intent(MainActivity.this,Contact.class);
             startActivity(intent);
