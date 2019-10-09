@@ -9,19 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Contact"></activity>
+        <activity
+            android:name=".TutorialActivity"
+            android:label="@string/title_activity_tutorial"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Contact" />
         <activity android:name=".Info" />
         <activity
             android:name=".ExamActivity"
             android:label="@string/title_activity_exam"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".PhotoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_photo"
             android:theme="@style/FullscreenTheme" />
-
         <activity
             android:name=".NoteActivity"
             android:label="@string/title_activity_note"
@@ -41,6 +43,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListDataActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

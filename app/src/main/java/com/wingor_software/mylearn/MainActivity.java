@@ -341,8 +341,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_statistics) {
             toastMessage("TU DODAC STATYSTYKI");
 
+
         } else if (id == R.id.nav_tutorial) {
             toastMessage("TU DODAC TUTORIAL");
+            Intent intent = new Intent(MainActivity.this,TutorialActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_destroy_database) {
             dataBaseHelper.dropSubjectTable();

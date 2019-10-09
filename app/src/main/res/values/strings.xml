@@ -191,6 +191,7 @@
 
     </string>
 
+    <string name="title_activity_tutorial">TutorialActivity</string>
     <string-array name="answers_array">
         <item>1</item>
         <item>2</item>

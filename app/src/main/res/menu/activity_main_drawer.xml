@@ -20,11 +20,11 @@
             <item
                 android:id="@+id/nav_darkMode_ON"
                 android:icon="@drawable/baseline_nights_stay_black_24"
-                android:title="DarkModeON" />
+                android:title="Dark mode" />
             <item
                 android:id="@+id/nav_darkMode_OFF"
                 android:icon="@drawable/baseline_wb_sunny_black_24"
-                android:title="DarkModeOFF" />
+                android:title="Light mode" />
             <item
                 android:id="@+id/nav_statistics"
                 android:icon="@drawable/baseline_format_list_numbered_black_24"
