@@ -136,9 +136,23 @@
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">TAB #3</string>
+<!--    nazwy zakladek w tutorialu-->
+    <string name="tab_text_1">First steps</string>
+    <string name="tab_text_2">Cards</string>
+    <string name="tab_text_3">Quizzes</string>
+    <string name="tab_text_4">Notes</string>
+    <string name="tab_text_5">Exams</string>
+    <string name="tab_text_6">Import/Export</string>
+    <string name="tab_text_7">Side menu</string>
+<!--    zawartosc kazdej z zakladek-->
+    <string name="tab_1_content">
+        Welcome to the mylearn application tutorial.\n
+        In a few steps you will learn how to use our application.\n
+        You can reopen the tutorial at any time by expanding the side menu and clicking the tutorial button.\n
+        Let\'s get started :)
+    </string>
+    
+    
     <string name="License">
         Copyright © 2019 MyLearn \n
         All Rights Reserved \n\n

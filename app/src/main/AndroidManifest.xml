@@ -12,7 +12,12 @@
         <activity
             android:name=".TutorialActivity"
             android:label="@string/title_activity_tutorial"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wingor_software.mylearn.MainActivity" />
+        </activity>
         <activity android:name=".Contact" />
         <activity android:name=".Info" />
         <activity
