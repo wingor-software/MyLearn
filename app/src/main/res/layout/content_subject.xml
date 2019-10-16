@@ -33,12 +33,12 @@
         <LinearLayout
             android:id="@+id/subjectActivityLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="10dp"
-            android:showDividers="middle"
+            android:layout_marginBottom="32dp"
             android:divider="@drawable/button_divider"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:showDividers="middle">
 
         </LinearLayout>
     </ScrollView>

@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_row_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/headline_word"
+    <ImageButton
+        android:id="@+id/stickyImageButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:fontFamily="casual"
-        android:padding="@dimen/fab_margin"
-        android:text="Dog"
-        android:textSize="35sp"
-        android:textStyle="bold" />
+        android:layout_height="375dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:scaleY="0.7"
+        android:src="@drawable/sticky_note"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/footer_answer"
+        android:id="@+id/stickyCardWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="casual"
-        android:padding="@dimen/fab_margin"
-        android:text="Pies"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:text="khgfjcjgch"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/stickyImageButton"
+        app:layout_constraintEnd_toEndOf="@+id/stickyImageButton"
+        app:layout_constraintStart_toStartOf="@+id/stickyImageButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

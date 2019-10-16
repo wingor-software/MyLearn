@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 public class CardListViewAdapter extends BaseAdapter {
 
     private Context context;
@@ -62,21 +64,21 @@ public class CardListViewAdapter extends BaseAdapter {
         if(view == null){
             view = mInflater.inflate(R.layout.card_list_row, null);
             holder = new ViewHolder();
-            holder.linearLayout = (LinearLayout) view.findViewById(R.id.card_row_layout);
+            holder.constraintLayout = (ConstraintLayout) view.findViewById(R.id.card_row_layout);
             view.setTag(holder);
         }
         else{
             holder = (ViewHolder) view.getTag();
         }
-        TextView word = (TextView) holder.linearLayout.getChildAt(0);
-        TextView answer = (TextView) holder.linearLayout.getChildAt(1);
+        TextView word = (TextView) holder.constraintLayout.getChildAt(1);
+//        TextView answer = (TextView) holder.linearLayout.getChildAt(1);
 
         try
         {
             Card card = dataBaseHelper.getCardList(subjectID).get(i);
             word.setText(card.getWord());
             setColor(EnumColors.valueOf(card.getColor()), word);
-            answer.setText(card.getAnswer());
+//            answer.setText(card.getAnswer());
             return view;
         }
         catch(Exception e)
@@ -119,6 +121,6 @@ public class CardListViewAdapter extends BaseAdapter {
     }
 
     private class ViewHolder{
-        LinearLayout linearLayout;
+        ConstraintLayout constraintLayout;
     }
 }
