@@ -19,7 +19,8 @@
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:src="@drawable/baseline_help_black_24" />
+                android:layout_margin="30dp"
+                android:src="@mipmap/ic_launcher_round" />
 
             <TextView
                 android:id="@+id/section_label"
@@ -35,7 +36,9 @@
                 android:fontFamily="casual"
                 android:textSize="26sp"
                 android:textStyle="bold"
-                android:typeface="normal" />
+                android:typeface="normal"
+                android:textColor="@color/black"
+                />
         </LinearLayout>
     </ScrollView>
 
