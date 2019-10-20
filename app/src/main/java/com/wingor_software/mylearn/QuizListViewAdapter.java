@@ -1,24 +1,23 @@
 package com.wingor_software.mylearn;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-public class CardListViewAdapter extends BaseAdapter {
-
+public class QuizListViewAdapter extends BaseAdapter
+{
     private Context context;
     private DataBaseHelper dataBaseHelper;
     private int subjectID;
     private LayoutInflater mInflater;
 
-    public CardListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
+    public QuizListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
     {
         this.context = context;
         this.dataBaseHelper = dataBaseHelper;
@@ -35,11 +34,15 @@ public class CardListViewAdapter extends BaseAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
+    @Override
     public int getCount() {
         try
         {
-            return dataBaseHelper.getCardList(subjectID).size();
-
+            return dataBaseHelper.getQuizList(subjectID).size();
         }
         catch(Exception e)
         {
@@ -58,27 +61,30 @@ public class CardListViewAdapter extends BaseAdapter {
         return i;
     }
 
+    private class ViewHolder{
+        ConstraintLayout constraintLayout;
+    }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder;
+        QuizListViewAdapter.ViewHolder holder;
         if(view == null){
-            view = mInflater.inflate(R.layout.card_list_row, null);
-            holder = new ViewHolder();
-            holder.constraintLayout = (ConstraintLayout) view.findViewById(R.id.card_row_layout);
+            view = mInflater.inflate(R.layout.quiz_list_row, null);
+            holder = new QuizListViewAdapter.ViewHolder();
+            holder.constraintLayout = (ConstraintLayout) view.findViewById(R.id.quiz_row_layout);
             view.setTag(holder);
         }
         else{
-            holder = (ViewHolder) view.getTag();
+            holder = (QuizListViewAdapter.ViewHolder) view.getTag();
         }
-        TextView word = (TextView) holder.constraintLayout.getChildAt(1);
-        TextView answer = (TextView) holder.constraintLayout.getChildAt(2);
+
+        TextView quesiton = (TextView) holder.constraintLayout.getChildAt(1);
 
         try
         {
-            Card card = dataBaseHelper.getCardList(subjectID).get(i);
-            word.setText(card.getWord());
-            setColor(EnumColors.valueOf(card.getColor()), word);
-            answer.setText(card.getAnswer());
+            Quiz quiz = dataBaseHelper.getQuizList(subjectID).get(i);
+            quesiton.setText(quiz.getQuestion());
+            setColor(EnumColors.valueOf(quiz.getColor()), quesiton);
             return view;
         }
         catch(Exception e)
@@ -120,12 +126,4 @@ public class CardListViewAdapter extends BaseAdapter {
         }
     }
 
-    private class ViewHolder{
-        ConstraintLayout constraintLayout;
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-    }
 }

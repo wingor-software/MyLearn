@@ -2,29 +2,30 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainConstraintLayout"
+    android:id="@+id/note_row_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/mainListView"
+    <ImageView
+        android:id="@+id/noteStickyImageButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/sticky_note"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/warningMainText"
+        android:id="@+id/noteStickyCardQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/subject_warning"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="khgfjcjgch"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/noteStickyImageButton"
+        app:layout_constraintEnd_toEndOf="@+id/noteStickyImageButton"
+        app:layout_constraintStart_toStartOf="@+id/noteStickyImageButton"
+        app:layout_constraintTop_toTopOf="@+id/noteStickyImageButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

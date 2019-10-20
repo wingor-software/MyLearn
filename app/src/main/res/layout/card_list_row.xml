@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/stickyImageButton"
-        android:layout_width="match_parent"
-        android:layout_height="375dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
-        android:scaleY="0.7"
         android:src="@drawable/sticky_note"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,12 +22,25 @@
         android:id="@+id/stickyCardWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="khgfjcjgch"
+        android:text="TestWord"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="@+id/stickyImageButton"
         app:layout_constraintEnd_toEndOf="@+id/stickyImageButton"
         app:layout_constraintStart_toStartOf="@+id/stickyImageButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.36" />
+
+    <TextView
+        android:id="@+id/stickyCardAnswer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TestAnswer"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/stickyImageButton"
+        app:layout_constraintEnd_toEndOf="@+id/stickyImageButton"
+        app:layout_constraintStart_toStartOf="@+id/stickyImageButton"
+        app:layout_constraintTop_toTopOf="@+id/stickyImageButton"
+        app:layout_constraintVertical_bias="0.60" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

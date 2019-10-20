@@ -1,44 +1,34 @@
 package com.wingor_software.mylearn;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-public class CardListViewAdapter extends BaseAdapter {
-
+public class MainListViewAdapter extends BaseAdapter
+{
     private Context context;
     private DataBaseHelper dataBaseHelper;
-    private int subjectID;
     private LayoutInflater mInflater;
 
-    public CardListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
+    public MainListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
     {
         this.context = context;
         this.dataBaseHelper = dataBaseHelper;
         this.mInflater = LayoutInflater.from(context);
-        try
-        {
-            this.subjectID = MainActivity.getCurrentSubject().getSubjectID();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            this.subjectID = 0;
-        }
     }
 
     @Override
     public int getCount() {
         try
         {
-            return dataBaseHelper.getCardList(subjectID).size();
+            return dataBaseHelper.getSubjectsList().size();
 
         }
         catch(Exception e)
@@ -58,27 +48,31 @@ public class CardListViewAdapter extends BaseAdapter {
         return i;
     }
 
+
+    private class ViewHolder{
+        ConstraintLayout constraintLayout;
+    }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
         if(view == null){
-            view = mInflater.inflate(R.layout.card_list_row, null);
-            holder = new ViewHolder();
-            holder.constraintLayout = (ConstraintLayout) view.findViewById(R.id.card_row_layout);
+            view = mInflater.inflate(R.layout.main_list_row, null);
+            holder = new MainListViewAdapter.ViewHolder();
+            holder.constraintLayout = (ConstraintLayout) view.findViewById(R.id.main_row_layout);
             view.setTag(holder);
         }
         else{
             holder = (ViewHolder) view.getTag();
         }
-        TextView word = (TextView) holder.constraintLayout.getChildAt(1);
-        TextView answer = (TextView) holder.constraintLayout.getChildAt(2);
+
+        TextView subjectName = (TextView) holder.constraintLayout.getChildAt(1);
 
         try
         {
-            Card card = dataBaseHelper.getCardList(subjectID).get(i);
-            word.setText(card.getWord());
-            setColor(EnumColors.valueOf(card.getColor()), word);
-            answer.setText(card.getAnswer());
+            Subject subject = dataBaseHelper.getSubjectsList().get(i);
+            subjectName.setText(subject.getSubjectName());
+            setColor(EnumColors.valueOf(subject.getColor()), subjectName);
             return view;
         }
         catch(Exception e)
@@ -118,10 +112,6 @@ public class CardListViewAdapter extends BaseAdapter {
                 break;
             }
         }
-    }
-
-    private class ViewHolder{
-        ConstraintLayout constraintLayout;
     }
 
     @Override
