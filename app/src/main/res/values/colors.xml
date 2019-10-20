@@ -1,6 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#8250E6</color>
-    <color name="colorPrimaryDark">#5F3CA0</color>
-    <color name="colorAccent">#A91C50</color>
+    <!--kolory glowne-->
+    <color name="colorLightPrimary">#8A43BD</color>
+    <color name="colorPrimary">#62148C</color>
+    <color name="colorPrimaryDark">#42005E</color>
+    <color name="colorDarkModeBackground">#2D2236</color>
+
+    <!--kolory dodatkowe-->
+    <color name="colorLightAccent">#4F03DD</color>
+    <color name="colorAccent">#500181</color>
+    <color name="colorAccentDark">#1F0241</color>
+
+    <!--kolory do gradientu side baru -->
+    <color name="colorLightGradient">#69389B</color>
+    <color name="colorGradient">#40105C</color>
+    <color name="colorGradientDark">#290435</color>
+
+    <!--kolory do dymkow popup-->
+    <color name="colorLightPopup">#C1B2E0</color>
+    <color name="colorPopup">#A884CE</color>
+    <color name="colorPopupDark">#946EC9</color>
+    <color name="colorPopupBorder">#7A51A3</color>
+
+    <!--kolory do przyciskow wyborow-->
+    <color name="colorLightButton">#ECE6F5</color>
+    <color name="colorButton">#ECE0FC</color>
+    <color name="colorButtonDark">#E2CDF7</color>
+
+    <!--kolory do przyciskow przedmiotow-->
+    <color name="colorLightSubject">#EEE7DF</color>
+    <color name="colorSubject">#FCE9D8</color>
+    <color name="colorSubjectDark">#F8D2B2</color>
+
+    <!--kolory do gradientow przedmiotow wszystkich-->
+    <color name="colorLightRed">#ff5131</color>
+    <color name="colorRed">#d50000</color>
+    <color name="colorDarkRed">#9b0000</color>
+
+    <color name="colorLightYellow">#ffff52</color>
+    <color name="colorYellow">#ffd600</color>
+    <color name="colorDarkYellow">#c7a500</color>
+
+    <color name="colorLightGreen">#5efc82</color>
+    <color name="colorGreen">#00c853</color>
+    <color name="colorDarkGreen">#009624</color>
+
+    <color name="colorLightBlue">#768fff</color>
+    <color name="colorBlue">#2962ff</color>
+    <color name="colorDarkBlue">#0039cb</color>
+
+    <color name="colorLightPurple">#e254ff</color>
+    <color name="colorPurple">#aa00ff</color>
+    <color name="colorDarkPurple">#7200ca</color>
+
+    <color name="colorLightGrey">#aaaaaa</color>
+    <color name="colorGrey">#808080</color>
+
+    <color name="black_overlay">#66000000</color>
+
+
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#E5E5E5</color>
+    <color name="half_black">#808080</color>
+    <color name="white_pressed">#F1F1F1</color>
+    <color name="white">#FAFAFA</color>
+    <color name="black">#000000</color>
+
+
 </resources>

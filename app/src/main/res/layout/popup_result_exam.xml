@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/popup_window_drawable"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/resultExamText"
+        android:layout_gravity="center"
+        android:gravity="center"
+
+        android:fontFamily="casual"
+        android:textAlignment="center"
+        android:textColor="@color/colorDarkPurple"
+        android:textSize="18sp"
+        android:textStyle="bold|italic"
+
+        android:text="Przykładowy tekst"
+        />
+
+    <Button
+        android:id="@+id/showAnswersExam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_drawable"
+        android:layout_gravity="center"
+
+        android:layout_margin="10dp"
+
+
+        android:fontFamily="casual"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:typeface="normal"
+
+        android:text="Show answers"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/okExamResultButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/button_drawable"
+        android:gravity="center"
+
+
+        android:fontFamily="casual"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:typeface="normal"
+
+        android:text="OK" />
+
+
+</LinearLayout>
