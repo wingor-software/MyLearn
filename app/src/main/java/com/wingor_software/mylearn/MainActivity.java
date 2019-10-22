@@ -19,9 +19,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -61,27 +64,55 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    //słuzy jako odnosnik do aktualnej sceny
+    /**
+     * Aktualna scena do popupow
+     */
     Dialog myDialog;
 
-    //odnosnik do layoutu przechowujacego przedmioty
-    LinearLayout subjectsLayout;
-    ScrollView mainScrollView;
+    /**
+     * list view na wszystkie przedmioty
+     */
+    private ListView mainListView;
 
-    //odnoscnik do pola tekstowego ostrzezenia
+    /**
+     * glowny layout na list view
+     */
+    private ConstraintLayout mainConstraintLayout;
+
+    /**
+     * Adapter do list view na przedmioty
+     */
+    private MainListViewAdapter mainListViewAdapter;
+
+    /**
+     * TextView z warningiem ze nie ma zadnych dodanych przedmiotow
+     */
     TextView warning;
 
-    //pomocnik do bazy danych
+    /**
+     * Pomocnik do obslugi bazy danych
+     */
     DataBaseHelper dataBaseHelper;
 
-    //wartosc wybranego koloru z popupu
+    /**
+     * Aktualnie wybrany kolor z palety
+     */
     EnumColors chosen_color = EnumColors.valueOf(5);
+
     boolean color_picked = false;
 
-    //aktualny przedmiot
+    /**
+     * Aktualny przedmiot
+     */
     private static Subject currentSubject;
 
+    /**
+     * Request code importowania przedmiotu z pliku .txt
+     */
     private final static int REQUEST_IMPORT_SUBJECT = 200;
+    /**
+     * Request code importowania przedmiotu z pliku .zip
+     */
     private static final int REQUEST_IMPORT_ZIP_SUBJECT = 300;
 
 
@@ -96,11 +127,13 @@ public class MainActivity extends AppCompatActivity
 
         dataBaseHelper = new DataBaseHelper(this);
         myDialog = new Dialog(this);
-        subjectsLayout = findViewById(R.id.subjectsLayout);
-        mainScrollView = findViewById(R.id.mainScrollView);
+//        subjectsLayout = findViewById(R.id.subjectsLayout);
+        mainListView = findViewById(R.id.mainListView);
+//        mainScrollView = findViewById(R.id.mainScrollView);
+        mainConstraintLayout = findViewById(R.id.mainConstraintLayout);
         int light = getResources().getColor(R.color.white);
         int dark = getResources().getColor(R.color.colorDarkModeBackground);
-        mainScrollView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        mainConstraintLayout.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -123,7 +156,7 @@ public class MainActivity extends AppCompatActivity
         final LinearLayout contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
 
-
+        warning = findViewById(R.id.warningMainText);
 
         titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
 
@@ -239,8 +272,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        subjectsLayout.removeAllViewsInLayout();
-        drawAllSubjectButtons();
+        mainListViewAdapter = new MainListViewAdapter(this, dataBaseHelper);
+        mainListView.setAdapter(mainListViewAdapter);
+        mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                try
+                {
+                    Subject subject = dataBaseHelper.getSubjectsList().get(position);
+                    setCurrentSubject(subject);
+                    Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
+                    startActivity(intent);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mainListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                showDeletePopup(position);
+                return false;
+            }
+        });
+        if (mainListViewAdapter.getCount() == 0)
+            warning.setVisibility(View.VISIBLE);
+        else
+            warning.setVisibility(View.GONE);
     }
 
     @Override
@@ -349,8 +409,15 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_destroy_database) {
             dataBaseHelper.dropSubjectTable();
-            subjectsLayout.removeAllViews();
             toastMessage("DATABASE DESTROYED!");
+        } else if (id == R.id.nav_tools) {
+
+        } else if (id == R.id.nav_share) {
+            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
+            restartApp();
+        } else if (id == R.id.nav_send) {
+            dataBaseHelper.setDisplayMode(DisplayMode.DARK);
+            restartApp();
         }
         else if (id == R.id.nav_license)
         {
@@ -368,6 +435,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Restartuje apke po zmianie trybu wyswietlania
+     */
     private void restartApp()
     {
         Intent intent = new Intent(this, MainActivity.class);
@@ -396,10 +466,10 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 TextInputEditText nameGetter = myDialog.findViewById(R.id.nameGetter);
                 String s;
-                if(subjectsLayout==null)
-                {
-                    Log.d("tesciki","subjectslayout jest nullem");
-                }
+//                if(subjectsLayout==null)
+//                {
+//                    Log.d("tesciki","subjectslayout jest nullem");
+//                }
                 Subject subject;
                 s=nameGetter.getText().toString();
                 if(!s.equals(""))
@@ -422,7 +492,7 @@ public class MainActivity extends AppCompatActivity
                         //pobiera ostatnio dodany i go rysuje
                         subject = dataBaseHelper.getLatelyAddedSubject();
                         Log.d("tesciki","dodano do bazy");
-                        drawSubjectButton(subject);
+                        mainListViewAdapter.notifyDataSetChanged();
                         Log.d("tesciki","powinno tutaj dodac przycisk");
                     }
                     catch (Exception e)
@@ -442,6 +512,11 @@ public class MainActivity extends AppCompatActivity
         myDialog.show();
     }
 
+    /**
+     * Dodaje do bazy nowy przedmiot
+     * @param newEntry Nazwa przedmiotu
+     * @param color kod wybranego koloru
+     */
     public void addData(String newEntry, int color)
     {
         boolean insertData = dataBaseHelper.addSubjectData(newEntry, color, 0, 0);
@@ -452,114 +527,163 @@ public class MainActivity extends AppCompatActivity
             toastMessage("Cos sie wysralo");
     }
 
+    /**
+     * Wyswietlanie toastu
+     * @param message Text toastu
+     */
     private void toastMessage(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+//    /**
+//     * Metoda dodająca graficznie przedmiot do sceny
+//     * @param subject przedmiot do narsowania
+//     */
+//    private void drawSubjectButton(final Subject subject)
+//    {
+//        final Button b =  new Button(MainActivity.this);
+//
+//        b.setText(subject.getSubjectName());
+//        int light = getResources().getColor(R.color.black);
+//        int dark = getResources().getColor(R.color.white);
+//        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+//        b.setTag("subject_" + subject.getSubjectID());
+//        b.setMinimumWidth(200);
+//        b.setMinimumHeight(200);
+//        //ustalam plik w zaleznosci od wybranego wczesniej koloru
+//
+//        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
+//        chosen_color = EnumColors.valueOf(subject.getColor());
+//        switch (chosen_color)
+//        {
+//            case red:
+//            {
+//                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
+//                break;
+//            }
+//            case yellow:
+//            {
+//                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
+//                break;
+//            }
+//            case green:
+//            {
+//                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
+//                break;
+//            }
+//            case blue:
+//            {
+//                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
+//                break;
+//            }
+//            case purple:
+//            {
+//                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
+//                break;
+//            }
+//        }
+//
+//        b.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                showDeletePopup(view);
+//                return true;
+//            }
+//        });
+//        b.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                setCurrentSubject(subject);
+//                Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        if(warning != null && warning.getParent() != null)
+//        {
+//            ((ViewManager)warning.getParent()).removeView(warning);
+//        }
+////        subjectsLayout.addView(b);
+//    }
+//
+//    /**
+//     * Metoda rysująca wszystkie przedmioty (uzywanie np. przy restarcie aplikacji)
+//     */
+//    private void drawAllSubjectButtons()
+//    {
+//        try
+//        {
+//            List<Subject> subjects = dataBaseHelper.getSubjectsList();
+//            Iterator it = subjects.iterator();
+//            while(it.hasNext())
+//            {
+//                drawSubjectButton((Subject) it.next());
+//            }
+//        }
+//        catch (EmptyDataBaseException em)
+//        {
+//            warning = new TextView(MainActivity.this);
+//            warning.setText(R.string.subject_warning);
+//            warning.setTag("subject_warning_tag");
+////            subjectsLayout.addView(warning);
+//        }
+//        catch(Exception e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
+
+
     /**
-     * Metoda dodająca graficznie przedmiot do sceny
-     * @param subject przedmiot do narsowania
+     * Wyswietla popup wyswietlany przy usuwaniu
+     * @param position pozycja przedmiotu od usuniecia na liscie
      */
-    private void drawSubjectButton(final Subject subject)
+    private void showDeletePopup(final int position)
     {
-        final Button b =  new Button(MainActivity.this);
+        myDialog.setContentView(R.layout.popup_delete_subject);
+        Button no_button = myDialog.findViewById(R.id.no_button);
+        Button yes_button = myDialog.findViewById(R.id.yes_button);
 
-        b.setText(subject.getSubjectName());
-        int light = getResources().getColor(R.color.black);
-        int dark = getResources().getColor(R.color.white);
-        b.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-        b.setTag("subject_" + subject.getSubjectID());
-        b.setMinimumWidth(200);
-        b.setMinimumHeight(200);
-        //ustalam plik w zaleznosci od wybranego wczesniej koloru
-
-        b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_default));
-        chosen_color = EnumColors.valueOf(subject.getColor());
-        switch (chosen_color)
-        {
-            case red:
-            {
-                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_red));
-                break;
-            }
-            case yellow:
-            {
-                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_yellow));
-                break;
-            }
-            case green:
-            {
-                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_green));
-                break;
-            }
-            case blue:
-            {
-                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_blue));
-                break;
-            }
-            case purple:
-            {
-                b.setBackground(getResources().getDrawable(R.drawable.subject_drawable_purple));
-                break;
-            }
-        }
-
-        b.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                showDeletePopup(view);
-                return true;
-            }
-        });
-        b.setOnClickListener(new View.OnClickListener() {
+        no_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setCurrentSubject(subject);
-                Intent intent = new Intent(MainActivity.this, SubjectActivity.class);
-                startActivity(intent);
+                mainListView.setEnabled(true);
+                myDialog.dismiss();
             }
         });
 
-        if(warning != null && warning.getParent() != null)
-        {
-            ((ViewManager)warning.getParent()).removeView(warning);
-        }
-        subjectsLayout.addView(b);
-    }
-
-    /**
-     * Metoda rysująca wszystkie przedmioty (uzywanie np. przy restarcie aplikacji)
-     */
-    private void drawAllSubjectButtons()
-    {
-        try
-        {
-            List<Subject> subjects = dataBaseHelper.getSubjectsList();
-            Iterator it = subjects.iterator();
-            while(it.hasNext())
-            {
-                drawSubjectButton((Subject) it.next());
+        yes_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try
+                {
+                    Subject subject = dataBaseHelper.getSubjectsList().get(position);
+                    int subjectID = subject.getSubjectID();
+                    dataBaseHelper.dropNotesBySubjectID(subjectID);
+                    dataBaseHelper.dropCardsBySubjectID(subjectID);
+                    dataBaseHelper.dropQuizBySubjectID(subjectID);
+                    dataBaseHelper.dropSubject(subjectID);
+                    mainListViewAdapter.notifyDataSetChanged();
+                    myDialog.dismiss();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+                mainListView.setEnabled(true);
             }
-        }
-        catch (EmptyDataBaseException em)
-        {
-            warning = new TextView(MainActivity.this);
-            warning.setText(R.string.subject_warning);
-            warning.setTag("subject_warning_tag");
-            subjectsLayout.addView(warning);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+        mainListView.setEnabled(false);
     }
 
     /**
      * Metoda pokazujaca okienko przy usuwaniu przemiotu
-     * @param subject_view
+     * @param subject_view przycisk przedmiotu ktory ma byc usuwany
      */
-
     private void showDeletePopup(final View subject_view)
     {
         myDialog.setContentView(R.layout.popup_delete_subject);
@@ -585,7 +709,7 @@ public class MainActivity extends AppCompatActivity
                 dataBaseHelper.dropSubject(subjectID);
                 toastMessage("Poprawnie usunieto przedmiot" + r_s);
 
-                ((ViewManager)subject_view.getParent()).removeView(subject_view);
+//                ((ViewManager)subject_view.getParent()).removeView(subject_view);
 
                 myDialog.dismiss();
             }
@@ -668,6 +792,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Zwraca aktualny przedmiot
+     * @return  aktualny przedmiot
+     * @throws Exception nie zostal ustawiony aktualny przedmiot
+     */
     public static Subject getCurrentSubject() throws Exception
     {
         try
@@ -681,12 +810,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Ustawia aktualnie wybray przedmiot
+     * @param subject Aktualny przedmiot
+     */
     private static void setCurrentSubject(Subject subject)
     {
         currentSubject = subject;
     }
 
-    //pozwolenia
+    /**
+     * Sprawdza pozwolenia aplikacji
+     */
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
@@ -698,10 +833,5 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 100);
         }
     }
-
-
-
-
-
 }
 
