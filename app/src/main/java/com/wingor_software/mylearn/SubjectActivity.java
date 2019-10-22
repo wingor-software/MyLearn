@@ -1,6 +1,5 @@
 package com.wingor_software.mylearn;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
@@ -13,9 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,21 +20,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,44 +34,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
-import androidx.core.widget.CompoundButtonCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Text;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * Klasa słuzaca do interakcji z przedmiotami
@@ -91,25 +56,9 @@ import java.util.Random;
 public class SubjectActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    /**
-     * ListView do wyswietlania Fiszek, Pytan i notatek
-     */
-    private ListView listView;
-    /**
-     * Adapter listy do wyswietlania fiszek
-     */
-    private CardListViewAdapter cardListViewAdapter;
-    /**
-     * Adapter listy do wyswietlania pytan
-     */
-    private QuizListViewAdapter quizListViewAdapter;
-    /**
-     * Adapter listy do wyswietlania notatek
-     */
-    private NoteListViewAdapter noteListViewAdapter;
+    private ViewPager subjectViewPager;
 
     Dialog myDialog;
-    private TextView warning;
 
     static DataBaseHelper dataBaseHelper;
 
@@ -118,15 +67,9 @@ public class SubjectActivity extends AppCompatActivity
 
     private static boolean color_picked = false;
 
-
-    private enum BarAction {CARDS, QUIZ, NOTES, EXAMS}
-
     private SharedPreferences sharedPref;
-    private BarAction whichAction;
 
     private static Note currentNote;
-    private static Card currentCard;
-    private static Quiz currentQuiz;
 
     private ArrayList<Uri> uriList;
     private Intent gallery;
@@ -137,20 +80,18 @@ public class SubjectActivity extends AppCompatActivity
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            sharedPref = getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
             switch (item.getItemId()) {
                 case R.id.action_cards:
-                    actionCards(editor);
+                    subjectViewPager.setCurrentItem(0);
                     return true;
                 case R.id.action_quiz:
-                    actionQuiz(editor);
+                    subjectViewPager.setCurrentItem(1);
                     return true;
                 case R.id.action_notes:
-                    actionNotes(editor);
+                    subjectViewPager.setCurrentItem(2);
                     return true;
                 case R.id.action_exams:
-                    actionExams(editor);
+                    subjectViewPager.setCurrentItem(3);
                     return true;
             }
             return false;
@@ -159,124 +100,11 @@ public class SubjectActivity extends AppCompatActivity
 
     StringBuilder path_to_save = new StringBuilder();
 
-    private ConstraintLayout scoreLayout;
-
     private static ExamType examType;
     private static int questionsCountToExam = 0;
 
     private static final int REQUEST_CODE_READING_FILE_CARDS = 300;
     private static final int REQUEST_CODE_READING_FILE_QUIZ = 400;
-
-    private void actionCards(SharedPreferences.Editor editor)
-    {
-        whichAction = BarAction.CARDS;
-        editor.putInt(getString(R.string.preference), 1);
-        editor.apply();     //albo commit ale to moze zawiesic UI
-        listView.setVisibility(View.VISIBLE);
-        scoreLayout.setVisibility(View.GONE);
-        fulfillCardListView();
-    }
-
-    private void actionQuiz(SharedPreferences.Editor editor)
-    {
-        whichAction = BarAction.QUIZ;
-        editor.putInt(getString(R.string.preference), 2);
-        editor.apply();
-        listView.setVisibility(View.VISIBLE);
-        scoreLayout.setVisibility(View.GONE);
-        fulfillQuizListView();
-    }
-
-    private void actionNotes(SharedPreferences.Editor editor)
-    {
-        whichAction = BarAction.NOTES;
-        editor.putInt(getString(R.string.preference), 3);
-        editor.apply();
-        listView.setVisibility(View.VISIBLE);
-        scoreLayout.setVisibility(View.GONE);
-        fulfillNoteListView();
-    }
-
-    private void actionExams(SharedPreferences.Editor editor)
-    {
-        whichAction = BarAction.EXAMS;
-        editor.putInt(getString(R.string.preference), 4);
-        editor.apply();
-        listView.setVisibility(View.GONE);
-        scoreLayout.setVisibility(View.VISIBLE);
-        ProgressBar progressBar = scoreLayout.findViewById(R.id.scoreBar);
-
-        int light = getResources().getColor(R.color.colorPrimary);
-        int dark = getResources().getColor(R.color.white);
-
-        scoreLayout.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getColor(R.color.white) : getResources().getColor(R.color.colorDarkModeBackground));
-
-        TextView scoreText = scoreLayout.findViewById(R.id.scoreText);
-        scoreText.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-
-        Button examStartButton = (Button) findViewById(R.id.examStartButton);
-        examStartButton.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-
-        CheckBox checkBoxCards = (CheckBox) findViewById(R.id.checkBoxCards);
-        checkBoxCards.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-        checkBoxCards.setChecked(false);
-
-        CheckBox checkBoxQuiz = (CheckBox) findViewById(R.id.checkBoxQuestions);
-        checkBoxQuiz.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-        checkBoxQuiz.setChecked(false);
-
-        SeekBar seekBar = (SeekBar) findViewById(R.id.questionCountSeekBar);
-        seekBar.setMax(2);
-        seekBar.setEnabled(false);
-        seekBar.setProgress(1);
-
-        final TextView questionsCount = (TextView) findViewById(R.id.questionsCountText);
-        questionsCount.setText("Choose exam options");
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                questionsCount.setText("" + i);
-                questionsCountToExam = i;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
-        });
-
-        checkBoxCards.setOnCheckedChangeListener(new CheckBoxStateListener(checkBoxCards, checkBoxQuiz, seekBar, questionsCount, dataBaseHelper));
-        checkBoxQuiz.setOnCheckedChangeListener(new CheckBoxStateListener(checkBoxCards, checkBoxQuiz, seekBar, questionsCount, dataBaseHelper));
-
-        dark = getResources().getColor(R.color.colorLightPrimary);
-
-        CheckBox checkBox = (CheckBox) findViewById(R.id.checkBoxQuestions);
-        for (int i = 0; i < 2; i++) {
-            if (Build.VERSION.SDK_INT < 21) {
-                CompoundButtonCompat.setButtonTintList(checkBox, ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//Use android.support.v4.widget.CompoundButtonCompat when necessary else
-            } else {
-                checkBox.setButtonTintList(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));//setButtonTintList is accessible directly on API>19
-            }
-            checkBox = (CheckBox) findViewById(R.id.checkBoxCards);
-        }
-
-        int examsTaken = 0;
-        int examsPassed = 0;
-        try
-        {
-            examsTaken = MainActivity.getCurrentSubject().getExamsTaken();
-            examsPassed = MainActivity.getCurrentSubject().getExamsPassed();
-            progressBar.setMax(examsTaken);
-            progressBar.setProgress(examsPassed);
-            scoreText.setText(new String(examsPassed + "/" + examsTaken));
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,13 +112,10 @@ public class SubjectActivity extends AppCompatActivity
         setContentView(R.layout.activity_subject);
         Toolbar toolbar = findViewById(R.id.toolbar_subject);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab_subject);
 
         dataBaseHelper = new DataBaseHelper(this);
-        listView = findViewById(R.id.subjectListView);
         int light = getResources().getColor(R.color.white);
         int dark = getResources().getColor(R.color.colorDarkModeBackground);
-        listView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -309,26 +134,21 @@ public class SubjectActivity extends AppCompatActivity
         navView = findViewById(R.id.nav_bottom_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        subjectViewPager = findViewById(R.id.subjectViewPager);
+        subjectViewPager.setAdapter(new SubjectMenuPagerAdapter(getSupportFragmentManager(), 4, this, dataBaseHelper));
+
         uriList = new ArrayList<>();
-
-        scoreLayout = findViewById(R.id.scoreLayout);
-
-
 
         final CalendarView calendarView = navigationView.getHeaderView(0).findViewById(R.id.calendarView);
         final TextView titleOfDay = navigationView.getHeaderView(0).findViewById(R.id.titleOfDay);
         final LinearLayout contentOfDay = navigationView.getHeaderView(0).findViewById(R.id.contentOfDay);
         final Button addnewCalendarEventButton = navigationView.getHeaderView(0).findViewById(R.id.addCalendarEventButton);
 
-
-
         titleOfDay.setText("To do on : " + new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date()));
-
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(final CalendarView calendarView, final int i, final int i1, final int i2) {
-
                 titleOfDay.setText("To do on : " + i + "-" +i1 + "-" +i2);
                 contentOfDay.removeAllViews();
 
@@ -399,13 +219,11 @@ public class SubjectActivity extends AppCompatActivity
                         myDialog.show();
                     }
                 });
-
             }
         });
 
         //zmiany w scroll view
         ScrollView dayScrollView = navigationView.getHeaderView(0).findViewById(R.id.dayScrollView);
-
 
         dayScrollView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -449,33 +267,28 @@ public class SubjectActivity extends AppCompatActivity
         }
 
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
         int defaultValue = 3;
         int submenuValue = sharedPref.getInt(getString(R.string.preference), defaultValue);
         switch(submenuValue)
         {
-            case 1:
+            case 0:
             {
                 navView.setSelectedItemId(R.id.action_cards);
-                actionCards(editor);
+                break;
+            }
+            case 1:
+            {
+                navView.setSelectedItemId(R.id.action_quiz);
                 break;
             }
             case 2:
             {
-                navView.setSelectedItemId(R.id.action_quiz);
-                actionQuiz(editor);
+                navView.setSelectedItemId(R.id.action_notes);
                 break;
             }
             case 3:
             {
-                navView.setSelectedItemId(R.id.action_notes);
-                actionNotes(editor);
-                break;
-            }
-            case 4:
-            {
                 navView.setSelectedItemId(R.id.action_exams);
-                actionQuiz(editor);
                 break;
             }
         }
@@ -486,29 +299,8 @@ public class SubjectActivity extends AppCompatActivity
         super.onPause();
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(getString(R.string.preference), actionToInt());
-    }
-
-    private int actionToInt()
-    {
-        switch(whichAction)
-        {
-            case CARDS:{
-                return 1;
-            }
-            case QUIZ:{
-                return 2;
-            }
-            case NOTES:{
-                return 3;
-            }
-            case EXAMS:{
-                return 4;
-            }
-            default:{
-                return 3;
-            }
-        }
+        editor.putInt(getString(R.string.preference), subjectViewPager.getCurrentItem());
+        editor.apply();
     }
 
     @Override
@@ -615,27 +407,24 @@ public class SubjectActivity extends AppCompatActivity
             public void onClick(View view) {
                 if(!textInputEditText.getText().toString().equals(""))
                 {
-                    switch(whichAction)
+                    switch(subjectViewPager.getCurrentItem())
                     {
-                        case CARDS:
+                        case 0:
                         {
-                            clearContent();
                             drawAllCardButtonsContaining(textInputEditText.getText().toString());
                             myDialog.dismiss();
 
                             break;
                         }
-                        case QUIZ:
+                        case 1:
                         {
-                            clearContent();
                             drawAllQuizButtonsContaining(textInputEditText.getText().toString());
                             myDialog.dismiss();
 
                             break;
                         }
-                        case NOTES:
+                        case 2:
                         {
-                            clearContent();
                             drawAllNoteButtonsContaining(textInputEditText.getText().toString());
                             myDialog.dismiss();
 
@@ -651,58 +440,6 @@ public class SubjectActivity extends AppCompatActivity
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
-    }
-
-    public void startExam(View view) {
-        CheckBox cards = findViewById(R.id.checkBoxCards);
-        CheckBox questions = findViewById(R.id.checkBoxQuestions);
-        Intent intent;
-
-        int cardsCount = 0;
-        int quizzesCount = 0;
-        try
-        {
-            cardsCount = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).size();
-            quizzesCount = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).size();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        if(questionsCountToExam == 0)
-        {
-            Toast.makeText(SubjectActivity.this, "Please, select exam size", Toast.LENGTH_LONG).show();
-        }
-        else if(cards.isChecked() && questions.isChecked() && cardsCount + quizzesCount > 0)
-        {
-            examType = ExamType.ALL;
-            Toast.makeText(SubjectActivity.this, "Cards and questions exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
-        }
-        else if(cards.isChecked() && cardsCount > 0)
-        {
-            examType = ExamType.CARDS;
-            Toast.makeText(SubjectActivity.this, "Cards exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
-        }
-        else if(questions.isChecked() && quizzesCount > 0)
-        {
-            examType = ExamType.QUESTIONS;
-            Toast.makeText(SubjectActivity.this, "Questions exam", Toast.LENGTH_LONG).show();
-            intent = new Intent(SubjectActivity.this, ExamActivity.class);
-            startActivity(intent);
-        }
-        else if(!cards.isChecked() && !questions.isChecked())
-        {
-            Toast.makeText(SubjectActivity.this, "Please, select exam type", Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-            Toast.makeText(SubjectActivity.this, "Looks like you don't have any cards or questions", Toast.LENGTH_LONG).show();
-        }
     }
 
     public static int getQuestionsCountToExam()
@@ -792,25 +529,6 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    private void clearContent() {
-        listView.removeAllViews();
-        scoreLayout.setVisibility(View.GONE);
-    }
-
-    private void showCardPopup(int currentPosition)
-    {
-        myDialog.setContentView(R.layout.popup_scrolling_open_card);
-        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-        CardPagerAdapter mCardPageAdapter = new CardPagerAdapter(dataBaseHelper, this, myDialog);
-        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
-        mViewPager.setAdapter(mCardPageAdapter);
-        mViewPager.setCurrentItem(currentPosition);
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
-
     public void choseColor(View view)
     {
         switch (view.getId())
@@ -883,71 +601,6 @@ public class SubjectActivity extends AppCompatActivity
                 break;
             }
         }
-    }
-
-    private void showDeletePopup(final int elementID)
-    {
-        myDialog.setContentView(R.layout.popup_delete_subject);
-        Button no_button = myDialog.findViewById(R.id.no_button);
-        Button yes_button = myDialog.findViewById(R.id.yes_button);
-
-
-        no_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listView.setEnabled(true);
-                myDialog.dismiss();
-            }
-        });
-
-        yes_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listView.setEnabled(true);
-                switch (whichAction) {
-                    case CARDS: {
-                        cardDeletingOnClick(elementID);
-                        break;
-                    }
-                    case QUIZ: {
-                        quizDeletingOnClick(elementID);
-                        break;
-                    }
-                    case NOTES: {
-                        noteDeletingOnClick(elementID);
-                        break;
-                    }
-                }
-            }
-        });
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-        listView.setEnabled(false);
-    }
-
-    private void noteDeletingOnClick(int noteID) {
-        dataBaseHelper.dropNoteByID(noteID);
-        noteListViewAdapter.notifyDataSetChanged();
-        toastMessage("Poprawnie usunieto notatke" + noteID);
-
-        myDialog.dismiss();
-    }
-
-    private void cardDeletingOnClick(int cardID)
-    {
-        dataBaseHelper.dropCardByID(cardID);
-        cardListViewAdapter.notifyDataSetChanged();
-
-        myDialog.dismiss();
-    }
-
-    private void quizDeletingOnClick(int quizID)
-    {
-        dataBaseHelper.dropQuizByID(quizID);
-        quizListViewAdapter.notifyDataSetChanged();
-
-        myDialog.dismiss();
     }
 
     private void toastMessage(String message)
@@ -1036,159 +689,26 @@ public class SubjectActivity extends AppCompatActivity
         }
     }
 
-    private void fulfillCardListView()
-    {
-        listView = findViewById(R.id.subjectListView);
-        cardListViewAdapter = new CardListViewAdapter(this, dataBaseHelper);
-        listView.setAdapter(cardListViewAdapter);
-        prepareCardListViewItems();
-    }
-
-    private void prepareCardListViewItems()
-    {
-        listView.setEnabled(true);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    currentCard = card;
-                    showCardPopup(position);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    showDeletePopup(card.getID());
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
-    }
-
-    private void fulfillQuizListView()
-    {
-        listView = findViewById(R.id.subjectListView);
-        quizListViewAdapter = new QuizListViewAdapter(this, dataBaseHelper);
-        listView.setAdapter(quizListViewAdapter);
-        prepareQuizListViewItems();
-    }
-
-    private void prepareQuizListViewItems()
-    {
-        listView.setEnabled(true);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Quiz quiz = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    currentQuiz = quiz;
-                    showOpenQuizPopup(position);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Quiz quiz = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    showDeletePopup(quiz.getID());
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
-    }
-
-    private void fulfillNoteListView()
-    {
-        listView = findViewById(R.id.subjectListView);
-        noteListViewAdapter = new NoteListViewAdapter(this, dataBaseHelper);
-        listView.setAdapter(noteListViewAdapter);
-        prepareNoteListViewItems();
-    }
-
-    private void prepareNoteListViewItems()
-    {
-        listView.setEnabled(true);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Note note = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    currentNote = note;
-                    Intent intent = new Intent(SubjectActivity.this, NoteActivity.class);
-                    startActivity(intent);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Note note = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    showDeletePopup(note.getID());
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
-    }
-
     public void addingContent(View view)
     {
-        switch(whichAction)
+        switch(subjectViewPager.getCurrentItem())
         {
-            case CARDS:
+            case 0:
             {
                 showPopupCardAdding(view);
                 break;
             }
-            case QUIZ:
+            case 1:
             {
                 showPopupQuizAdding_1(view);
                 break;
             }
-            case NOTES:
+            case 2:
             {
                 showPopupNoteAdding(view);
                 break;
             }
-            case EXAMS:
+            case 3:
             {
                 break;
             }
@@ -1383,20 +903,6 @@ public class SubjectActivity extends AppCompatActivity
         myDialog.show();
     }
 
-    private void showOpenQuizPopup(int currentPosition)
-    {
-        myDialog.setContentView(R.layout.popup_scrolling_open_card);
-        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-        QuizPagerAdapter quizPagerAdapter = new QuizPagerAdapter(dataBaseHelper, this, myDialog);
-        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
-        mViewPager.setAdapter(quizPagerAdapter);
-        mViewPager.setCurrentItem(currentPosition);
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Intent intent = getIntent();
@@ -1491,8 +997,8 @@ public class SubjectActivity extends AppCompatActivity
             try {
                 Log.d("test","DO bazy poszedl kolor " + chosen_color);
                 addNoteData(s, "Empty note", path_to_save.toString(),"");
+                subjectViewPager.getAdapter().notifyDataSetChanged();
                 Log.d("uritest", getStringFromUriList());
-                noteListViewAdapter.notifyDataSetChanged();
             }
             catch (Exception e)
             {
@@ -1511,6 +1017,7 @@ public class SubjectActivity extends AppCompatActivity
             answer = answerGetter.getText().toString();
 
             addCardData(word, answer, "");
+            subjectViewPager.getAdapter().notifyDataSetChanged();
             Log.d("cardAdding", "dodano do bazy");
         }
         catch(Exception e)
@@ -1524,6 +1031,7 @@ public class SubjectActivity extends AppCompatActivity
         try
         {
             addQuizData(question, goodAnswer, badAnswer, "");
+            subjectViewPager.getAdapter().notifyDataSetChanged();
             Log.d("quizAdding", "dodano do bazy");
         }
         catch(Exception e)
@@ -1619,6 +1127,14 @@ public class SubjectActivity extends AppCompatActivity
 
     public static void setCurrentNote(Note currentNote) {
         SubjectActivity.currentNote = currentNote;
+    }
+
+    public static void setQuestionsCountToExam(int questionsCountToExam) {
+        SubjectActivity.questionsCountToExam = questionsCountToExam;
+    }
+
+    public static void setExamType(ExamType examType) {
+        SubjectActivity.examType = examType;
     }
 
     public static void updateNoteContent(int noteID, String newContent)

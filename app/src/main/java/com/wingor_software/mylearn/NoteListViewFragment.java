@@ -2,6 +2,7 @@ package com.wingor_software.mylearn;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -15,21 +16,19 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
-public class CardListViewFragment extends Fragment
+public class NoteListViewFragment extends Fragment
 {
     private DataBaseHelper dataBaseHelper;
-    private CardListViewAdapter cardListViewAdapter;
+    private NoteListViewAdapter noteListViewAdapter;
     private Context context;
     private ListView listView;
-    private Card currentCard;
     private Dialog myDialog;
 
-    public CardListViewFragment(Context context, DataBaseHelper dataBaseHelper)
+    public NoteListViewFragment(Context context, DataBaseHelper dataBaseHelper)
     {
-        this.dataBaseHelper = dataBaseHelper;
         this.context = context;
+        this.dataBaseHelper = dataBaseHelper;
         myDialog = new Dialog(context);
     }
 
@@ -39,26 +38,23 @@ public class CardListViewFragment extends Fragment
         View view = inflater.inflate(R.layout.subject_list_view_fragment, null);
         listView = (ListView) view.findViewById(R.id.subjectListView);
         listView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getColor(R.color.white) : getResources().getColor(R.color.colorDarkModeBackground));
-        cardListViewAdapter = new CardListViewAdapter(context, dataBaseHelper);
-        listView.setAdapter(cardListViewAdapter);
-        prepareCardListViewItems();
+        noteListViewAdapter = new NoteListViewAdapter(context, dataBaseHelper);
+        listView.setAdapter(noteListViewAdapter);
+        prepareNoteListViewItems();
         return view;
     }
 
-    private void prepareCardListViewItems()
-    {
+    private void prepareNoteListViewItems() {
         listView.setEnabled(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    currentCard = card;
-                    showCardPopup(position);
-                }
-                catch(Exception e)
-                {
+                try {
+                    Note note = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
+                    SubjectActivity.setCurrentNote(note);
+                    Intent intent = new Intent(context, NoteActivity.class);
+                    startActivity(intent);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -67,32 +63,15 @@ public class CardListViewFragment extends Fragment
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try
-                {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    showDeletePopup(card.getID());
-                }
-                catch(Exception e)
-                {
+                try {
+                    Note note = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
+                    showDeletePopup(note.getID());
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return false;
             }
         });
-    }
-
-    private void showCardPopup(int currentPosition)
-    {
-        myDialog.setContentView(R.layout.popup_scrolling_open_card);
-        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-        CardPagerAdapter mCardPageAdapter = new CardPagerAdapter(dataBaseHelper, context, myDialog);
-        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
-        mViewPager.setAdapter(mCardPageAdapter);
-        mViewPager.setCurrentItem(currentPosition);
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
     }
 
     private void showDeletePopup(final int elementID)
@@ -114,7 +93,7 @@ public class CardListViewFragment extends Fragment
             @Override
             public void onClick(View view) {
                 listView.setEnabled(true);
-                cardDeletingOnClick(elementID);
+                noteDeletingOnClick(elementID);
             }
         });
 
@@ -123,10 +102,9 @@ public class CardListViewFragment extends Fragment
         listView.setEnabled(false);
     }
 
-    private void cardDeletingOnClick(int cardID)
-    {
-        dataBaseHelper.dropCardByID(cardID);
-        cardListViewAdapter.notifyDataSetChanged();
+    private void noteDeletingOnClick(int noteID) {
+        dataBaseHelper.dropNoteByID(noteID);
+        noteListViewAdapter.notifyDataSetChanged();
 
         myDialog.dismiss();
     }

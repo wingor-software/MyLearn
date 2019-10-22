@@ -17,19 +17,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-public class CardListViewFragment extends Fragment
+public class QuizListViewFragment extends Fragment
 {
     private DataBaseHelper dataBaseHelper;
-    private CardListViewAdapter cardListViewAdapter;
+    private QuizListViewAdapter quizListViewAdapter;
     private Context context;
     private ListView listView;
-    private Card currentCard;
+    private Quiz currentQuiz;
     private Dialog myDialog;
 
-    public CardListViewFragment(Context context, DataBaseHelper dataBaseHelper)
+    public QuizListViewFragment(Context context, DataBaseHelper dataBaseHelper)
     {
-        this.dataBaseHelper = dataBaseHelper;
         this.context = context;
+        this.dataBaseHelper = dataBaseHelper;
         myDialog = new Dialog(context);
     }
 
@@ -39,13 +39,13 @@ public class CardListViewFragment extends Fragment
         View view = inflater.inflate(R.layout.subject_list_view_fragment, null);
         listView = (ListView) view.findViewById(R.id.subjectListView);
         listView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getColor(R.color.white) : getResources().getColor(R.color.colorDarkModeBackground));
-        cardListViewAdapter = new CardListViewAdapter(context, dataBaseHelper);
-        listView.setAdapter(cardListViewAdapter);
-        prepareCardListViewItems();
+        quizListViewAdapter = new QuizListViewAdapter(context, dataBaseHelper);
+        listView.setAdapter(quizListViewAdapter);
+        prepareQuizListViewItems();
         return view;
     }
 
-    private void prepareCardListViewItems()
+    private void prepareQuizListViewItems()
     {
         listView.setEnabled(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,9 +53,9 @@ public class CardListViewFragment extends Fragment
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 try
                 {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    currentCard = card;
-                    showCardPopup(position);
+                    Quiz quiz = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
+                    currentQuiz = quiz;
+                    showOpenQuizPopup(position);
                 }
                 catch(Exception e)
                 {
@@ -69,8 +69,8 @@ public class CardListViewFragment extends Fragment
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
                 try
                 {
-                    Card card = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
-                    showDeletePopup(card.getID());
+                    Quiz quiz = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID()).get(position);
+                    showDeletePopup(quiz.getID());
                 }
                 catch(Exception e)
                 {
@@ -79,20 +79,6 @@ public class CardListViewFragment extends Fragment
                 return false;
             }
         });
-    }
-
-    private void showCardPopup(int currentPosition)
-    {
-        myDialog.setContentView(R.layout.popup_scrolling_open_card);
-        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-        CardPagerAdapter mCardPageAdapter = new CardPagerAdapter(dataBaseHelper, context, myDialog);
-        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
-        mViewPager.setAdapter(mCardPageAdapter);
-        mViewPager.setCurrentItem(currentPosition);
-
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
     }
 
     private void showDeletePopup(final int elementID)
@@ -114,7 +100,7 @@ public class CardListViewFragment extends Fragment
             @Override
             public void onClick(View view) {
                 listView.setEnabled(true);
-                cardDeletingOnClick(elementID);
+                quizDeletingOnClick(elementID);
             }
         });
 
@@ -123,11 +109,25 @@ public class CardListViewFragment extends Fragment
         listView.setEnabled(false);
     }
 
-    private void cardDeletingOnClick(int cardID)
+    private void quizDeletingOnClick(int quizID)
     {
-        dataBaseHelper.dropCardByID(cardID);
-        cardListViewAdapter.notifyDataSetChanged();
+        dataBaseHelper.dropQuizByID(quizID);
+        quizListViewAdapter.notifyDataSetChanged();
 
         myDialog.dismiss();
+    }
+
+    private void showOpenQuizPopup(int currentPosition)
+    {
+        myDialog.setContentView(R.layout.popup_scrolling_open_card);
+        myDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+
+        QuizPagerAdapter quizPagerAdapter = new QuizPagerAdapter(dataBaseHelper, context, myDialog);
+        ViewPager mViewPager = (ViewPager) myDialog.findViewById(R.id.cardPager);
+        mViewPager.setAdapter(quizPagerAdapter);
+        mViewPager.setCurrentItem(currentPosition);
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 }
