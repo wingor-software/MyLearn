@@ -206,9 +206,12 @@ public class SubjectActivity extends AppCompatActivity
         scoreLayout.setVisibility(View.VISIBLE);
         ProgressBar progressBar = scoreLayout.findViewById(R.id.scoreBar);
 
-        TextView scoreText = scoreLayout.findViewById(R.id.scoreText);
         int light = getResources().getColor(R.color.colorPrimary);
         int dark = getResources().getColor(R.color.white);
+
+        scoreLayout.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? getResources().getColor(R.color.white) : getResources().getColor(R.color.colorDarkModeBackground));
+
+        TextView scoreText = scoreLayout.findViewById(R.id.scoreText);
         scoreText.setTextColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
 
         Button examStartButton = (Button) findViewById(R.id.examStartButton);
@@ -970,7 +973,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch (EmptyDataBaseException em)
         {
-            warning = new TextView(SubjectActivity.this);
+            TextView warning = new TextView(SubjectActivity.this);
             warning.setText("Can't find such a note");
             warning.setTag("note_warning_tag");
 //            subjectLayout.addView(warning);
@@ -997,7 +1000,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch (EmptyDataBaseException em)
         {
-            warning = new TextView(SubjectActivity.this);
+            TextView warning = new TextView(SubjectActivity.this);
             warning.setText(R.string.quiz_warning);
             warning.setTag("quiz_warning_tag");
 //            subjectLayout.addView(warning);
@@ -1024,7 +1027,7 @@ public class SubjectActivity extends AppCompatActivity
         }
         catch (EmptyDataBaseException em)
         {
-            warning = new TextView(SubjectActivity.this);
+            TextView warning = new TextView(SubjectActivity.this);
             warning.setText("Can't find such a card");
             warning.setTag("card_warning_tag");
 //            subjectLayout.addView(warning);

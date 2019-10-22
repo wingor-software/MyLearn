@@ -22,27 +22,6 @@
         app:layout_constraintStart_toStartOf="@+id/scoreLayout"
         app:layout_constraintTop_toTopOf="@+id/scoreLayout" />
 
-<!--    <ScrollView-->
-<!--        android:id="@+id/scrollView2"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_marginBottom="56dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        tools:layout_editor_absoluteX="0dp">-->
-
-<!--        <LinearLayout-->
-<!--            android:id="@+id/subjectActivityLayout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginBottom="32dp"-->
-<!--            android:divider="@drawable/button_divider"-->
-<!--            android:orientation="vertical"-->
-<!--            android:showDividers="middle">-->
-
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
-
     <ListView
         android:id="@+id/subjectListView"
         android:layout_width="match_parent"
