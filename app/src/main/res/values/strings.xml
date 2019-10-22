@@ -146,9 +146,9 @@
     <string name="tab_text_7">Side menu</string>
 <!--    zawartosc kazdej z zakladek-->
     <string name="tab_1_content">
-        Welcome to the mylearn application tutorial.\n
+        Welcome to the MyLearn application tutorial.\n
         In a few steps you will learn how to use our application.\n
-        You can reopen the tutorial at any time by expanding the side menu and clicking the tutorial button.\n
+        You can reopen this tutorial at any time by expanding the side menu and clicking the tutorial button.\n
         Let\'s get started :)
     </string>
     
