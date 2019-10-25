@@ -41,6 +41,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
@@ -73,30 +74,6 @@ public class SubjectActivity extends AppCompatActivity
 
     private ArrayList<Uri> uriList;
     private Intent gallery;
-
-    private BottomNavigationView navView;
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.action_cards:
-                    subjectViewPager.setCurrentItem(0);
-                    return true;
-                case R.id.action_quiz:
-                    subjectViewPager.setCurrentItem(1);
-                    return true;
-                case R.id.action_notes:
-                    subjectViewPager.setCurrentItem(2);
-                    return true;
-                case R.id.action_exams:
-                    subjectViewPager.setCurrentItem(3);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     StringBuilder path_to_save = new StringBuilder();
 
@@ -131,11 +108,16 @@ public class SubjectActivity extends AppCompatActivity
 
         myDialog = new Dialog(this);
 
-        navView = findViewById(R.id.nav_bottom_view);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         subjectViewPager = findViewById(R.id.subjectViewPager);
         subjectViewPager.setAdapter(new SubjectMenuPagerAdapter(getSupportFragmentManager(), 4, this, dataBaseHelper));
+
+        TabLayout topTabLayout = findViewById(R.id.topTabLayout);
+        topTabLayout.setupWithViewPager(subjectViewPager);
+        topTabLayout.setBackgroundColor(getResources().getColor(R.color.colorLightPrimary));
+        topTabLayout.getTabAt(0).setIcon(R.drawable.baseline_call_to_action_white_48);
+        topTabLayout.getTabAt(1).setIcon(R.drawable.baseline_speaker_notes_white_48);
+        topTabLayout.getTabAt(2).setIcon(R.drawable.baseline_note_white_48);
+        topTabLayout.getTabAt(3).setIcon(R.drawable.baseline_school_white_48);
 
         uriList = new ArrayList<>();
 
@@ -269,29 +251,7 @@ public class SubjectActivity extends AppCompatActivity
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         int defaultValue = 3;
         int submenuValue = sharedPref.getInt(getString(R.string.preference), defaultValue);
-        switch(submenuValue)
-        {
-            case 0:
-            {
-                navView.setSelectedItemId(R.id.action_cards);
-                break;
-            }
-            case 1:
-            {
-                navView.setSelectedItemId(R.id.action_quiz);
-                break;
-            }
-            case 2:
-            {
-                navView.setSelectedItemId(R.id.action_notes);
-                break;
-            }
-            case 3:
-            {
-                navView.setSelectedItemId(R.id.action_exams);
-                break;
-            }
-        }
+        subjectViewPager.setCurrentItem(submenuValue);
     }
 
     @Override

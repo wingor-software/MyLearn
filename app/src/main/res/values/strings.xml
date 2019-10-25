@@ -22,6 +22,7 @@
     <string name="cards">Cards</string>
     <string name="quiz">Quiz</string>
     <string name="notes">Notes</string>
+    <string name="exams">Exams</string>
     <string name="preference">3</string>
     <string name="preference_text_size">18</string>
     <string name="preference_display_mode">0</string>
