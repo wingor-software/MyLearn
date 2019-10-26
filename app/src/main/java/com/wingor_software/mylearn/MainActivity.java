@@ -410,14 +410,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_destroy_database) {
             dataBaseHelper.dropSubjectTable();
             toastMessage("DATABASE DESTROYED!");
-        } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
-            restartApp();
-        } else if (id == R.id.nav_send) {
-            dataBaseHelper.setDisplayMode(DisplayMode.DARK);
-            restartApp();
         }
         else if (id == R.id.nav_license)
         {
