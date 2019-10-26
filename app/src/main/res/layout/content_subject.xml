@@ -14,141 +14,146 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/subjectListView"
-        app:layout_constraintEnd_toEndOf="@+id/scoreLayout"
-        app:layout_constraintStart_toStartOf="@+id/scoreLayout"
-        app:layout_constraintTop_toTopOf="@+id/scoreLayout" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/subjectListView"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/subjectViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/scoreLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="-539dp">
+    <!--    <ListView-->
+<!--        android:id="@+id/subjectListView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginBottom="56dp"/>-->
 
-        <TextView
-            android:id="@+id/scoreText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="75/100"
-            android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/scoreBar"
-            app:layout_constraintEnd_toEndOf="@+id/scoreBar"
-            app:layout_constraintStart_toStartOf="@+id/scoreBar"
-            app:layout_constraintTop_toTopOf="@+id/scoreBar" />
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/scoreLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:visibility="visible"-->
+<!--        tools:layout_editor_absoluteX="16dp"-->
+<!--        tools:layout_editor_absoluteY="-539dp"-->
+<!--        android:layout_marginBottom="56dp">-->
 
-        <ProgressBar
-            android:id="@+id/scoreBar"
-            style="?android:progressBarStyleHorizontal"
-            android:layout_width="235dp"
-            android:layout_height="228dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="8dp"
-            android:max="100"
-            android:progress="75"
-            android:progressDrawable="@drawable/circle_progress_bar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <TextView-->
+<!--            android:id="@+id/scoreText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="75/100"-->
+<!--            android:textColor="@color/colorPrimary"-->
+<!--            android:textSize="24sp"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/scoreBar"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/scoreBar"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/scoreBar"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/scoreBar" />-->
 
-        <ProgressBar
-            android:id="@+id/fullScoreBar"
-            style="?android:progressBarStyleHorizontal"
-            android:layout_width="235dp"
-            android:layout_height="228dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="8dp"
-            android:alpha="0.3"
-            android:max="1"
-            android:progress="1"
-            android:progressDrawable="@drawable/circle_progress_bar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <ProgressBar-->
+<!--            android:id="@+id/scoreBar"-->
+<!--            style="?android:progressBarStyleHorizontal"-->
+<!--            android:layout_width="235dp"-->
+<!--            android:layout_height="228dp"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:max="100"-->
+<!--            android:progress="75"-->
+<!--            android:progressDrawable="@drawable/circle_progress_bar"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scoreText">
+<!--        <ProgressBar-->
+<!--            android:id="@+id/fullScoreBar"-->
+<!--            style="?android:progressBarStyleHorizontal"-->
+<!--            android:layout_width="235dp"-->
+<!--            android:layout_height="228dp"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:alpha="0.3"-->
+<!--            android:max="1"-->
+<!--            android:progress="1"-->
+<!--            android:progressDrawable="@drawable/circle_progress_bar"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="8dp"
-                android:orientation="horizontal">
+<!--        <LinearLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:layout_marginBottom="8dp"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/scoreText">-->
 
-                <CheckBox
-                    android:id="@+id/checkBoxCards"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="@dimen/fab_margin"
-                    android:text="Cards"
-                    android:textColor="@color/colorPrimary" />
+<!--            <LinearLayout-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="32dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginEnd="32dp"-->
+<!--                android:layout_marginBottom="8dp"-->
+<!--                android:orientation="horizontal">-->
 
-                <CheckBox
-                    android:id="@+id/checkBoxQuestions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="@dimen/fab_margin"
-                    android:text="Questions"
-                    android:textColor="@color/colorPrimary" />
+<!--                <CheckBox-->
+<!--                    android:id="@+id/checkBoxCards"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:padding="@dimen/fab_margin"-->
+<!--                    android:text="Cards"-->
+<!--                    android:textColor="@color/colorPrimary" />-->
 
-            </LinearLayout>
+<!--                <CheckBox-->
+<!--                    android:id="@+id/checkBoxQuestions"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:padding="@dimen/fab_margin"-->
+<!--                    android:text="Questions"-->
+<!--                    android:textColor="@color/colorPrimary" />-->
 
-            <TextView
-                android:id="@+id/questionsCountText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/fab_margin"
-                android:text="xxx"
-                android:textColor="@color/colorPrimary"
-                android:layout_gravity="center"/>
+<!--            </LinearLayout>-->
 
-            <SeekBar
-                android:id="@+id/questionCountSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="@dimen/fab_margin"/>
+<!--            <TextView-->
+<!--                android:id="@+id/questionsCountText"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:padding="@dimen/fab_margin"-->
+<!--                android:text="xxx"-->
+<!--                android:textColor="@color/colorPrimary"-->
+<!--                android:layout_gravity="center"/>-->
 
-            <Button
-                android:id="@+id/examStartButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:text="START EXAM"
-                android:textColor="@color/colorPrimary"
-                android:background="@drawable/start_exam_button"
-                android:onClick="startExam"/>
-        </LinearLayout>
+<!--            <SeekBar-->
+<!--                android:id="@+id/questionCountSeekBar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="@dimen/fab_margin"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/examStartButton"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/fab_margin"-->
+<!--                android:text="START EXAM"-->
+<!--                android:textColor="@color/colorPrimary"-->
+<!--                android:background="@drawable/start_exam_button"-->
+<!--                android:onClick="startExam"/>-->
+<!--        </LinearLayout>-->
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

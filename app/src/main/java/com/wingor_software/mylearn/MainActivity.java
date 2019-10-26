@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity
      */
     private MainListViewAdapter mainListViewAdapter;
 
+    private NavigationView navigationView;
+
     /**
      * TextView z warningiem ze nie ma zadnych dodanych przedmiotow
      */
@@ -131,23 +133,16 @@ public class MainActivity extends AppCompatActivity
         mainListView = findViewById(R.id.mainListView);
 //        mainScrollView = findViewById(R.id.mainScrollView);
         mainConstraintLayout = findViewById(R.id.mainConstraintLayout);
-        int light = getResources().getColor(R.color.white);
-        int dark = getResources().getColor(R.color.colorDarkModeBackground);
-        mainConstraintLayout.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-		
-        navigationView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
-        light = getResources().getColor(R.color.black);
-        dark = getResources().getColor(R.color.white);
-        navigationView.setItemTextColor(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));
 
         dataBaseHelper = new DataBaseHelper(this);
 
@@ -272,6 +267,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        int light = getResources().getColor(R.color.white);
+        int dark = getResources().getColor(R.color.colorDarkModeBackground);
+        mainConstraintLayout.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+
+        navigationView.setBackgroundColor((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark);
+        light = getResources().getColor(R.color.black);
+        dark = getResources().getColor(R.color.white);
+        navigationView.setItemTextColor(ColorStateList.valueOf((dataBaseHelper.getDisplayMode() == DisplayMode.LIGHT) ? light : dark));
+
         mainListViewAdapter = new MainListViewAdapter(this, dataBaseHelper);
         mainListView.setAdapter(mainListViewAdapter);
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -411,6 +416,15 @@ public class MainActivity extends AppCompatActivity
             dataBaseHelper.dropSubjectTable();
             toastMessage("DATABASE DESTROYED!");
         }
+//        else if (id == R.id.nav_tools) {
+//
+//        } else if (id == R.id.nav_share) {
+//            dataBaseHelper.setDisplayMode(DisplayMode.LIGHT);
+//            restartApp();
+//        } else if (id == R.id.nav_send) {
+//            dataBaseHelper.setDisplayMode(DisplayMode.DARK);
+//            restartApp();
+//        }
         else if (id == R.id.nav_license)
         {
             Intent intent = new Intent(MainActivity.this,Info.class);

@@ -25,14 +25,12 @@ import java.util.Iterator;
 
 public class ExamActivity extends AppCompatActivity {
 
-//    private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private PagerAdapter mPageAdapter;
     private static TextView pageCount;
     private static DataBaseHelper dataBaseHelper;
     private static Examable[] examables;
     private static int QUESTIONS_COUNT = 10;
-    private static final int DEF_QUESTIONS_COUNT = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
