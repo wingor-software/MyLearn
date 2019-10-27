@@ -668,13 +668,20 @@ public class SubjectActivity extends AppCompatActivity
         try
         {
             List<Card> cards = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
-            Iterator it = cards.iterator();
-            while(it.hasNext())
-            {
-                Card card = (Card)it.next();
-//                if(card.getWord().toLowerCase().contains(phrase.toLowerCase()))
-//                    drawCardButton(card);
+            for (Card c:cards) {
+                if(c.getWord().toLowerCase().equals(phrase.toLowerCase()))
+                {
+                    subjectViewPager.getAdapter().notifyDataSetChanged();
+                }
             }
+
+//            Iterator it = cards.iterator();
+//            while(it.hasNext())
+//            {
+//                Card card = (Card)it.next();
+////                if(card.getWord().toLowerCase().contains(phrase.toLowerCase()))
+////                    drawCardButton(card);
+//            }
         }
         catch (EmptyDataBaseException em)
         {
@@ -779,7 +786,6 @@ public class SubjectActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if(!(word.equals("") && !answer.equals("")))
                 {
                     cardAddingOnClick(wordGetter, answerGetter);
