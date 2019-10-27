@@ -1,6 +1,7 @@
 package com.wingor_software.mylearn;
 
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +42,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -118,6 +122,8 @@ public class SubjectActivity extends AppCompatActivity
         topTabLayout.getTabAt(1).setIcon(R.drawable.baseline_speaker_notes_white_48);
         topTabLayout.getTabAt(2).setIcon(R.drawable.baseline_note_white_48);
         topTabLayout.getTabAt(3).setIcon(R.drawable.baseline_school_white_48);
+
+        initFabButtons();
 
         uriList = new ArrayList<>();
 
@@ -277,6 +283,24 @@ public class SubjectActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.subject, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search_subject);
+
+        SearchManager searchManager = (SearchManager) this.getSystemService(Context.SEARCH_SERVICE);
+
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(this.getComponentName()));
+        }
+
+        searchView.setActivated(true);
+        searchView.setQueryHint("Searching...");
+        searchView.onActionViewExpanded();
+        searchView.setIconified(false);
+
         return true;
     }
 
@@ -288,44 +312,44 @@ public class SubjectActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch(id)
-        {
-            case R.id.action_subject_search:
-            {
-                showPopupSearch();
-                return true;
-            }
-            case R.id.action_export_subject:
-            {
-                new BackgroudExport(SubjectActivity.this, dataBaseHelper).execute();
-                return true;
-            }
-            case R.id.action_share_subject:
-            {
-                new BackgroudShare(SubjectActivity.this, dataBaseHelper).execute();
-                return true;
-            }
-            case R.id.action_import_cards_from_file:
-            {
-                showSeparatorPopup(REQUEST_CODE_READING_FILE_CARDS);
-                return true;
-            }
-            case R.id.action_import_quiz_from_file:
-            {
-               showSeparatorPopup(REQUEST_CODE_READING_FILE_QUIZ);
-                return true;
-            }
-            case R.id.action_zip_file_export:
-            {
-                new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
-                return true;
-            }
-            case R.id.action_zip_file_share:
-            {
-                new BackgroundZipShare(SubjectActivity.this, dataBaseHelper).execute();
-                return true;
-            }
-        }
+//        switch(id)
+//        {
+//            case R.id.action_subject_search:
+//            {
+//                showPopupSearch();
+//                return true;
+//            }
+//            case R.id.action_export_subject:
+//            {
+//                new BackgroudExport(SubjectActivity.this, dataBaseHelper).execute();
+//                return true;
+//            }
+//            case R.id.action_share_subject:
+//            {
+//                new BackgroudShare(SubjectActivity.this, dataBaseHelper).execute();
+//                return true;
+//            }
+//            case R.id.action_import_cards_from_file:
+//            {
+//                showSeparatorPopup(REQUEST_CODE_READING_FILE_CARDS);
+//                return true;
+//            }
+//            case R.id.action_import_quiz_from_file:
+//            {
+//               showSeparatorPopup(REQUEST_CODE_READING_FILE_QUIZ);
+//                return true;
+//            }
+//            case R.id.action_zip_file_export:
+//            {
+//                new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
+//                return true;
+//            }
+//            case R.id.action_zip_file_share:
+//            {
+//                new BackgroundZipShare(SubjectActivity.this, dataBaseHelper).execute();
+//                return true;
+//            }
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -1155,5 +1179,40 @@ public class SubjectActivity extends AppCompatActivity
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(s, options);
+    }
+
+    public void initFabButtons()
+    {
+        FloatingActionButton exportFab = findViewById(R.id.fab_export);
+        exportFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new BackgroundZipExport(SubjectActivity.this, dataBaseHelper).execute();
+            }
+        });
+
+        FloatingActionButton importCardsFab = findViewById(R.id.fab_import_cards);
+        importCardsFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSeparatorPopup(REQUEST_CODE_READING_FILE_CARDS);
+            }
+        });
+
+        FloatingActionButton importQuizzesFab = findViewById(R.id.fab_import_quiz);
+        importQuizzesFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSeparatorPopup(REQUEST_CODE_READING_FILE_QUIZ);
+            }
+        });
+
+        FloatingActionButton shareFab = findViewById(R.id.fab_share);
+        shareFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new BackgroundZipShare(SubjectActivity.this, dataBaseHelper).execute();
+            }
+        });
     }
 }

@@ -22,18 +22,6 @@
 
     <include layout="@layout/content_subject" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginEnd="70dp"
-        android:layout_marginRight="70dp"
-        android:onClick="addingContent"
-        app:rippleColor="#00B11E1E"
-        app:srcCompat="@drawable/baseline_add_white_48dp" />
-
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab_subject_menu"
         android:layout_width="wrap_content"
@@ -46,7 +34,7 @@
         app:fab_labelStyle="@style/customFab">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_import"
+            android:id="@+id/fab_import_cards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="center"
@@ -54,7 +42,18 @@
             app:fab_colorPressed="@color/colorPrimaryDark"
             app:fab_icon="@drawable/baseline_input_white_48dp"
             app:fab_size="mini"
-            app:fab_title="Import" />
+            app:fab_title="Import cards" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_import_quiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_icon="@drawable/baseline_input_white_48dp"
+            app:fab_size="mini"
+            app:fab_title="Import quizzes" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_export"
@@ -87,7 +86,8 @@
             app:fab_colorPressed="@color/colorPrimaryDark"
             app:fab_icon="@drawable/baseline_add_white_48dp"
             app:fab_size="mini"
-            app:fab_title="Add"/>
+            app:fab_title="Add"
+            android:onClick="addingContent"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
