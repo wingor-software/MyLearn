@@ -2,6 +2,7 @@ package com.wingor_software.mylearn;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -13,7 +14,8 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
     private int numberOfTabs;
     private Context context;
     private DataBaseHelper dataBaseHelper;
-    private FloatingActionButton addingFabButton;
+
+    private String[] pageTitles = new String[]{"Cards", "Quiz", "Notes", "Exams"};
 
     public SubjectMenuPagerAdapter(FragmentManager fm, int numberOfTabs, Context context, DataBaseHelper dataBaseHelper)
     {
@@ -46,6 +48,12 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
             default:
                 return null;
         }
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return pageTitles[position];
     }
 
     @Override
