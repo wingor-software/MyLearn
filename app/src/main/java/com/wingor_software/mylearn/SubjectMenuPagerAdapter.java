@@ -16,6 +16,7 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
     private DataBaseHelper dataBaseHelper;
 
     private String[] pageTitles = new String[]{"Cards", "Quiz", "Notes", "Exams"};
+    private Fragment[] currentFragments;
 
     public SubjectMenuPagerAdapter(FragmentManager fm, int numberOfTabs, Context context, DataBaseHelper dataBaseHelper)
     {
@@ -23,6 +24,7 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
         this.numberOfTabs = numberOfTabs;
         this.context = context;
         this.dataBaseHelper = dataBaseHelper;
+        currentFragments = new Fragment[4];
     }
 
     @Override
@@ -31,19 +33,27 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
         {
             case 0:
             {
-                return new CardListViewFragment(context, dataBaseHelper);
+                CardListViewFragment cardListViewFragment = new CardListViewFragment(context, dataBaseHelper);
+                currentFragments[0] = cardListViewFragment;
+                return cardListViewFragment;
             }
             case 1:
             {
-                return new QuizListViewFragment(context, dataBaseHelper);
+                QuizListViewFragment quizListViewFragment = new QuizListViewFragment(context, dataBaseHelper);
+                currentFragments[1] = quizListViewFragment;
+                return quizListViewFragment;
             }
             case 2:
             {
-                return new NoteListViewFragment(context, dataBaseHelper);
+                NoteListViewFragment noteListViewFragment = new NoteListViewFragment(context, dataBaseHelper);
+                currentFragments[2] = noteListViewFragment;
+                return noteListViewFragment;
             }
             case 3:
             {
-                return new ExamFragment(context, dataBaseHelper);
+                ExamFragment examFragment = new ExamFragment(context, dataBaseHelper);
+                currentFragments[3] = examFragment;
+                return examFragment;
             }
             default:
                 return null;
@@ -59,5 +69,10 @@ public class SubjectMenuPagerAdapter extends FragmentStatePagerAdapter
     @Override
     public int getCount() {
         return numberOfTabs;
+    }
+
+    public Fragment getCurrentFragment(int position)
+    {
+        return currentFragments[position];
     }
 }

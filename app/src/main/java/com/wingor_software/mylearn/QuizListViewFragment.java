@@ -130,4 +130,8 @@ public class QuizListViewFragment extends Fragment
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
     }
+
+    public QuizListViewAdapter getQuizListViewAdapter() {
+        return quizListViewAdapter;
+    }
 }

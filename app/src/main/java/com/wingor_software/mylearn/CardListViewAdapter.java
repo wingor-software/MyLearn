@@ -6,17 +6,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-public class CardListViewAdapter extends BaseAdapter {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CardListViewAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
     private DataBaseHelper dataBaseHelper;
     private int subjectID;
     private LayoutInflater mInflater;
+
+    private ValueFilter valueFilter;
+    private List<Card> filterList;
+    private List<Card> mData;
 
     public CardListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
     {
@@ -26,31 +36,26 @@ public class CardListViewAdapter extends BaseAdapter {
         try
         {
             this.subjectID = MainActivity.getCurrentSubject().getSubjectID();
+            this.filterList = dataBaseHelper.getCardList(subjectID);
+            this.mData = dataBaseHelper.getCardList(subjectID);
         }
         catch(Exception e)
         {
             e.printStackTrace();
             this.subjectID = 0;
+            mData = new ArrayList<>();
+            filterList = new ArrayList<>();
         }
     }
 
     @Override
     public int getCount() {
-        try
-        {
-            return dataBaseHelper.getCardList(subjectID).size();
-
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return 0;
-        }
+        return mData.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return i;
+        return mData.get(i);
     }
 
     @Override
@@ -75,7 +80,7 @@ public class CardListViewAdapter extends BaseAdapter {
 
         try
         {
-            Card card = dataBaseHelper.getCardList(subjectID).get(i);
+            Card card = mData.get(i);
             word.setText(card.getWord());
             setColor(EnumColors.valueOf(card.getColor()), word);
             answer.setText(card.getAnswer());
@@ -127,5 +132,45 @@ public class CardListViewAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
+    }
+
+    public List<Card> getmData() {
+        return mData;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if(valueFilter == null){
+            valueFilter = new ValueFilter();
+        }
+        return valueFilter;
+    }
+
+    private class ValueFilter extends Filter{
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            FilterResults results = new FilterResults();
+            if(charSequence != null && charSequence.length() > 0){
+                List<Card> resultFilterList = new ArrayList<>();
+                for (int i = 0; i < filterList.size(); i++) {
+                    if(filterList.get(i).getWord().toUpperCase().contains(charSequence.toString().toUpperCase())){
+                        resultFilterList.add(filterList.get(i));
+                    }
+                }
+                results.count = resultFilterList.size();
+                results.values = resultFilterList;
+            }else
+            {
+                results.count = filterList.size();
+                results.values = filterList;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            mData = (List<Card>) filterResults.values;
+            notifyDataSetChanged();
+        }
     }
 }

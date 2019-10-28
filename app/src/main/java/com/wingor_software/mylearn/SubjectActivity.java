@@ -40,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -62,6 +63,7 @@ public class SubjectActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private ViewPager subjectViewPager;
+    private SubjectMenuPagerAdapter subjectViewPagerAdapter;
 
     Dialog myDialog;
 
@@ -113,7 +115,8 @@ public class SubjectActivity extends AppCompatActivity
         myDialog = new Dialog(this);
 
         subjectViewPager = findViewById(R.id.subjectViewPager);
-        subjectViewPager.setAdapter(new SubjectMenuPagerAdapter(getSupportFragmentManager(), 4, this, dataBaseHelper));
+        subjectViewPagerAdapter = new SubjectMenuPagerAdapter(getSupportFragmentManager(), 4, this, dataBaseHelper);
+        subjectViewPager.setAdapter(subjectViewPagerAdapter);
 
         TabLayout topTabLayout = findViewById(R.id.topTabLayout);
         topTabLayout.setupWithViewPager(subjectViewPager);
@@ -301,6 +304,45 @@ public class SubjectActivity extends AppCompatActivity
         searchView.onActionViewExpanded();
         searchView.setIconified(false);
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                switch(subjectViewPager.getCurrentItem())
+                {
+                    case 0:
+                    {
+                        Fragment fr = subjectViewPagerAdapter.getCurrentFragment(0);
+                        CardListViewFragment cardListViewFragment = (CardListViewFragment) fr;
+                        CardListViewAdapter cardListViewAdapter = cardListViewFragment.getCardListViewAdapter();
+                        cardListViewAdapter.getFilter().filter(s);
+                        break;
+                    }
+                    case 1:
+                    {
+                        Fragment fr = subjectViewPagerAdapter.getCurrentFragment(1);
+                        QuizListViewFragment quizListViewFragment = (QuizListViewFragment) fr;
+                        QuizListViewAdapter quizListViewAdapter = quizListViewFragment.getQuizListViewAdapter();
+                        quizListViewAdapter.getFilter().filter(s);
+                        break;
+                    }
+                    case 2:
+                    {
+                        Fragment fr = subjectViewPagerAdapter.getCurrentFragment(2);
+                        NoteListViewFragment noteListViewFragment = (NoteListViewFragment) fr;
+                        NoteListViewAdapter noteListViewAdapter = noteListViewFragment.getNoteListViewAdapter();
+                        noteListViewAdapter.getFilter().filter(s);
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -375,51 +417,6 @@ public class SubjectActivity extends AppCompatActivity
                     toastMessage("Please enter a non-empty value!");
                 }
 
-            }
-        });
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
-
-    private void showPopupSearch()
-    {
-        myDialog.setContentView(R.layout.popup_search);
-        final TextInputEditText textInputEditText = myDialog.findViewById(R.id.searchGetter);
-        Button button = myDialog.findViewById(R.id.searchButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!textInputEditText.getText().toString().equals(""))
-                {
-                    switch(subjectViewPager.getCurrentItem())
-                    {
-                        case 0:
-                        {
-                            drawAllCardButtonsContaining(textInputEditText.getText().toString());
-                            myDialog.dismiss();
-
-                            break;
-                        }
-                        case 1:
-                        {
-                            drawAllQuizButtonsContaining(textInputEditText.getText().toString());
-                            myDialog.dismiss();
-
-                            break;
-                        }
-                        case 2:
-                        {
-                            drawAllNoteButtonsContaining(textInputEditText.getText().toString());
-                            myDialog.dismiss();
-
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    toastMessage("Please enter a non-empty value!");
-                }
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -590,94 +587,6 @@ public class SubjectActivity extends AppCompatActivity
     private void toastMessage(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    // TODO: 20.10.2019 do naprawy
-    private void drawAllNoteButtonsContaining(String phrase)
-    {
-        try
-        {
-            List<Note> notes = dataBaseHelper.getNoteList(MainActivity.getCurrentSubject().getSubjectID());
-            Iterator it = notes.iterator();
-            while(it.hasNext())
-            {
-                Note note = (Note)it.next();
-//                if(note.getTitle().toLowerCase().contains(phrase.toLowerCase()))
-//                    drawNoteButton(note);
-            }
-        }
-        catch (EmptyDataBaseException em)
-        {
-            TextView warning = new TextView(SubjectActivity.this);
-            warning.setText("Can't find such a note");
-            warning.setTag("note_warning_tag");
-//            subjectLayout.addView(warning);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    // TODO: 20.10.2019 do naprawy
-    private void drawAllQuizButtonsContaining(String phrase)
-    {
-        try
-        {
-            List<Quiz> quizzes = dataBaseHelper.getQuizList(MainActivity.getCurrentSubject().getSubjectID());
-            Iterator it = quizzes.iterator();
-            while(it.hasNext())
-            {
-                Quiz quiz = (Quiz) it.next();
-//                if(quiz.getQuestion().toLowerCase().contains(phrase.toLowerCase()))
-//                    drawQuizButton(quiz);
-            }
-        }
-        catch (EmptyDataBaseException em)
-        {
-            TextView warning = new TextView(SubjectActivity.this);
-            warning.setText(R.string.quiz_warning);
-            warning.setTag("quiz_warning_tag");
-//            subjectLayout.addView(warning);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    // TODO: 20.10.2019 do naprawy
-    private void drawAllCardButtonsContaining(String phrase)
-    {
-        try
-        {
-            List<Card> cards = dataBaseHelper.getCardList(MainActivity.getCurrentSubject().getSubjectID());
-            for (Card c:cards) {
-                if(c.getWord().toLowerCase().equals(phrase.toLowerCase()))
-                {
-                    subjectViewPager.getAdapter().notifyDataSetChanged();
-                }
-            }
-
-//            Iterator it = cards.iterator();
-//            while(it.hasNext())
-//            {
-//                Card card = (Card)it.next();
-////                if(card.getWord().toLowerCase().contains(phrase.toLowerCase()))
-////                    drawCardButton(card);
-//            }
-        }
-        catch (EmptyDataBaseException em)
-        {
-            TextView warning = new TextView(SubjectActivity.this);
-            warning.setText("Can't find such a card");
-            warning.setTag("card_warning_tag");
-//            subjectLayout.addView(warning);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
     }
 
     public void addingContent(View view)

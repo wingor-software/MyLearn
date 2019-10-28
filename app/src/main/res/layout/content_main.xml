@@ -13,13 +13,12 @@
         android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/board"
         android:scaleX="1.06"
         android:scaleY="1.2"
-        android:scrollingCache="true">
-    </ListView>
+        android:scrollingCache="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ListView>
 
     <TextView
         android:id="@+id/warningMainText"

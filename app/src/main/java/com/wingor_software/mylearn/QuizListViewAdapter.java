@@ -6,16 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-public class QuizListViewAdapter extends BaseAdapter
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuizListViewAdapter extends BaseAdapter implements Filterable
 {
     private Context context;
     private DataBaseHelper dataBaseHelper;
     private int subjectID;
     private LayoutInflater mInflater;
+
+    private ValueFilter valueFilter;
+    private List<Quiz> filterList;
+    private List<Quiz> mData;
 
     public QuizListViewAdapter(Context context, DataBaseHelper dataBaseHelper)
     {
@@ -25,11 +34,15 @@ public class QuizListViewAdapter extends BaseAdapter
         try
         {
             this.subjectID = MainActivity.getCurrentSubject().getSubjectID();
+            this.filterList = dataBaseHelper.getQuizList(subjectID);
+            this.mData = dataBaseHelper.getQuizList(subjectID);
         }
         catch(Exception e)
         {
             e.printStackTrace();
             this.subjectID = 0;
+            this.mData = new ArrayList<>();
+            this.filterList = new ArrayList<>();
         }
     }
 
@@ -40,20 +53,12 @@ public class QuizListViewAdapter extends BaseAdapter
 
     @Override
     public int getCount() {
-        try
-        {
-            return dataBaseHelper.getQuizList(subjectID).size();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return 0;
-        }
+        return mData.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return i;
+        return mData.get(i);
     }
 
     @Override
@@ -82,7 +87,7 @@ public class QuizListViewAdapter extends BaseAdapter
 
         try
         {
-            Quiz quiz = dataBaseHelper.getQuizList(subjectID).get(i);
+            Quiz quiz = mData.get(i);
             quesiton.setText(quiz.getQuestion());
             setColor(EnumColors.valueOf(quiz.getColor()), quesiton);
             return view;
@@ -126,4 +131,39 @@ public class QuizListViewAdapter extends BaseAdapter
         }
     }
 
+    @Override
+    public Filter getFilter() {
+        if(valueFilter == null){
+            valueFilter = new ValueFilter();
+        }
+        return valueFilter;
+    }
+
+    private class ValueFilter extends Filter{
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            FilterResults results = new FilterResults();
+            if(charSequence != null && charSequence.length() > 0){
+                List<Quiz> resultFilterList = new ArrayList<>();
+                for (int i = 0; i < filterList.size(); i++) {
+                    if(filterList.get(i).getQuestion().toUpperCase().contains(charSequence.toString().toUpperCase())){
+                        resultFilterList.add(filterList.get(i));
+                    }
+                }
+                results.count = resultFilterList.size();
+                results.values = resultFilterList;
+            }else
+            {
+                results.count = filterList.size();
+                results.values = filterList;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            mData = (List<Quiz>) filterResults.values;
+            notifyDataSetChanged();
+        }
+    }
 }

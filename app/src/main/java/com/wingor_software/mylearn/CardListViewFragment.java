@@ -130,4 +130,8 @@ public class CardListViewFragment extends Fragment
 
         myDialog.dismiss();
     }
+
+    public CardListViewAdapter getCardListViewAdapter() {
+        return cardListViewAdapter;
+    }
 }

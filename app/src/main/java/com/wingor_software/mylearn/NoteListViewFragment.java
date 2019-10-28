@@ -108,4 +108,8 @@ public class NoteListViewFragment extends Fragment
 
         myDialog.dismiss();
     }
+
+    public NoteListViewAdapter getNoteListViewAdapter() {
+        return noteListViewAdapter;
+    }
 }
